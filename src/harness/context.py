@@ -1,7 +1,7 @@
 from .state import HarnessState
 
 class HarnessContext:
-    def __init__(self, artefacts, log_handle, config):
+    def __init__(self, log_handle, config, artefacts: list[Artefact]):
         self.execution_id = 0
         self.current_state = HarnessState.INITIALISING
         self.current_round = 0
