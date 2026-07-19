@@ -1,6 +1,5 @@
 from .state import HarnessState
 from .context import HarnessContext
-import argparse
 from typing import Dict, Callable
 
 class Harness:
