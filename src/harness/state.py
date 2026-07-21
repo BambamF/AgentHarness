@@ -11,5 +11,5 @@ class HarnessState(Enum):
     EVALUATING = auto()
     REFLECTING = auto()
     MEMORY_UPDATE = auto()
-    TERMINATING = auto()
+    TERMINATE = auto()
 

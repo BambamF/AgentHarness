@@ -12,3 +12,14 @@ class Artefact:
     timestamp: float
     confidence: float
     metadata: Any
+    payload: Any
+
+    def _to_dict(self):
+        return {"artefact_id":self.artefact_id,
+                "execution_id": self.execution_id,
+                "producer": self.producer,
+                "producer_state": self.producer_state,
+                "timestamp": self.timestamp,
+                "confidence": self.confidence,
+                "metadata": self.metadata,
+                "payload": self.payload}
