@@ -4,11 +4,16 @@ from .tool_dispatcher import ToolDispatcher
 import subprocess
 
 class GitTool(Tool):
-    def __init__(self, subcommand: str, flags: List[str] | None, args: List[str]):
+    def __init__(self, command: str):
         self.name = "git"
-        self.subcommand = subcommand
-        self.flags = flags
-        self.args = args
+        self.description = "Run a git command."
+        self.input_schema = {
+                "type": "object",
+                "properties": {"command": {"type": "string"}},
+                "required": "command"
+                }
+        self.command = command
     
     def run(self):
-        subprocess.run([self.name, self.subcommand, self.flags if self.flags, self.args if self.args], capture_output=True, text=True)    
+        response = subprocess.run([self.command], capture_output=True, text=True)
+        return response

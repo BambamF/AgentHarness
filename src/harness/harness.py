@@ -1,8 +1,8 @@
-from .state import HarnessState
-from .context import HarnessContext
+from state import HarnessState
+from context import HarnessContext
 from ../prompt/prompt_handler import PromptHandler
 from ../permissions/permissions import PermissionManager
-from .artefacts/artefact_store import ArtefactStore
+from ../artefacts/artefact_store import ArtefactStore
 
 class Harness:
     def __init__(self, agent, memory, planner, runtime, evaluator, prompt: PromptArtefact, logger: logging.logger, permission_manager: PermissionManager, artefact_store: ArtefactStore):
