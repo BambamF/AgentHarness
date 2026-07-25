@@ -1,15 +1,19 @@
 from permissions import PermissionManager
 from .tool import Tool
 from datetime import datetime
-from ../harness/artefacts/artefact import Artefact
+from ../harness/artefacts/action import ActionArtefact, ActionProvider
+from ../harness/artefacts/artefact_store import ArtefactStore
 
 class ToolDispatch:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def dispatch(self, tool: Tool, exec_id: UUID):
-        command = [tool.name, tool.subcommand, tool.flags if tool.flags else "", tool.args if tool.args else ""]
-        permission = PermissionManager.permission(command)
+    def dispatch(self, tool: Tool, exec_id: UUID, caller: ActionProvider.SYSTEM):
+        params = {"provider": caller,
+                  "intention": tool.intention,
+                  "required_permission": tool.required_permission}
+        action_artefact: ActionArtefact = ArtefactStore.builder(ActionArtefact, params)
+        permission = PermissionManager.get_permission(action_artefact)
         if permission:
             try:
                 exec_artefact = tool.run()
