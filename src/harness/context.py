@@ -12,5 +12,5 @@ class HarnessContext:
         self.config = config
         self.termination_reason = None
 
-    def increment_round:
+    def increment_round(self):
         self.current_round += 1

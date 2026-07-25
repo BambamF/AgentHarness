@@ -7,9 +7,8 @@ class ToolDispatch:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def dispatch(self, tool: Tool, exec_id: UUID):
-        command = [tool.name, tool.subcommand, tool.flags if tool.flags else "", tool.args if tool.args else ""]
-        permission = PermissionManager.permission(command)
+    def dispatch(self, tool: Tool, exec_id: UUID, caller: str):
+        permission = PermissionManager.permission(tool.command, caller)
         if permission:
             try:
                 exec_artefact = tool.run()

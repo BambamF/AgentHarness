@@ -8,6 +8,7 @@ class PermissionLevel(Enum):
     READ_ONLY = auto()
     READ_WRITE = auto()
     EXECUTE = auto()
+    ALWAYS_BLOCK = auto()
 
 class AgentPermissions(Enum):
 
@@ -17,7 +18,8 @@ class PermissionManager:
         self.permission_levels = {
                 PermissionLevel.READ_ONLY: ["git branch", "git log", "git status", "ls", "echo", "cat"],
                 PermissionLevel.READ_WRITE: ["mkdir", "touch", "mv", "git checkout"]
-                PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"]
+                PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"],
+                PermissionLevel.ALWAYS_BLOCK: ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/", ":(){ :|:& };:"]
                 }
         self.requires_sub = ["git", "apt", "docker"]
 
