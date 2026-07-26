@@ -16,22 +16,23 @@ class Harness:
         self.config_path = config_path
         self.state = HarnessState.INITIALISING
         self.artefact_store = artefact_store
-        self.transitions: Dict[HarnessState, Callable] = {self.state.INITIALISING: self._initialise,
-                            self.state.REPO_ANALYSIS: self._analyse_repo,
-                            self.state.HYDRATING_MEMORY: self._hydrate_memory,
-                            self.state.PLANNING: self._create_plan,
-                            self.state.GENERATING: self._generate,
-                            self.state.PERMISSIONS: self._run_permissions,
-                            self.state.EXECUTING: self._execute,
-                            self.state.REFLECTING: self._reflect,
-                            self.state.MEMORY_UPDATE: self._update_memory,
-                            self.state.TERMINATE: self._terminate}
+        self.transitions: Dict[HarnessState, Callable] = {HarnessState.INITIALISING: self._initialise,
+                            HarnessState.REPO_ANALYSIS: self._analyse_repo,
+                            HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
+                            HarnessState.PLANNING: self._create_plan,
+                            HarnessState.GENERATING: self._generate,
+                            HarnessState.PERMISSIONS: self._run_permissions,
+                            HarnessState.EXECUTING: self._execute,
+                            HarnessState.REFLECTING: self._reflect,
+                            HarnessState.MEMORY_UPDATE: self._update_memory,
+                            HarnessState.TERMINATE: self._terminate}
 
         self.permission_manager = permission_manager
         self.DEFAULT_SYSTEM = f"You are a coding agent at {self.repository_root}. Use tools to solve tasks, Act, don't explain."
 
     def run(self):
-        pass        
+        while self.state not HarnessState.TERMINATE:
+
 
     def _initialise(self):
         execution_id = uuid.uuid5()
@@ -44,7 +45,7 @@ class Harness:
         self.context.hydrate_repo()
 
     def _create_plan(self):
-        self.plan = planner.create_plan(self.context, self.charter_path, self.prompt_artefact)
+        self.plan = planner.create_plan(self.context, self.prompt_artefact)
 
     def _generate(self):
         response = agent.messages.create(
