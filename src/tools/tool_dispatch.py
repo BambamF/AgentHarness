@@ -9,7 +9,7 @@ class ToolDispatch:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def dispatch(self, tool: Tool, exec_id: UUID, caller: ActionProvider.SYSTEM):
+    def dispatch(self, tool: Tool, exec_id: UUID, caller: ActionProvider):
         params = {"execution_id": tool.execution_id,
                   "producer": caller,
                   "intention": tool.intention,

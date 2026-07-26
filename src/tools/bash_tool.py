@@ -1,10 +1,11 @@
 from tool import Tool
 import subprocess
 import os
+from ../harness/artefacts/action import ActionProvider
 
 class BashTool(Tool):
 
-    def __init__(self, command: str, exec_id: UUID, caller: UUID):
+    def __init__(self, command: str, exec_id: UUID, caller: ActionProvider):
         self.name = "bash"
         self.description = "Run a shell command."
         self.input_schema = {

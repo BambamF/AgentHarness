@@ -5,9 +5,10 @@ from uuid import UUID
 from ../harness/artefacts/execution import ExecutionArtefact
 from ../harness/artefacts/artefact_store import ArtefactStore
 from ../../permissions/permissions import PermissionLevel, PermissionManager
+from ../harness/artefacts/action import ActionProvider
 
 class GitTool(Tool):
-    def __init__(self, command: str, exec_id: UUID, caller: UUID):
+    def __init__(self, command: str, exec_id: UUID, caller: ActionProvider):
         self.name = "git"
         self.description = "Run a git command."
         self.input_schema = {
