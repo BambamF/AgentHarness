@@ -2,6 +2,7 @@ from .artefact import Artefact
 from uuid import UUID
 from collections import deque
 from typing import Dict, Any
+from datetime import datetime
 
 """
     ArtefactStore is the execution knowledge repository for a single Harness run.
@@ -43,4 +44,11 @@ class ArtefactStore:
         return self.artefacts.get(artefact_type, [])
 
     def builder(self, artefact_type: type(Artefact), params: Dict[str, Any]):
-        return artefact_type(**params)
+        full_params = {"artefact_id": uuid.uuid4(),
+                       "execution_id" params.get("execution_id", None),
+                       "producer": params.get("producer", None),
+                       "timestamp": datetime.now(),
+                       "confidence": 1.0,
+                       "metadata": None,
+                       "payload": params.get("payload", None)}
+        return artefact_type(**full_params)

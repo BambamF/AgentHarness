@@ -9,21 +9,7 @@ class ToolDispatch:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def dispatch(self, tool: Tool, exec_id: UUID, caller: str):
-        permission = PermissionManager.permission(tool.command, caller)
-=======
     def dispatch(self, tool: Tool, exec_id: UUID, caller: ActionProvider.SYSTEM):
-        params = {"provider": caller,
-                  "intention": tool.intention,
-                  "required_permission": tool.required_permission}
-        action_artefact: ActionArtefact = ArtefactStore.builder(ActionArtefact, params)
-        permission = PermissionManager.get_permission(action_artefact)
->>>>>>> feat/implement-initialising-state
-        if permission:
-=======
-    def dispatch(self, tool: Tool, caller: ActionProvider.SYSTEM):
         params = {"execution_id": tool.execution_id,
                   "producer": caller,
                   "intention": tool.intention,
@@ -32,7 +18,6 @@ class ToolDispatch:
         permission_artefact = PermissionManager.get_permission(action_artefact)
 
         if permission_artefact.allowed:
->>>>>>> feat/implement-initialising-state
             try:
                 exec_artefact = tool.run()
                 self.logger.info(f"[Dispatch] - Tool: {type(tool)} | Permission: {PermissionManager.get_status()} | Permitted: {permission} | Timestamp: {datetime.now()}")

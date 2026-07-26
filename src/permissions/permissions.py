@@ -14,11 +14,7 @@ class PermissionManager:
     def __init__(self):
         self.permission_levels = {
                 PermissionLevel.READ_ONLY: ["git branch", "git log", "git status", "ls", "echo", "cat"],
-<<<<<<< HEAD
-                PermissionLevel.READ_WRITE: ["mkdir", "touch", "mv", "git checkout"]
-=======
                 PermissionLevel.READ_WRITE: ["mkdir", "touch", "mv", "git checkout"],
->>>>>>> feat/implement-initialising-state
                 PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"],
                 PermissionLevel.ALWAYS_BLOCK: ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/", ":(){ :|:& };:"]
                 }
