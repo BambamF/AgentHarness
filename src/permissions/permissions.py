@@ -10,9 +10,6 @@ class PermissionLevel(Enum):
     EXECUTE = auto()
     ALWAYS_BLOCK = auto()
 
-class AgentPermissions(Enum):
-
-
 class PermissionManager:
     def __init__(self):
         self.permission_levels = {

@@ -1,6 +1,7 @@
 from .artefact import Artefact
 from uuid import UUID
 from collections import deque
+from typing import Dict, Any
 
 """
     ArtefactStore is the execution knowledge repository for a single Harness run.
@@ -10,7 +11,6 @@ class ArtefactStore:
     def __init__(self):
         self.artefacts: dict[type(Artefact), list[Artefact]] = {}
         self.artefact_history: deque[tuple[type(Artefact), UUID]] = deque([])
-
     def add(self, candidate: Artefact):
         if type(candidate) not in self.artefacts:
             self.artefacts[type(candidate)] = [candidate]
@@ -28,7 +28,7 @@ class ArtefactStore:
                     return candidate
         return None
 
-    def latest(self, artefact_type: Artefact):
+    def latest(self, artefact_type: type(Artefact)):
         return self.artefacts.get(artefact_type, [])[-1]
 
     def get(self, candidate_type: type(Artefact), candidate_id: UUID) -> Artefact | None:
@@ -42,3 +42,5 @@ class ArtefactStore:
     def get_all(self, artefact_type: type(Artefact)):
         return self.artefacts.get(artefact_type, [])
 
+    def builder(self, artefact_type: type(Artefact), params: Dict[str, Any]):
+        return artefact_type(**params)
