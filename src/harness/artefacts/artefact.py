@@ -11,6 +11,7 @@ class Artefact:
     producer_state: HarnessState
     timestamp: float
     confidence: float
+    caller: str
     metadata: Any
     payload: Any
 
@@ -21,5 +22,6 @@ class Artefact:
                 "producer_state": self.producer_state,
                 "timestamp": self.timestamp,
                 "confidence": self.confidence,
+                "caller": self.caller,
                 "metadata": self.metadata,
                 "payload": self.payload}
