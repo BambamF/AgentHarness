@@ -43,12 +43,3 @@ class ArtefactStore:
     def get_all(self, artefact_type: type(Artefact)):
         return self.artefacts.get(artefact_type, [])
 
-    def builder(self, artefact_type: type(Artefact), params: Dict[str, Any]):
-        full_params = {"artefact_id": uuid.uuid4(),
-                       "execution_id" params.get("execution_id", None),
-                       "producer": params.get("producer", None),
-                       "timestamp": datetime.now(),
-                       "confidence": 1.0,
-                       "metadata": None,
-                       "payload": params.get("payload", None)}
-        return artefact_type(**full_params)

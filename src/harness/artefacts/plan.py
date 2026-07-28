@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from .artefact import Artefact
+from ..context import HarnessContext
 
 @dataclass(frozen=True)
 class PlanArtefact(Artefact):

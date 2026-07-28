@@ -1,11 +1,13 @@
 from tool import Tool
 import subprocess
 import os
-from ../harness/artefacts/action import ActionProvider
+from ..harness.artefacts.execution_artefact import ExecutionArtefact
+from ..harness.artefacrs.artefact_store import ArtefactStore
+from ..harness.artefacrs.artefact_factory import ArtefactFactory
 
 class BashTool(Tool):
 
-    def __init__(self, command: str, exec_id: UUID, caller: ActionProvider):
+    def __init__(self, command: str):
         self.name = "bash"
         self.description = "Run a shell command."
         self.input_schema = {
@@ -13,9 +15,10 @@ class BashTool(Tool):
                 "properties": {"command": {"type": string}},
                 "required": ["command"]
                 }
-        self.command = command
-        self.execution_id = exec_id
-        self.caller = caller
+
+    def run(command: str):
+        return run_bash(command)
+
 
     def run_bash(self, command: str) -> ExecutionArtefact:
         if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
@@ -25,7 +28,8 @@ class BashTool(Tool):
                       "execution_id": self.execution_id,
                       "producer": self.caller}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
 
         try:
 
@@ -37,7 +41,8 @@ class BashTool(Tool):
                       "producer": self.caller,
                       "payload": payload}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
 
         except subprocess.TimoutExpired:
             # handle cases where the command runs longer than 120s limit
@@ -47,7 +52,8 @@ class BashTool(Tool):
                       "execution_id": self.execution_id,
                       "producer": self.caller}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
         except Exception as e:
             # return any other execution errors as part of an execution artefact
 
@@ -58,4 +64,5 @@ class BashTool(Tool):
                       "error": e
                       }
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)

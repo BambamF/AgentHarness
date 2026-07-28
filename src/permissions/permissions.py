@@ -1,7 +1,7 @@
 from enum import Enum, auto
-from ../harness/action import ActionProvider, ActionArtefact
-from ../harness/artefacts/permission_artefact import PermissionArtefact
-from ../harness/artefacts/artefact_store import ArtefactStore
+from harness.artefacts.action import ActionProvider, ActionArtefact
+from harness.artefacts.permission_artefact import PermissionArtefact
+from harness.artefacts.artefact_store import ArtefactStore
 from datetime import datetime
 
 class PermissionLevel(Enum):

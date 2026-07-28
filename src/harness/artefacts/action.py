@@ -1,6 +1,6 @@
-from artefacts import Artefact
+from .artefact import Artefact
 from dataclasses import dataclass
-from ../../permissions/permissions import PermissionLevel
+from permissions.permissions import PermissionLevel
 from enum import Enum, auto
 
 @dataclass(frozen=True)

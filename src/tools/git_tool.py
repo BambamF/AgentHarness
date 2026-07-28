@@ -2,13 +2,14 @@ from typing import List
 from tool import Tool
 import subprocess
 from uuid import UUID
-from ../harness/artefacts/execution import ExecutionArtefact
-from ../harness/artefacts/artefact_store import ArtefactStore
-from ../../permissions/permissions import PermissionLevel, PermissionManager
-from ../harness/artefacts/action import ActionProvider
+from ..harness.artefacts.execution import ExecutionArtefact
+from ..harness.artefacts.artefact_store import ArtefactStore
+from ..harness.artefacts.artefact_factory import ArtefactFactory
+from ...permissions.permissions import PermissionLevel, PermissionManager
+from ..harness.artefacts.action import ActionProvider
 
 class GitTool(Tool):
-    def __init__(self, command: str, exec_id: UUID, caller: ActionProvider):
+    def __init__(self, command: str):
         self.name = "git"
         self.description = "Run a git command."
         self.input_schema = {
@@ -16,16 +17,11 @@ class GitTool(Tool):
                 "properties": {"command": {"type": "string"}},
                 "required": "command"
                 }
-        self.command = command
-        self.caller = caller    
-        self.execution_id = exec_id
-        self.command = command
-        self.caller = caller
     
-    def run(self):
-        pass
+    def run(self, command: str) -> ExecutionArtefact:
+        return self.run_git(command)
 
-    def run_git(self) -> ExecutionArtefact:
+    def run_git(self, commmand: str) -> ExecutionArtefact:
         if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 
             params = {"execution_status": "FAILED",
@@ -33,7 +29,8 @@ class GitTool(Tool):
                       "execution_id": self.execution_id,
                       "producer": self.caller}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
 
         try:
 
@@ -49,7 +46,8 @@ class GitTool(Tool):
                       "payload": payload
                       }
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
 
         except subprocess.TimeoutExpired as e:
             
@@ -59,7 +57,8 @@ class GitTool(Tool):
                       "producer": self.caller,
                       "error": e}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
 
         except Exception as e:
 
@@ -69,4 +68,5 @@ class GitTool(Tool):
                       "producer": self.caller,
                       "error": e}
 
-            return ArtefactStore.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            ArtefactStore.add(execution_artefact)
