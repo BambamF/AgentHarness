@@ -27,10 +27,12 @@ class ArtefactStore:
             for candidate in self.artefacts[candidate_type]:
                 if candidate.artefact_id == id:
                     return candidate
+        else:
+            return self.artefacts.get(self.artefact_history[-1][0])[-1]
         return None
 
     def latest(self, artefact_type: type(Artefact)):
-        return self.artefacts.get(artefact_type, [])[-1]
+        return self.artefacts.get(artefact_type)[-1]
 
     def get(self, candidate_type: type(Artefact), candidate_id: UUID) -> Artefact | None:
         for k, v in self.artefacts.items():
@@ -41,5 +43,5 @@ class ArtefactStore:
         return None
 
     def get_all(self, artefact_type: type(Artefact)):
-        return self.artefacts.get(artefact_type, [])
+        return self.artefacts.get(artefact_type)
 

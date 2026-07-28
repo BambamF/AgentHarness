@@ -1,21 +1,27 @@
 from harness.harness import Harness
 import os
 import logging
-from permissionspermission_manager import PermissionManager
+from planner.planner import Planner
+from permissions.permissions import PermissionManager
 from harness.artefacts.artefact_store import ArtefactStore
-from harness.artefacts.prompt_artefact import PromptArtefact
+from harness.artefacts.artefact_factory import ArtefactFactory
+from harness.artefacts.repository.repository import RepositoryArtefact
+from harness.artefacts.prompt import PromptArtefact
 from typing import List, Dict, Any
 from anthropic import Anthropic
-import os
+import html
+import hashlib
+import uuid
+from datetime import datetime
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"].strip()
-MODEL_ID=claude-sonnet-4-6
+MODEL_ID="claude-opus-5"
 
-ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-LOG_DIR = os.path.join(ROOT_PATH, 'log')
+ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.join(ROOT_PATH, 'src/logging')
 LOG_PATH = os.path.join(LOG_DIR, 'harness.log')
 
-client = Anthropic(url="https://api.anthropic.com", api_key=ANTHROPIC_API_KEY)
+client = Anthropic(api_key=ANTHROPIC_API_KEY)
 MODEL=MODEL_ID
 
 
@@ -24,24 +30,43 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
     memory_path = os.path.join(ROOT_PATH, 'memory/memory.md')
     config_path = os.path.join(ROOT_PATH, 'config/config.json')
     charter_path = os.path.join(ROOT_PATH,'agents/charter.md')
-    planner = None
     while True:
-        params = messages[-1]
-        prompt_artefact = ArtefactFactory.builder(PromptArtefact, params)
-        harness = Harness(agent, memory_path, config_path, charter_path, MODEL, ROOT_PATH, planner, prompt_artefact, permission_manager, artefact_store)
+        execution_id = uuid.uuid7()
+        last_message = messages[-1].get('content')
+        role = messages[-1].get('role')
+        h = hashlib.sha256()
+        h.update(last_message.encode('utf-8'))
+        params = {"producer_state": "initialising",
+                  "caller": role,
+                  "original_prompt": last_message,
+                  "sanitised_prompt": html.escape(last_message),
+                  "source": role,
+                  "prompt_hash": h.hexdigest()}
+        
+        full_params = {"artefact_id": uuid.uuid4(),
+                       "execution_id": execution_id,
+                       "producer": role,
+                       "timestamp": datetime.now(),
+                       "confidence": 1.0, # compute later
+                       "metadata": None,
+                       "payload": html.escape(last_message)}
+        full_params.update(params)
+
+        prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store)
+        harness = Harness(agent, memory_path, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response) != ReflectionArtefact:
+        if type(response_artefact) != RepositoryArtefact: # Change to TerminationArtefact after dryrun
             print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: ReflectionArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {params.content}")
+            logging.error(f"[AGENT LOOP] Expected artefact: RepositoryArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
         else:
-            logging.info(f"[AGENT LOOP] Reflection Artefact: {response_artefact.content} | Prompt: {params.content}")
+            logging.info(f"[AGENT LOOP] Repository Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')}")
         break
 
 
 def main():
-    os.makedirs(LOG_PATH, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
     history: List[Dict[str, Any]] = []
@@ -61,8 +86,9 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(
             filename=LOG_PATH,
-            level=logging.info,
+            level=logging.INFO,
             format="%(asctime)s | %(message)s"
             )
+    
     with open(LOG_PATH, 'a', encoding='utf-8', newline="") as log_file:
         main()

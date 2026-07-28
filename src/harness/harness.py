@@ -3,14 +3,14 @@ from .context import HarnessContext
 from prompts.prompt_handler import PromptHandler
 from permissions.permissions import PermissionManager
 from .artefacts.artefact_store import ArtefactStore
-from .artefacts.plan import Planner
+from planner.planner import Planner
 from .artefacts.action import ActionProvider
 import logging
 from typing import List, Dict, Any, Callable
 # from tools.tool_map import ToolMap
 
 class Harness:
-    def __init__(self, agent, memory_path, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], planner: Planner, prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore):
+    def __init__(self, agent, memory_path, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore):
         self.agent = agent
         self.prompt_artefact = prompt_artefact
         self.memory_path = memory_path
@@ -41,18 +41,19 @@ class Harness:
                 self.transitions[harness_state]
 
     def _initialise(self):
-        execution_id = uuid.uuid5()
-        self.context = HarnessContext(self.memory_path, self.config_path, self.repository_root, execution_id, self.artefact_store)
+        self.execution_id = uuid.uuid5()
+        self.context = HarnessContext(self.memory_path, self.config_path, self.repository_root, self.artefact_store)
         
         
     def _analyse_repo(self):
-        self.context.scan_repository()
+        self.context.scan_repository(self.execution_id)
 
     def _hydrate_memory(self):
         self.context.scan_memory()
 
     def _create_plan(self):
-        self.plan = planner.create_plan(self.artefact_store)
+        self.planner = Planner(self.context, self.artefactStore)
+        self.plan = planner.create_plan()
 
     def _generate(self):
         response = agent.messages.create(
@@ -61,7 +62,7 @@ class Harness:
                 messages=self.messages,
                 max_tokens=8000
                 )
-        self.messages.append({"role": ActionProvider.SYSTEM, "content": response.content})
+        self.messages.append({"role": "agent", "content": response.content})
 
     def _run_permissions(self):
         self.permission_manager.get_permission(ArtefactStore.latest())

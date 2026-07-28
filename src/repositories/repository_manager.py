@@ -9,12 +9,14 @@ import entrypoints
 from collections import defaultdict
 import os
 import logging
+import uuid
+from uuid import UUID
 
 class RepositoryManager:
 
-    def get_repository_artefact(self, repository_root: str, artefact_store: ArtefactStore):
+    def get_repository_artefact(self, repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
 
-        commit_hash = self.get_commit_hash(logger)
+        commit_hash = self.get_commit_hash()
         languages_set = Set()
         languages = self.get_languages(repository_root, languages_set)
         entry_points = self.get_entry_points(repository_root)
@@ -31,10 +33,18 @@ class RepositoryManager:
                 "dependency_graph": self.dict_to_json(dependency_graph),
                 "config_files": config_files
                 }
+        full_params = {"artefact_id": uuid.uuid4(),
+                       "execution_id": execution_id,
+                       "producer": role,
+                       "timestamp": datetime.now(),
+                       "confidence": 1.0, # compute later
+                       "metadata": None,
+                       "payload": commit_hash}
+        full_params.update(params)
 
         logging.info(f"[REPO ARTEFACT] Producer: RepositoryManager | Repository Root: {repository_root} | Commit Hash: {commit_hash} | Languages: {",".join(languages)} | N Entry Points: {len(entry_points)} | Topology: {topology.size} | Dependency Graph: {dependency_graph.size} | N Config Files: {len(config_files)}")
 
-        repo_artefact = ArtefactFactory.builder(RepositoryArtefact, params)
+        repo_artefact = ArtefactFactory.builder(artefact_type=RepositoryArtefact, params=full_params, artefact_store=self.artefact_store)
         artefact_store.add(repo_artefact)
 
     def scan_config_files(self, repository_root: str) -> List[str] | None:
@@ -66,7 +76,7 @@ class RepositoryManager:
 
         return config_files
 
-    def get_commit_hash(self, logger: logging.logger) -> str | None:
+    def get_commit_hash(self) -> str | None:
         try:
             response = subprocess.run(['git', 'rev-parse', 'HEAD'], check=True, text=True, capture_output=True, timeout=120)
             logging.info(f"[COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: {response.stdout}")

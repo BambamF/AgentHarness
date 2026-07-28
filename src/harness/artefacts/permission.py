@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from artefact import Artefact
+from .artefact import Artefact
 
 @dataclass(frozen=True)
 class PermissionArtefact(Artefact):
