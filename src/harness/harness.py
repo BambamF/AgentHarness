@@ -10,13 +10,14 @@ from typing import List, Dict, Any, Callable
 # from tools.tool_map import ToolMap
 
 class Harness:
-    def __init__(self, agent, memory_path, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore):
+    def __init__(self, agent, memory_path, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore, execution_id: UUID):
         self.agent = agent
         self.prompt_artefact = prompt_artefact
         self.memory_path = memory_path
         self.messages = messages
         self.charter_path = charter_path
         self.repository_root = repository_root
+        self.execution_id = execution_id
         self.config_path = config_path
         self.state = HarnessState.INITIALISING
         self.artefact_store = artefact_store
@@ -36,12 +37,11 @@ class Harness:
 
     def run(self):
         while self.state != HarnessState.TERMINATE:
-            for harness_state in self.transitions.keys():
-                self.state = harness_state
-                self.transitions[harness_state]
+            for transition, handler in self.transitions.items():
+                self.state = transition
+                handler()
 
     def _initialise(self):
-        self.execution_id = uuid.uuid5()
         self.context = HarnessContext(self.memory_path, self.config_path, self.repository_root, self.artefact_store)
         
         
@@ -49,7 +49,7 @@ class Harness:
         self.context.scan_repository(self.execution_id)
 
     def _hydrate_memory(self):
-        self.context.scan_memory()
+        self.context.scan_memory(self.execution_id)
 
     def _create_plan(self):
         self.planner = Planner(self.context, self.artefactStore)

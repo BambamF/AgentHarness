@@ -12,6 +12,7 @@ class ArtefactStore:
     def __init__(self):
         self.artefacts: dict[type(Artefact), list[Artefact]] = {}
         self.artefact_history: deque[tuple[type(Artefact), UUID]] = deque([])
+
     def add(self, candidate: Artefact):
         if type(candidate) not in self.artefacts:
             self.artefacts[type(candidate)] = [candidate]
@@ -20,19 +21,17 @@ class ArtefactStore:
         self.artefact_history.append((type(candidate), candidate.artefact_id))
 
     def latest_any(self) -> Artefact | None:
-        if len(self.artefact_history) < 1:
+        if self.artefact_history:
             last: tuple[type(Artefact), UUID] = self.artefact_history[-1]
             id: UUID = last[1]
             candidate_type: type(Artefact) = last[0]
             for candidate in self.artefacts[candidate_type]:
                 if candidate.artefact_id == id:
                     return candidate
-        else:
-            return self.artefacts.get(self.artefact_history[-1][0])[-1]
         return None
 
-    def latest(self, artefact_type: type(Artefact)):
-        return self.artefacts.get(artefact_type)[-1]
+    def latest(self, artefact_type: type(Artefact)) -> Artefact | None:
+        return self.artefacts.get(artefact_type)[-1] if self.artefacts.get(artefact_type) else None
 
     def get(self, candidate_type: type(Artefact), candidate_id: UUID) -> Artefact | None:
         for k, v in self.artefacts.items():
@@ -42,6 +41,6 @@ class ArtefactStore:
                         return candidate
         return None
 
-    def get_all(self, artefact_type: type(Artefact)):
+    def get_all(self, artefact_type: type(Artefact)) -> List[Artefact] | None:
         return self.artefacts.get(artefact_type)
 

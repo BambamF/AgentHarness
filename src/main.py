@@ -6,6 +6,7 @@ from permissions.permissions import PermissionManager
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.repository.repository import RepositoryArtefact
+from harness.artefacts.memory import MemoryArtefact
 from harness.artefacts.prompt import PromptArtefact
 from typing import List, Dict, Any
 from anthropic import Anthropic
@@ -36,7 +37,7 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         role = messages[-1].get('role')
         h = hashlib.sha256()
         h.update(last_message.encode('utf-8'))
-        params = {"producer_state": "initialising",
+        params = {
                   "caller": role,
                   "original_prompt": last_message,
                   "sanitised_prompt": html.escape(last_message),
@@ -53,15 +54,16 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store)
-        harness = Harness(agent, memory_path, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store)
+        harness = Harness(agent, memory_path, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response_artefact) != RepositoryArtefact: # Change to TerminationArtefact after dryrun
+        if type(response_artefact) != MemoryArtefact: # Change to TerminationArtefact after dryrun
             print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: RepositoryArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
+            logging.error(f"[AGENT LOOP] Expected artefact: MemoryArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
         else:
-            logging.info(f"[AGENT LOOP] Repository Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')}")
+            print("\n\033[32mFinal Answer: Done, check log file\033[0m")
+            logging.info(f"[AGENT LOOP] Memory Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')} | State: INITIALISING ")
         break
 
 

@@ -13,3 +13,102 @@
 2026-07-28 14:06:15,399 | [AGENT LOOP] Expected artefact: RepositoryArtefact | Latest Artefact: <class 'harness.artefacts.prompt.PromptArtefact'> | Prompt: Write a python script to add two numbers
 2026-07-28 14:15:45,839 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa914-e1ae-73a6-82a5-8941c9b0947b | Artefact ID: 673363c1-819d-42aa-93cc-77b9880ca814 | Confidence: 1.0
 2026-07-28 14:15:45,852 | [AGENT LOOP] Expected artefact: RepositoryArtefact | Latest Artefact: <class 'harness.artefacts.prompt.PromptArtefact'> | Prompt: python for math
+2026-07-28 14:41:34,455 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa92c-82f6-7104-a9e9-3574336aaa40 | Artefact ID: 654ff8b9-2165-420a-8b8c-d6995b2db583 | Confidence: 1.0
+2026-07-28 14:46:31,878 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa931-0cc6-74ca-9d2d-f003617cf7da | Artefact ID: cfec6871-c8b1-4f46-9dc9-2d64a2b164b5 | Confidence: 1.0
+2026-07-28 14:50:46,655 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa934-effe-7705-bb3c-ad0a786ee088 | Artefact ID: 8b7c2673-a854-44ed-82bd-935e3c73e650 | Confidence: 1.0
+2026-07-28 14:51:39,274 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa935-bd89-752f-823c-fc50439dd60d | Artefact ID: 1ba4b16d-82db-4008-95cb-58a98b8dcf20 | Confidence: 1.0
+2026-07-28 14:53:35,415 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa937-8337-724a-9a9b-8453d34f9169 | Artefact ID: f04ad3b1-bc38-495d-b1bc-798b71e58db3 | Confidence: 1.0
+2026-07-28 14:54:58,301 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa938-c6fc-7184-88b6-10ac360dd6c8 | Artefact ID: 8b5abf30-d3a8-4c9a-8be8-ba404b6fa8a9 | Confidence: 1.0
+2026-07-28 14:56:53,261 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa93a-880c-7228-b415-a8ddf8e2dfc0 | Artefact ID: 85f6e4ff-4134-4e2f-8065-adac828994ec | Confidence: 1.0
+2026-07-28 15:00:17,222 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa93d-a4c5-7660-ab0f-13365963d299 | Artefact ID: 8c5c64a0-e1cb-4e3e-8fc7-24247f23e604 | Confidence: 1.0
+2026-07-28 15:02:44,705 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa93f-e4e1-75f5-b5de-ca4c152cdeb1 | Artefact ID: 4b79b098-dcc9-4c85-915f-9338981a8649 | Confidence: 1.0
+2026-07-28 15:08:01,950 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa944-bc1d-77fe-83ad-57328c8b135a | Artefact ID: 9c45b12b-f048-4c6e-abf0-a2cdf0f4c02e | Confidence: 1.0
+2026-07-28 15:08:31,519 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa945-2f9f-7737-8b3f-85fb92e90f40 | Artefact ID: 15fe3a1a-01c0-4822-bcea-186093e71b05 | Confidence: 1.0
+2026-07-28 15:08:31,555 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-28 15:09:42,705 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fa946-45b0-776a-980f-832a3a5aa593 | Artefact ID: 02064d39-c9a8-4d45-81b9-a2b66ad25716 | Confidence: 1.0
+2026-07-28 15:09:42,733 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:33:20,087 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4a-48d7-77be-afaa-554d865a59d2 | Artefact ID: de944b69-14d7-4a52-bfac-15f13d2cd236 | Confidence: 1.0
+2026-07-29 00:33:20,115 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:34:00,906 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4a-e84a-71b0-9cf6-4c5db406a7a1 | Artefact ID: 2d4354c2-3e1e-44f6-99fb-0901714ed0eb | Confidence: 1.0
+2026-07-29 00:34:00,932 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:35:43,102 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4c-777d-7485-a93c-79685984d67e | Artefact ID: 56eafdd3-7be5-4ce0-835b-f9a6ebb57bef | Confidence: 1.0
+2026-07-29 00:35:43,119 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:36:40,932 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4d-5964-7784-8259-ae5be5227750 | Artefact ID: bd769130-676d-414e-8157-e78b61d36ae0 | Confidence: 1.0
+2026-07-29 00:36:40,967 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:37:34,833 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4e-2bf1-7715-9c9a-3fc395b84319 | Artefact ID: d2c07e13-7c0d-4076-9ec5-3d74b17ae7c5 | Confidence: 1.0
+2026-07-29 00:37:34,853 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:38:01,332 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4e-9373-726c-985c-9e45a59f22c4 | Artefact ID: 75176119-3b0e-46d8-8feb-055d56ff880e | Confidence: 1.0
+2026-07-29 00:38:01,357 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:38:54,590 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab4f-637e-7741-b00c-aedc3f55b50d | Artefact ID: 13ad43af-b628-47dc-81e7-3edf385008bb | Confidence: 1.0
+2026-07-29 00:38:54,618 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:41:04,493 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab51-5eed-7171-a9a5-74a142afa0b7 | Artefact ID: 0e1f784c-a184-4476-9b0f-59acb955bab8 | Confidence: 1.0
+2026-07-29 00:41:04,519 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:43:03,735 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab53-30b7-720a-85c3-c0d95def8e12 | Artefact ID: d5065dfa-a955-4d26-9e53-82e9e0d2f433 | Confidence: 1.0
+2026-07-29 00:43:03,761 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:44:36,946 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab54-9cd1-73fa-80e3-d65755264e98 | Artefact ID: ccf0ccfe-222d-4193-adc1-f21ad70f1880 | Confidence: 1.0
+2026-07-29 00:44:36,983 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:44:37,003 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:45:36,214 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab55-8455-729d-8b73-1615b58adaa1 | Artefact ID: e579fcf6-8dec-4a42-b636-4292956d885f | Confidence: 1.0
+2026-07-29 00:45:36,253 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:45:36,273 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:46:14,443 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab56-19aa-71d3-830d-f0d39bc4fe79 | Artefact ID: 41382c96-d9d1-41fa-91e7-5a477978dc97 | Confidence: 1.0
+2026-07-29 00:46:14,479 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:46:14,490 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:52:17,676 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab5b-a48b-7457-9ad2-4fb5d5b87480 | Artefact ID: df0b3c9a-3fe3-4962-8c7b-a481865833b4 | Confidence: 1.0
+2026-07-29 00:52:17,694 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:52:17,709 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:52:17,709 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab5b-a48b-7457-9ad2-4fb5d5b87480 | Artefact ID: 774b3618-5d19-45a1-91b5-4a205da9cd97 | Confidence: 1.0
+2026-07-29 00:55:15,989 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab5e-5d15-74dd-b764-e7d3098e7896 | Artefact ID: c04258f9-d50e-460f-b254-e48adf1ab001 | Confidence: 1.0
+2026-07-29 00:55:16,017 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:55:16,025 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:55:16,025 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab5e-5d15-74dd-b764-e7d3098e7896 | Artefact ID: 3c19c060-7aea-44be-a7d1-c6f4e163b7ca | Confidence: 1.0
+2026-07-29 00:55:55,066 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab5e-f5ba-74d6-8016-45eedfd16537 | Artefact ID: 8d07be05-4352-49b8-b379-b7e368183e87 | Confidence: 1.0
+2026-07-29 00:55:55,105 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:55:55,124 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:55:55,124 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab5e-f5ba-74d6-8016-45eedfd16537 | Artefact ID: a4392960-0e78-45ed-b481-18199593553a | Confidence: 1.0
+2026-07-29 00:56:46,756 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab5f-bfa4-76a3-9f80-e32dd20aafad | Artefact ID: 726d8a85-7d2d-4922-85a3-5c1df40e2da7 | Confidence: 1.0
+2026-07-29 00:56:46,799 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 00:56:46,818 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 00:56:46,818 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab5f-bfa4-76a3-9f80-e32dd20aafad | Artefact ID: 2a746b67-fd98-492c-a23b-393c83be61da | Confidence: 1.0
+2026-07-29 00:56:46,818 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fab5f-bfa4-76a3-9f80-e32dd20aafad | Artefact ID: 3cf080d3-14f8-4053-aaea-96ec33e21a50 | Confidence: 1.0
+2026-07-29 00:56:46,831 | [AGENT LOOP] Expected artefact: RepositoryArtefact | Latest Artefact: <class 'harness.artefacts.memory.MemoryArtefact'> | Prompt: write python to add numbers
+2026-07-29 01:03:46,132 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab66-25d4-744e-9a17-2691166d2935 | Artefact ID: da354c8c-c8b0-44b1-9bf2-f35b17865854 | Confidence: 1.0
+2026-07-29 01:03:46,159 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 01:03:46,167 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 01:03:46,168 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab66-25d4-744e-9a17-2691166d2935 | Artefact ID: 044eeba9-ac51-41d9-8722-47c84f62b92e | Confidence: 1.0
+2026-07-29 01:03:46,168 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fab66-25d4-744e-9a17-2691166d2935 | Artefact ID: a724a446-182e-4089-9081-7fb6b8d4c3e4 | Confidence: 1.0
+2026-07-29 01:04:52,559 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fab67-294f-73c7-997a-f56366d32f6d | Artefact ID: cf848b68-aeba-49b3-8b02-2b8ec5c678ee | Confidence: 1.0
+2026-07-29 01:04:52,588 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+
+2026-07-29 01:04:52,595 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: 37834184c3cca4b31e209fd7f4adeb07e58ac842
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 01:04:52,595 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab67-294f-73c7-997a-f56366d32f6d | Artefact ID: f70d4788-d70d-460a-aa77-b1e2f84ae20d | Confidence: 1.0
+2026-07-29 01:04:52,596 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fab67-294f-73c7-997a-f56366d32f6d | Artefact ID: 960cd684-55b7-4686-8264-d1ad3a32bc59 | Confidence: 1.0
+2026-07-29 01:04:52,608 | [AGENT LOOP] Memory Artefact: 960cd684-55b7-4686-8264-d1ad3a32bc59 | Prompt: Write a python weather app | State: INITIALISING 
