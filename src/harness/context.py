@@ -6,7 +6,7 @@ import os
 from typing import Dict, Any
 from pathlib import Path
 from .artefacts.memory import MemoryArtefact
-from memory/memory import MemoryManager
+from memory.memory import MemoryManager
 from .artefacts.artefact_factory import ArtefactFactory
 from repositories.repository_manager import RepositoryManager
 from .artefacts.repository.repository import RepositoryArtefact

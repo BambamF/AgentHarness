@@ -39,7 +39,6 @@ class RepositoryManager:
                        "execution_id": execution_id,
                        "producer": "system",
                        "timestamp": datetime.now(),
-                       "confidence": 1.0, # compute later
                        "metadata": None,
                        "payload": commit_hash,
                        "caller": "system"}

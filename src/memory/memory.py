@@ -1,12 +1,16 @@
-from ../harness/artefacts/artefact_store import ArtefactStore
-from ../harness/artefacts/memory_artefact import MemoryArtefact
+from harness.artefacts.artefact_store import ArtefactStore
+from harness.artefacts.memory import MemoryArtefact
 import logging
 from uuid import UUID
+import uuid
+from datetime import datetime
+from harness.artefacts.artefact_factory import ArtefactFactory
 
 class MemoryManager:
 
-    def __init__(self, memory_path: str, artefact_story: ArtefactStore):
+    def __init__(self, memory_path: str, artefact_store: ArtefactStore):
         self.memory_path = memory_path
+        self.artefact_store = artefact_store
 
     def scan_memory(self, execution_id: UUID) -> MemoryArtefact:
         

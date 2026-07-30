@@ -3,6 +3,7 @@ import os
 import logging
 from planner.planner import Planner
 from permissions.permissions import PermissionManager
+from memory.memory import MemoryManager
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.repository.repository import RepositoryArtefact
@@ -24,13 +25,12 @@ LOG_PATH = os.path.join(LOG_DIR, 'harness.log')
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 MODEL=MODEL_ID
+memory_path = os.path.join(ROOT_PATH, 'memory/memory.md')
+agent = client
+config_path = os.path.join(ROOT_PATH, 'config/config.json')
+charter_path = os.path.join(ROOT_PATH,'agents/charter.md')
 
-
-def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager):
-    agent = client
-    memory_path = os.path.join(ROOT_PATH, 'memory/memory.md')
-    config_path = os.path.join(ROOT_PATH, 'config/config.json')
-    charter_path = os.path.join(ROOT_PATH,'agents/charter.md')
+def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, memory_manager: MemoryManager):
     while True:
         execution_id = uuid.uuid7()
         last_message = messages[-1].get('content')
@@ -48,13 +48,12 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
                        "execution_id": execution_id,
                        "producer": role,
                        "timestamp": datetime.now(),
-                       "confidence": 1.0, # compute later
                        "metadata": None,
                        "payload": html.escape(last_message)}
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store)
-        harness = Harness(agent, memory_path, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store, execution_id)
+        harness = Harness(agent, memory_path, memory_manager, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
@@ -71,6 +70,7 @@ def main():
     os.makedirs(LOG_DIR, exist_ok=True)
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
+    memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     history: List[Dict[str, Any]] = []
     while True:
         try:
@@ -82,7 +82,7 @@ def main():
         if query.strip().lower() in ("q", "exit", ""):
             break
         history.append({"role": "user", "content": query})
-        agent_loop(history, artefact_store, permission_manager)
+        agent_loop(history, artefact_store, permission_manager, memory_manager)
         break
 
 if __name__ == "__main__":

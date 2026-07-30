@@ -9,7 +9,6 @@ class Artefact:
     execution_id: UUID
     producer: str
     timestamp: float
-    confidence: float
     caller: str
     metadata: Any
     payload: Any
@@ -19,7 +18,6 @@ class Artefact:
                 "execution_id": self.execution_id,
                 "producer": self.producer,
                 "timestamp": self.timestamp,
-                "confidence": self.confidence,
                 "caller": self.caller,
                 "metadata": self.metadata,
                 "payload": self.payload}

@@ -112,3 +112,37 @@
 2026-07-29 01:04:52,595 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fab67-294f-73c7-997a-f56366d32f6d | Artefact ID: f70d4788-d70d-460a-aa77-b1e2f84ae20d | Confidence: 1.0
 2026-07-29 01:04:52,596 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fab67-294f-73c7-997a-f56366d32f6d | Artefact ID: 960cd684-55b7-4686-8264-d1ad3a32bc59 | Confidence: 1.0
 2026-07-29 01:04:52,608 | [AGENT LOOP] Memory Artefact: 960cd684-55b7-4686-8264-d1ad3a32bc59 | Prompt: Write a python weather app | State: INITIALISING 
+2026-07-29 02:11:46,268 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019faba4-67dc-760a-9464-2c5ce2141a50 | Artefact ID: 6f323a65-cb4a-4b2f-801c-e47b5f1d1f10 | Confidence: None
+2026-07-29 02:11:46,292 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+
+2026-07-29 02:11:46,313 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 02:11:46,313 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019faba4-67dc-760a-9464-2c5ce2141a50 | Artefact ID: 9b9a34f0-f4c3-4797-a849-dfa7a1802535 | Confidence: None
+2026-07-29 02:23:35,803 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fabaf-3b7b-77b5-947b-ee0ebfcf5847 | Artefact ID: 26a23ae1-8c52-4274-bc46-48e4dcab21c0 | Confidence: None
+2026-07-29 02:23:35,829 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+
+2026-07-29 02:23:35,837 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 02:23:35,837 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fabaf-3b7b-77b5-947b-ee0ebfcf5847 | Artefact ID: 78322d90-c50e-478e-9588-30f7fadc2edb | Confidence: None
+2026-07-29 02:24:04,965 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fabaf-ad65-7618-aa0a-9f2a686b5f67 | Artefact ID: 3ccd1451-b7dc-4e30-99de-94f61bb531ab | Confidence: None
+2026-07-29 02:24:04,984 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+
+2026-07-29 02:24:04,998 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 02:24:04,999 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fabaf-ad65-7618-aa0a-9f2a686b5f67 | Artefact ID: a6df2d14-dfd4-4493-ad09-0d3f18850b36 | Confidence: None
+2026-07-29 02:24:33,422 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fabb0-1c8e-7435-81b3-ee6cad0750db | Artefact ID: 21701298-3cfb-4b41-8d42-491a6cfeade2 | Confidence: None
+2026-07-29 02:24:33,440 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+
+2026-07-29 02:24:33,460 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 02:24:33,460 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fabb0-1c8e-7435-81b3-ee6cad0750db | Artefact ID: 8b93bda3-4553-4c08-af1d-659c8a77c253 | Confidence: None
+2026-07-29 02:24:33,460 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fabb0-1c8e-7435-81b3-ee6cad0750db
+2026-07-29 02:26:03,988 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fabb1-7e54-7410-8d13-ff2d3ab3df3c | Artefact ID: 89fc0865-0f4c-404e-9d25-435e3d36921c | Confidence: None
+2026-07-29 02:26:04,053 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+
+2026-07-29 02:26:04,059 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: claude-opus-5 | Commit Hash: a03a2260803d2f522b485aa1bacbfc4ea8120112
+ | Languages: None | N Entry Points: 5 | Topology: 2 | Dependency Graph: None | N Config Files: None
+2026-07-29 02:26:04,059 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fabb1-7e54-7410-8d13-ff2d3ab3df3c | Artefact ID: c39fce0f-0658-4cc2-bbac-bc29cf1210c8 | Confidence: None
+2026-07-29 02:26:04,059 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fabb1-7e54-7410-8d13-ff2d3ab3df3c
+2026-07-29 02:26:04,059 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fabb1-7e54-7410-8d13-ff2d3ab3df3c | Artefact ID: ac8fa364-5384-4e4e-8b96-9c7a9ac24d7c | Confidence: 1.0
+2026-07-29 02:26:04,070 | [AGENT LOOP] Memory Artefact: ac8fa364-5384-4e4e-8b96-9c7a9ac24d7c | Prompt: write a python weather app | State: INITIALISING 
