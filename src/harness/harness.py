@@ -52,7 +52,7 @@ class Harness:
 
     def _hydrate_memory(self):
         self.context.scan_memory(execution_id=self.execution_id, memory_manager=self.memory_manager)
-
+        self.memory_manager.hydrate_memory(execution_id=self.execution_id)
     def _create_plan(self):
         self.planner = Planner(self.context, self.artefactStore)
         self.plan = planner.create_plan()

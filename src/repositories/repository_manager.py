@@ -25,6 +25,7 @@ class RepositoryManager:
         topology = RepositoryManager.get_topology(repository_root=repository_root)
         dependency_graph = RepositoryManager.build_dependency_graph(repo_path=repository_root)
         config_files = RepositoryManager.scan_config_files(repository_root=repository_root)
+        typed_topology = RepositoryManager.get_typed_topology(repository_root=repository_root)
 
         params = {
                 "repository_root": str(repository_root),
@@ -32,6 +33,7 @@ class RepositoryManager:
                 "languages": languages,
                 "entry_points": entry_points,
                 "topology": topology,
+                "typed_topology": typed_topology,
                 "dependency_graph": dependency_graph,
                 "config_files": config_files
                 }
@@ -138,7 +140,7 @@ class RepositoryManager:
     def get_topology(repository_root: str) -> Dict[str, Any]:
         topology = {}
         repository_root = os.path.abspath(repository_root)
-        topology[repository_root] = [RepositoryManager.get_topology(os.path.join(repository_root, child)) if os.path.isdir(os.path.join(repository_root, child)) else child for child in os.listdir(repository_root)]
+        topology[repository_root] = {child : RepositoryManager.get_topology(os.path.join(repository_root, child)) for child in os.listdir(repository_root) if os.path.isdir(os.path.join(repository_root, child))}
         return topology
 
     @staticmethod

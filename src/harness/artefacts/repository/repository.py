@@ -8,6 +8,7 @@ class RepositoryArtefact(Artefact):
     repository_root: str | Path
     commit_hash: str
     topology: Dict[str, Any]
+    typed_topology: Dict[str, Any]
     dependency_graph: dict
     languages: list
     entry_points: list

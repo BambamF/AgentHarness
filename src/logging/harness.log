@@ -239,3 +239,65 @@
 2026-08-10 15:08:55,516 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 288b70600e8876f77cc67f7426665d7be733a714
  | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
 2026-08-10 15:08:55,516 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fec38-0801-72e9-acc2-5b3a29522266 | Artefact ID: 7f36cf08-ae19-4449-b1d5-c8c3febab67d | Confidence: None
+2026-08-10 16:07:36,297 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fec6d-f269-734f-aa18-5e6d6dca313d | Artefact ID: 1388e616-015f-4caf-a86f-c07702d5b697 | Confidence: None
+2026-08-10 16:07:36,325 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 16:07:48,831 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 16:07:48,831 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fec6d-f269-734f-aa18-5e6d6dca313d | Artefact ID: 784a06b4-85e6-484c-b8e4-df1137ec5154 | Confidence: None
+2026-08-10 16:19:08,246 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fec78-8156-774e-bbb2-9d8cfa8420e3 | Artefact ID: 447c55c5-e129-43b6-beb1-d9d95e853ca7 | Confidence: None
+2026-08-10 16:19:08,281 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 16:19:20,317 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 16:19:20,317 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fec78-8156-774e-bbb2-9d8cfa8420e3 | Artefact ID: e1477fe3-8e2f-46f5-af74-6fa72589375e | Confidence: None
+2026-08-10 16:20:08,194 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fec79-6b82-74c4-ada2-074ffebfca57 | Artefact ID: da17975b-92c4-448a-8776-00722a33d644 | Confidence: None
+2026-08-10 16:20:08,215 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 16:20:20,520 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 16:20:20,520 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fec79-6b82-74c4-ada2-074ffebfca57 | Artefact ID: 79831c9a-3805-4a71-8e5e-c1f7dd163ad9 | Confidence: None
+2026-08-10 16:20:20,523 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fec79-6b82-74c4-ada2-074ffebfca57
+2026-08-10 18:12:30,927 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fece0-4e4f-71ef-b46e-22b5028b05ee | Artefact ID: 266891ef-4fe9-4ea6-b98c-530f28755758 | Confidence: None
+2026-08-10 18:12:30,945 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 18:12:42,735 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 18:12:42,735 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fece0-4e4f-71ef-b46e-22b5028b05ee | Artefact ID: 66fbd269-7aaa-4034-84a1-857efc4a6e5e | Confidence: None
+2026-08-10 18:12:42,738 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fece0-4e4f-71ef-b46e-22b5028b05ee
+2026-08-10 18:12:42,739 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fece0-4e4f-71ef-b46e-22b5028b05ee | Artefact ID: 4612f3d1-7384-4750-b253-7a636f2ab2a5 | Confidence: None
+2026-08-10 18:12:42,739 | [AGENT LOOP] Memory Artefact: 4612f3d1-7384-4750-b253-7a636f2ab2a5 | Prompt: Write a python weather app | State: INITIALISING 
+2026-08-10 18:16:48,908 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fece4-3e0c-7542-81c6-0fa3b52ca258 | Artefact ID: b69b97e9-769d-4cfb-9693-01f2ed39610d | Confidence: None
+2026-08-10 18:16:48,950 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 18:17:00,858 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 18:17:00,858 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fece4-3e0c-7542-81c6-0fa3b52ca258 | Artefact ID: 000af243-7d72-427f-8915-89c001e31e57 | Confidence: None
+2026-08-10 18:17:00,861 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fece4-3e0c-7542-81c6-0fa3b52ca258
+2026-08-10 18:17:00,861 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fece4-3e0c-7542-81c6-0fa3b52ca258 | Artefact ID: 8aad3a1f-6049-4655-969c-2f6fa04c27f9 | Confidence: None
+2026-08-10 18:18:02,962 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fece5-5f52-71e8-8f5b-13b75021209b | Artefact ID: 664a4170-bce7-41e1-b3d2-67e691e9707f | Confidence: None
+2026-08-10 18:18:02,989 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 18:18:15,409 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 18:18:15,409 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fece5-5f52-71e8-8f5b-13b75021209b | Artefact ID: 7abc9458-9173-42cc-a7da-aebe392714f4 | Confidence: None
+2026-08-10 18:18:15,412 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fece5-5f52-71e8-8f5b-13b75021209b
+2026-08-10 18:18:15,412 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fece5-5f52-71e8-8f5b-13b75021209b | Artefact ID: 8c2da945-eaba-44e2-96da-ea0e4edd829a | Confidence: None
+2026-08-10 18:18:18,031 | [AGENT LOOP] Memory Artefact: 8c2da945-eaba-44e2-96da-ea0e4edd829a | Prompt: Write a python link safety app | State: INITIALISING 
+2026-08-10 18:27:21,762 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019feced-e622-76d2-8c9b-f113f314e7a9 | Artefact ID: d3fc4003-674c-42b0-a0e2-8a25cb27eddb | Confidence: None
+2026-08-10 18:27:21,787 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 18:27:33,668 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 18:27:33,669 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019feced-e622-76d2-8c9b-f113f314e7a9 | Artefact ID: 76ebdc1b-01d9-493d-b05e-e1efad72396d | Confidence: None
+2026-08-10 18:27:33,672 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019feced-e622-76d2-8c9b-f113f314e7a9
+2026-08-10 18:27:33,672 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019feced-e622-76d2-8c9b-f113f314e7a9 | Artefact ID: 77349a05-a683-42ac-aa58-70ab833823d4 | Confidence: None
+2026-08-10 18:28:13,641 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 019fecee-b0c8-70a3-8eaf-e1fc82a3ee42 | Artefact ID: 21c139cb-b0a7-436e-ac4d-add045b8d95a | Confidence: None
+2026-08-10 18:28:13,678 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+
+2026-08-10 18:28:25,362 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ea260885b102e62fa7f5329ff7b6cee5a1f772c1
+ | Languages: python | N Entry Points: 5 | Topology: 1 | Dependency Graph: 1792 | N Config Files: 12
+2026-08-10 18:28:25,362 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 019fecee-b0c8-70a3-8eaf-e1fc82a3ee42 | Artefact ID: eff143c1-d4b6-4409-8dc1-8b6d0e26828c | Confidence: None
+2026-08-10 18:28:25,365 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/memory/memory.md | Execution ID: 019fecee-b0c8-70a3-8eaf-e1fc82a3ee42
+2026-08-10 18:28:25,365 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 019fecee-b0c8-70a3-8eaf-e1fc82a3ee42 | Artefact ID: 54107149-1f52-4db3-8a78-2b135fef5814 | Confidence: None
+2026-08-10 18:28:25,379 | [AGENT LOOP] Memory Artefact: 54107149-1f52-4db3-8a78-2b135fef5814 | Prompt: Write a python fighting game | State: INITIALISING 

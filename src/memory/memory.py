@@ -8,6 +8,7 @@ from datetime import datetime
 from harness.artefacts.artefact_factory import ArtefactFactory
 import os
 from typing import Dict, Any
+import random
 
 class MemoryManager:
 
@@ -23,12 +24,15 @@ class MemoryManager:
         
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
         if memory_artefact == None:
-            topology = self.artefact_store.latest(RepositoryArtefact).topology
+            repository_artefact = self.artefact_store.latest(RepositoryArtefact)
+            topology = repository_artefact.topology
+            typed_topology = repository_artefact.typed_topology
             confidence_agg = {}
-            topology_confidence = self.initialise_confidence("", confidence_agg, topology, memory_artefact)
+            topology_confidence = self.initialise_confidence("", confidence_agg, typed_topology, memory_artefact)
             params = {"memory_path": self.memory_path,
                       "topology_confidence": topology_confidence,
                       "topology": topology,
+                      "typed_topology": typed_topology,
                       "known_facts_path": self.known_facts_path,
                       "previous_decisions_path": self.previous_decisions_path,
                       "relevant_history_path": self.relevant_history_path,
@@ -47,14 +51,20 @@ class MemoryManager:
 
     def hydrate_memory(self, execution_id: UUID):
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
-        print(f"[MEMORY HYDRATION] Execution ID: {execution_id} | Topology: {memory_artefact.topology} | Topology Confidence: {memory_artefact.topology_confidence}")
+        print(f"[MEMORY HYDRATION] Execution ID: {execution_id} | Topology Length: {len(memory_artefact.topology)} | Topology Confidence Length: {len(memory_artefact.topology_confidence)} | Topology Confidence Sample: {self.sample_from_dict(memory_artefact.topology_confidence, 10)}")
 
-    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], topology: Dict[str, Any], memory_artefact: MemoryArtefact) -> Dict[str, float]:
+    def sample_from_dict(self, d: Dict[Any, Any], n_sample: int):
+        keys = random.sample(list(d), n_sample)
+        values = [d[k] for k in keys]
+        return dict(zip(keys, values))
+
+    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], typed_topology: Dict[str, Any], memory_artefact: MemoryArtefact) -> Dict[str, float]:
         if memory_artefact == None:
-            for key, value in topology.items():
-                absolute_key = acc + "/" + key
+            if typed_topology.get("type") == "directory":
+                absolute_key = (acc + "/" + typed_topology.get("name")).strip("/")
                 confidence_agg[absolute_key] = 0.0
-                self.initialise_confidence(absolute_key, confidence_agg, value, memory_artefact)
-            return topology_confidence
+                for child in typed_topology.get("children"):
+                    self.initialise_confidence(absolute_key, confidence_agg, child, memory_artefact)
+            return confidence_agg
         else: 
             return memory_artefact.topology_confidence # CHANGE TO EVALUATE RECENT CHANGES AND COMPARE WITH MEMORY ARTEFACT
