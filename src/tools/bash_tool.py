@@ -1,22 +1,25 @@
 from tool import Tool
 import subprocess
 import os
-from ..harness.artefacts.execution_artefact import ExecutionArtefact
-from ..harness.artefacrs.artefact_store import ArtefactStore
-from ..harness.artefacrs.artefact_factory import ArtefactFactory
+from harness.artefacts.execution_artefact import ExecutionArtefact
+from harness.artefacrs.artefact_store import ArtefactStore
+from harness.artefacrs.artefact_factory import ArtefactFactory
+from dataclasses import dataclass
 
+@dataclass(frozen=True)
 class BashTool(Tool):
 
-    def __init__(self, command: str):
-        self.name = "bash"
-        self.description = "Run a shell command."
-        self.input_schema = {
+    def __init__(self):
+        name = "bash"
+        description = "Run a shell command."
+        input_schema = {
                 "type": "object",
-                "properties": {"command": {"type": string}},
+                "properties": {"command": {"type": "string"}},
                 "required": ["command"]
                 }
+        super.__init__(name, description, input_schema)
 
-    def run(command: str):
+    def run(command: str) -> ExecutionArtefact:
         return run_bash(command)
 
 
@@ -29,7 +32,7 @@ class BashTool(Tool):
                       "producer": self.caller}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
-            ArtefactStore.add(execution_artefact)
+            return execution_artefact
 
         try:
 
@@ -42,7 +45,7 @@ class BashTool(Tool):
                       "payload": payload}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
-            ArtefactStore.add(execution_artefact)
+            return execution_artefact
 
         except subprocess.TimoutExpired:
             # handle cases where the command runs longer than 120s limit
@@ -53,7 +56,7 @@ class BashTool(Tool):
                       "producer": self.caller}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
-            ArtefactStore.add(execution_artefact)
+            return execution_artefact
         except Exception as e:
             # return any other execution errors as part of an execution artefact
 
@@ -65,4 +68,4 @@ class BashTool(Tool):
                       }
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
-            ArtefactStore.add(execution_artefact)
+            return execution_artefact

@@ -1,4 +1,5 @@
 from pathlib import Path
+import ast
 import json
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.artefact_store import ArtefactStore
@@ -19,8 +20,7 @@ class RepositoryManager:
     def get_repository_artefact(repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
 
         commit_hash = RepositoryManager.get_commit_hash()
-        languages_set = set()
-        languages = RepositoryManager.get_languages(repository_root=repository_root, languages_set=languages_set)
+        languages = RepositoryManager.get_languages(repository_root=repository_root)
         entry_points = RepositoryManager.get_entry_points(repository_root=repository_root)
         topology = RepositoryManager.get_topology(repository_root=repository_root)
         dependency_graph = RepositoryManager.build_dependency_graph(repo_path=repository_root)
@@ -31,8 +31,8 @@ class RepositoryManager:
                 "commit_hash": commit_hash,
                 "languages": languages,
                 "entry_points": entry_points,
-                "topology": RepositoryManager.dict_to_json(topology),
-                "dependency_graph": RepositoryManager.dict_to_json(dependency_graph),
+                "topology": topology,
+                "dependency_graph": dependency_graph,
                 "config_files": config_files
                 }
         full_params = {"artefact_id": uuid.uuid4(),
@@ -68,7 +68,7 @@ class RepositoryManager:
 
                 file_lower = file.lower()
                 file_name, file_ext = os.path.splitext(file_lower)
-                is_dotfile_config = file_lower.startswith(".") and not ext
+                is_dotfile_config = file_lower.startswith(".")
                 is_known_filename = file_lower in CONFIG_FILENAMES
                 has_config_extension = file_ext in CONFIG_EXTENSIONS
 
@@ -114,7 +114,8 @@ class RepositoryManager:
         return language_dict
 
     @staticmethod
-    def get_languages(repository_root: str, languages_set: Set[string]) -> List[str]:
+    def get_languages(repository_root: str) -> List[str]:
+        languages_set = set()
         repository_root = os.path.abspath(repository_root)
         language_dict = RepositoryManager.get_language_dict()
 
@@ -122,7 +123,8 @@ class RepositoryManager:
             for filename in files:
                 ext = Path(filename).suffix.lower()
                 lang = language_dict.get(ext)
-                languages_set.add(lang)
+                if lang:
+                    languages_set.add(lang)
         return sorted(languages_set)
 
 
@@ -131,14 +133,21 @@ class RepositoryManager:
         repository_root = os.path.abspath(repository_root)
         console_scripts = entrypoints.get_group_all('console_scripts')
         return console_scripts
-
+    
     @staticmethod
     def get_topology(repository_root: str) -> Dict[str, Any]:
+        topology = {}
+        repository_root = os.path.abspath(repository_root)
+        topology[repository_root] = [RepositoryManager.get_topology(os.path.join(repository_root, child)) if os.path.isdir(os.path.join(repository_root, child)) else child for child in os.listdir(repository_root)]
+        return topology
+
+    @staticmethod
+    def get_typed_topology(repository_root: str) -> Dict[str, Any]:
         repository_root = os.path.abspath(repository_root)
         d = {"name": os.path.basename(repository_root)}
         if os.path.isdir(repository_root):
             d["type"] = "directory"
-            d["children"] = [RepositoryManager.get_repository_topology(repository_root=os.path.join(repository_root, child)) for child in os.listdir(repository_root)]
+            d["children"] = [RepositoryManager.get_typed_topology(repository_root=os.path.join(repository_root, child)) for child in os.listdir(repository_root)]
         else:
             d["type"] = "file"
         return d
@@ -148,7 +157,7 @@ class RepositoryManager:
         return json.dumps(d)
     
     @staticmethod
-    def extract_imports_from_file(file_path: Path, repo_root: Path) -> List:
+    def extract_imports_from_file(file_path: Path, repo_root: Path) -> List[str]:
         """
         Parses a python file and extracts all imported module names
         """
@@ -163,16 +172,18 @@ class RepositoryManager:
         for node in ast.walk(tree):
             # handle standard imports like 'import os'
             if isinstance(node, ast.Import):
-                imports.append(node.name)
+                for name in node.names:
+                    imports.append(name.name) 
             
             # handle from imports
             elif isinstance(node, ast.ImportFrom):
-                if node.level > 0:
-                    relatice_prefix = ".".join(file_path.parent.parts[-node.level:]) + "."
-                    imports.append(f"{relative_prefix}{node.module}")
+                module = node.module or ""
+                prefix = "." * node.level
 
-            else:
-                imports.append(node.module)
+                if module:
+                    imports.append(f"{prefix}{module}".lstrip("."))
+                else:
+                    imports.append(prefix.strip(".") or ".")
         return imports
     
     @staticmethod
@@ -206,7 +217,7 @@ class RepositoryManager:
         internal_modules = set(graph.keys())
 
         for file_path, module_name in file_mapping.items():
-            found_imports = RepositoryManager.extract_imports_from_files(file_path=file_path, repo_root=repo_root)
+            found_imports = RepositoryManager.extract_imports_from_file(file_path=file_path, repo_root=repo_root)
             dependencies = set()
 
             for imp in found_imports:
@@ -217,5 +228,5 @@ class RepositoryManager:
 
             # Remove self dependencies if any
             dependencies.discard(module_name)
-            graph[module_name] = sorted(List(dependencies))
+            graph[module_name] = sorted(list(dependencies))
         return graph

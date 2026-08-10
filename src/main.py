@@ -53,7 +53,7 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store)
-        harness = Harness(agent, memory_path, memory_manager, config_path, charter_path, MODEL, ROOT_PATH, prompt_artefact, permission_manager, artefact_store, execution_id)
+        harness = Harness(agent, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()

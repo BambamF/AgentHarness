@@ -11,9 +11,9 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class GrepTool(Tool):
     def __init__(self):
-        self.name = "grep"
-        self.description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
-        self.input_schema = {
+        name = "grep"
+        description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
+        input_schema = {
                 "type": "object",
                 "properties": {
                     "pattern": {"type": "string"},
@@ -22,11 +22,12 @@ class GrepTool(Tool):
                     },
                 "required": ["pattern"]
                 }
+        super.__init__(name, description, input_schema)
 
-        def run(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True):
+        def run(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
             return self.run_grep(pattern, path, caller, execution_id, recursive)
 
-        def run_grep(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True):
+        def run_grep(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
 
             try:
                 flags = ['-r'] if recursive else []

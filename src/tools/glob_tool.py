@@ -11,19 +11,20 @@ import glob as _glob
 @dataclass(frozen=True)
 class GlobTool:
     def __init__(self):
-        self.name = "glob"
-        self.description = "Find files matching a glob pattern, e.g. '**/*.py'. Returns sorted list of matching paths."
-        self.input_schema = {"type": "object",
+        name = "glob"
+        description = "Find files matching a glob pattern, e.g. '**/*.py'. Returns sorted list of matching paths."
+        input_schema = {"type": "object",
                              "properties": {"pattern": {"type": "string"}},
                              "required": ["pattern"]
                              }
+        super.__init__(name, description, input_schema)
 
     def run(self, pattern: str, caller: str, execution_id: UUID) -> ExecutionArtefact:
         return self.run_glob(pattern, caller, execution_id)
 
     def run_glob(self, pattern: str, caller: str,  execution_id: UUID) -> ExecutionArtefact:
 
-        matches = -glob.glob(pattern, recursive=True)
+        matches = _glob.glob(pattern, recursive=True)
         
         params = {"execution_status": "SUCCESS" if matches else "FAILED",
                   "termination_reason": "completed" if matches else "no matches",

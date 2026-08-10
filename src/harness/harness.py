@@ -67,7 +67,7 @@ class Harness:
         self.messages.append({"role": "agent", "content": response.content})
 
     def _run_permissions(self):
-        self.permission_manager.get_permission(ArtefactStore.latest())
+        self.permission_manager.get_permission(ArtefactStore.latest(GenerationArtefact))
 
     def _execute(self):
         pass
