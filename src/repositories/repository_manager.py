@@ -7,6 +7,7 @@ from harness.artefacts.repository.repository import RepositoryArtefact
 import subprocess
 from datetime import datetime
 from typing import List, Dict, Any, Set
+from  importlib.metadata import entry_points
 import entrypoints
 from collections import defaultdict
 import os
@@ -48,14 +49,14 @@ class RepositoryManager:
 
         logging.info(f"[REPO ARTEFACT] Producer: RepositoryManager | Repository Root: {repository_root} | Commit Hash: {commit_hash} | Languages: {",".join(languages) if languages else None} | N Entry Points: {len(entry_points) if entry_points else None} | Topology: {len(topology)} | Dependency Graph: {len(dependency_graph) if dependency_graph else None} | N Config Files: {len(config_files) if config_files else None}")
 
-        repo_artefact = ArtefactFactory.builder(artefact_type=RepositoryArtefact, params=full_params, artefact_store=artefact_store)
+        repo_artefact = ArtefactFactory.builder(artefact_type=RepositoryArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="system")
 
     @staticmethod
     def scan_config_files(repository_root: str) -> List[str] | None:
 
         CONFIG_EXTENSIONS = {".json", ".yaml", ".toml", ".ini", ".cfg", ".conf", ".xml", ".properties", ".env"}
         CONFIG_FILENAMES = {"dockerfile", "makerfile", "pipfile", "pipfile.lock", "gemfile", "vagrantfile", "procfile", "pyproject.toml"}
-        IGNORE_DIRS = {".git", ".hg", ".svn", "node_modules", "venv", ".venv", "__pycache__", "build", "dist", ".idea", ".vscode"}
+        IGNORE_DIRS = {".git", ".hg", ".svn", "node_modules", "venv", ".venv", "__pycache__", "build", "dist", ".idea", ".vscode", ".gitignore"}
 
         repository_root = os.path.abspath(repository_root)
         config_files = []
@@ -133,8 +134,8 @@ class RepositoryManager:
     @staticmethod
     def get_entry_points(repository_root: str) -> Dict[str, str]:
         repository_root = os.path.abspath(repository_root)
-        console_scripts = entrypoints.get_group_all('console_scripts')
-        return console_scripts
+        eps = entry_points(group=None)
+        return {eps.name: eps.value for name, value in eps}
     
     @staticmethod
     def get_topology(repository_root: str) -> Dict[str, Any]:

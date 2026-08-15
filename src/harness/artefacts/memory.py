@@ -8,7 +8,7 @@ class MemoryArtefact(Artefact):
     topology_confidence: Dict[str, Any]
     topology: Dict[str, Any]
     typed_topology: Dict[str, Any]
-    known_facts_path: str
-    previous_decisions_path: str
-    relevant_history_path: str
-    compressed_context_path: str
+    known_facts: list[str]
+    previous_decisions: list[str]
+    relevant_history: list[str]
+    compressed_context: list[str]

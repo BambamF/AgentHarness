@@ -11,8 +11,9 @@ from typing import List, Dict, Any, Callable
 # from tools.tool_map import ToolMap
 
 class Harness:
-    def __init__(self, agent, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore, execution_id: UUID):
+    def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore, execution_id: UUID):
         self.agent = agent
+        self.model = model
         self.prompt_artefact = prompt_artefact
         self.memory_path = memory_path
         self.messages = messages
@@ -26,7 +27,7 @@ class Harness:
         self.transitions: Dict[HarnessState, Callable] = {HarnessState.INITIALISING: self._initialise,
                             HarnessState.REPO_ANALYSIS: self._analyse_repo,
                             HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
-                           # HarnessState.PLANNING: self._create_plan,
+                            HarnessState.PLANNING: self._create_plan,
                            # HarnessState.GENERATING: self._generate,
                            # HarnessState.PERMISSIONS: self._run_permissions,
                            # HarnessState.EXECUTING: self._execute,
@@ -54,11 +55,11 @@ class Harness:
         self.context.scan_memory(execution_id=self.execution_id, memory_manager=self.memory_manager)
         self.memory_manager.hydrate_memory(execution_id=self.execution_id)
     def _create_plan(self):
-        self.planner = Planner(self.context, self.artefactStore)
-        self.plan = planner.create_plan()
+        self.planner = Planner(self.agent, self.model, self.artefact_store, self.execution_id)
+        self.plan = self.planner.create_plan(self.execution_id)
 
     def _generate(self):
-        response = agent.messages.create(
+        response = self.agent.messages.create(
                 model=self.MODEL,
                 system=self.DEFAULT_SYSTEM,
                 messages=self.messages,
@@ -72,11 +73,11 @@ class Harness:
     def _execute(self):
         pass
 
-    def _reflecting(self):
+    def _reflect(self):
         pass
 
     def _update_memory(self):
         pass
 
     def _terminate(self):
-        pass
+        print("Terminating...")

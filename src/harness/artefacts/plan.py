@@ -10,4 +10,8 @@ class PlanArtefact(Artefact):
     risks: list
     dependencies: list
     success_criteria: list
+    repo_observations: dict
+    memory_references: dict
+    topology_references: dict
+    error: Any | None
 

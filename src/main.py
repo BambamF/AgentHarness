@@ -9,14 +9,22 @@ from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.repository.repository import RepositoryArtefact
 from harness.artefacts.memory import MemoryArtefact
 from harness.artefacts.prompt import PromptArtefact
+from harness.artefacts.plan import PlanArtefact
 from typing import List, Dict, Any
 from anthropic import Anthropic
 import html
 import hashlib
 import uuid
 from datetime import datetime
+from dotenv import load_dotenv
 
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"].strip()
+load_dotenv()
+print("api key in env ? ", "ANTHROPIC_API_KEY" in os.environ)
+
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise RuntimeError("Missing api key in environment, check .env key name and location")
+ANTHROPIC_API_KEY = ANTHROPIC_API_KEY.strip()
 MODEL_ID="claude-opus-5"
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,10 +33,10 @@ LOG_PATH = os.path.join(LOG_DIR, 'harness.log')
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 MODEL=MODEL_ID
-memory_path = os.path.join(ROOT_PATH, 'memory/memory.md')
+memory_path = os.path.join(ROOT_PATH, 'src/memory/memory.md')
 agent = client
-config_path = os.path.join(ROOT_PATH, 'config/config.json')
-charter_path = os.path.join(ROOT_PATH,'agents/charter.md')
+config_path = os.path.join(ROOT_PATH, 'configs/config.json')
+charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
 def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, memory_manager: MemoryManager):
     while True:
@@ -52,17 +60,17 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
                        "payload": html.escape(last_message)}
         full_params.update(params)
 
-        prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store)
-        harness = Harness(agent, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, artefact_store, execution_id)
+        prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
+        harness = Harness(agent, MODEL, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response_artefact) != MemoryArtefact: # Change to TerminationArtefact after dryrun
+        if type(response_artefact) != PlanArtefact: # Change to TerminationArtefact after dryrun
             print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: MemoryArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
+            logging.error(f"[AGENT LOOP] Expected artefact: PlanArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
         else:
-            print("\n\033[32mFinal Answer: Done, check log file\033[0m")
-            logging.info(f"[AGENT LOOP] Memory Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')} | State: INITIALISING ")
+            print("\n\033[32mFinal Answer: Done plan created, check log file\033[0m")
+            logging.info(f"[AGENT LOOP] Plan Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')} | State: PLANNING ")
         break
 
 
