@@ -79,7 +79,11 @@ class Planner:
                                    }
                     )
 
-            plan_dict = message.content
+            print()
+            print(message.content)
+            print()
+            raw = message.content[0].text
+            plan_dict = json.loads(raw)
             
             params = {"objective": plan_dict.get("objective"),
                       "ordered_tasks": plan_dict.get("ordered_tasks"),
@@ -92,9 +96,9 @@ class Planner:
                       "topology_references": plan_dict.get("topology_references"),
                       "error": None}
 
-            logging.info(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {' -- '.join(plan_dict.get('risks')[0])} | Sample Repo Observation: {str(plan_dict.get('repo_observations').items()[0])}")
+            logging.info(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {' -- '.join(plan_dict.get('risks')[0])} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[3]) or None}")
 
-            print("[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {' -- '.join(plan_dict.get('risks').items()[0])} | Sample Repo Observation: {' -- '.join(plan_dict.get('repo_observations').items()[0]')}")
+            print(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {' -- '.join(plan_dict.get('risks')[0])} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[3]) or None}")
             plan_artefact = ArtefactFactory.builder(artefact_type=PlanArtefact, params=params, artefact_store=self.artefact_store, execution_id=self.execution_id, caller="agent")
             return plan_artefact
 
@@ -143,19 +147,37 @@ class Planner:
                 return {"type": "object",
                         "properties": {
                             "objective": {"type": "string"},
-                            "ordered_tasks": {"type": "array", "items": {"type": "string"}},
-                            "assumptions": {"type": "array", "items": {"type": "string"}},
-                            "risks": {"type": "array", "items": {"type": "string"}},
-                            "dependencies": {"type": "array", "items": {"type": "string"}},
-                            "success_criteria": {"type": "array", "items": {"type": "string"}},
-                            "repo_observations": {"type": "object", "properties": {"path": {"type": "string"}, "observation": {"type": "string"}}, "additionalProperties": False},
-                            "memory_references": {"type": "object", "properties": {"reference_id": {"type": "string"}, "confidence": {"type": "number"}}, "additionalProperties": False, "required": ["reference_id" "confidence"]},
-                            "topology_references": {"type": "object", "properties": {"path": {"type": "string"}, "observation_identifier": {"type": "array", "items": {"type": "object", "properties": {"observation": {"type": "string"}, "confidence": {"type": "number"}}, "additonalProperties": False},
-                                                                                                "min_items": 2,
-                                                                                                "max_items": 2}},
-                                                    "additionalProperties": False,
-                                                    "required": ["path", "observation"]
-                                                    }
+                            "ordered_tasks": {"type": "array", 
+                                              "items": {"type": "string"}},
+                            "assumptions": {"type": "array", 
+                                            "items": {"type": "string"}},
+                            "risks": {"type": "array", 
+                                      "items": {"type": "string"}},
+                            "dependencies": {"type": "array", 
+                                             "items": {"type": "string"}},
+                            "success_criteria": {"type": "array", 
+                                                 "items": {"type": "string"}},
+                            "repo_observations": {
+                                "type": "array", 
+                                "items": {"type": "object", 
+                                          "properties": {"path": {"type": "string"}, 
+                                                         "observation": {"type": "string"}, 
+                                                         "confidence": {"type": "number"}}, 
+                                          "required": ["path", "observation", "confidence"], 
+                                          "additionalProperties": False}},
+                            "memory_references": {"type": "array", 
+                                                  "items": {"type": "object",
+                                                            "properties": {"reference_id": {"type": "string"},
+                                                                           "confidence": {"type": "number"}},
+                                                            "required": ["reference_id", "confidence"],
+                                                            "additionalProperties": False}},
+                            "topology_references": {"type": "array",
+                                                    "items": {"type": "object",
+                                                              "properties": {"path": {"type": "string"},
+                                                                   "observation": {"type": "string"},
+                                                                   "confidence": {"type": "number"}},
+                                                    "required": ["path", "observation", "confidence"],
+                                                    "additionalProperties": False}}
                             },
-                        "required": ["objective", "ordered_tasks", "assumptions", "risks", "dependencies", "success_criteria", "repo_observations", "topology_references"],
+                        "required": ["objective", "ordered_tasks", "assumptions", "risks", "dependencies", "success_criteria", "repo_observations", "memory_references", "topology_references"],
                         "additionalProperties": False}

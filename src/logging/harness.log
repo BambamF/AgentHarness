@@ -676,3 +676,123 @@
 2026-08-15 20:42:44,637 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': "output_config.format.schema: For 'object' type, 'additionalProperties' must be explicitly set to false"}, 'request_id': 'req_011Ce5qNRpaub4bTpfWEkJbN'}
 2026-08-15 20:42:44,650 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a00729-7033-703b-bb4f-132f0ba30a86 | Artefact ID: 6a1a7470-d9cc-48ed-9dc6-d01a340114b6
 2026-08-15 20:42:44,653 | [AGENT LOOP] Plan Artefact: 6a1a7470-d9cc-48ed-9dc6-d01a340114b6 | Prompt: Write a python script to add two numbers | State: PLANNING 
+2026-08-16 03:31:15,484 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0089f-a59c-771a-8a99-37abdfb4f2e9 | Artefact ID: f8631377-75f7-4787-b023-153f93f6a26e
+2026-08-16 03:31:15,504 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 03:31:27,164 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 03:31:27,164 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a0089f-a59c-771a-8a99-37abdfb4f2e9 | Artefact ID: e2501cf9-f1ba-481f-b0ba-bfbf31ccb908
+2026-08-16 03:31:27,167 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a0089f-a59c-771a-8a99-37abdfb4f2e9
+2026-08-16 03:31:27,167 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a0089f-a59c-771a-8a99-37abdfb4f2e9 | Artefact ID: 31ffb5be-e2bf-4365-a16d-6eeb02a93918
+2026-08-16 03:31:59,237 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 03:31:59,356 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: 'list' object has no attribute 'get'
+2026-08-16 03:31:59,367 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a0089f-a59c-771a-8a99-37abdfb4f2e9 | Artefact ID: c0bd3b02-b849-40f1-a840-0870c4857443
+2026-08-16 03:31:59,368 | [AGENT LOOP] Plan Artefact: c0bd3b02-b849-40f1-a840-0870c4857443 | Prompt: Write a python script to add two numbers | State: PLANNING 
+2026-08-16 03:40:05,553 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008a7-bc30-74a0-b04f-b8fe309c2119 | Artefact ID: 7c60454a-29fe-43cc-99d8-5adcbf313248
+2026-08-16 03:40:05,571 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 03:40:16,941 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 03:40:16,941 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008a7-bc30-74a0-b04f-b8fe309c2119 | Artefact ID: cfae644c-c60e-41bf-9a6f-4ce55a85fc50
+2026-08-16 03:40:16,945 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008a7-bc30-74a0-b04f-b8fe309c2119
+2026-08-16 03:40:16,945 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008a7-bc30-74a0-b04f-b8fe309c2119 | Artefact ID: 016216c2-ede5-47ea-8ef0-1afa3fab6c2b
+2026-08-16 03:40:44,737 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 03:40:44,906 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: 'list' object has no attribute 'get'
+2026-08-16 03:40:44,908 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008a7-bc30-74a0-b04f-b8fe309c2119 | Artefact ID: 067b79ac-d312-450b-b774-bde15e687359
+2026-08-16 03:40:44,943 | [AGENT LOOP] Plan Artefact: 067b79ac-d312-450b-b774-bde15e687359 | Prompt: Write a python script to add two numbers | State: PLANNING 
+2026-08-16 04:22:34,134 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008ce-9f96-753a-a554-11af1cc79e52 | Artefact ID: bbe5ce8f-7c4e-4da9-b779-1cb2e9084f6a
+2026-08-16 04:22:34,155 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:22:45,224 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:22:45,224 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008ce-9f96-753a-a554-11af1cc79e52 | Artefact ID: f4086912-fc28-46a0-aed7-15d03d2ad005
+2026-08-16 04:22:45,227 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008ce-9f96-753a-a554-11af1cc79e52
+2026-08-16 04:22:45,227 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008ce-9f96-753a-a554-11af1cc79e52 | Artefact ID: 2ab53b89-7f99-42ba-88ee-25c14a08ad9e
+2026-08-16 04:23:14,383 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:23:14,517 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to perform an einsum | Error: Unterminated string starting at: line 1 column 2747 (char 2746)
+2026-08-16 04:23:14,530 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008ce-9f96-753a-a554-11af1cc79e52 | Artefact ID: 7b2f88db-2276-4a9d-aca2-d9445c25c948
+2026-08-16 04:23:14,533 | [AGENT LOOP] Plan Artefact: 7b2f88db-2276-4a9d-aca2-d9445c25c948 | Prompt: Write a python script to perform an einsum | State: PLANNING 
+2026-08-16 04:27:31,002 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008d3-2739-723f-b08b-318e7d4bef11 | Artefact ID: 72eec07f-bb04-432b-8355-592b6c9e5bbe
+2026-08-16 04:27:31,028 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:27:42,208 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:27:42,208 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008d3-2739-723f-b08b-318e7d4bef11 | Artefact ID: be2e12ef-bfa3-4ee3-8003-4f65aec8db0f
+2026-08-16 04:27:42,212 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008d3-2739-723f-b08b-318e7d4bef11
+2026-08-16 04:27:42,212 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008d3-2739-723f-b08b-318e7d4bef11 | Artefact ID: da93960b-a6d5-4b28-b5f3-63ae52e38c8b
+2026-08-16 04:28:08,305 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:28:08,425 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add three numbers | Error: Unterminated string starting at: line 1 column 3026 (char 3025)
+2026-08-16 04:28:08,436 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008d3-2739-723f-b08b-318e7d4bef11 | Artefact ID: e93d6537-34f3-4ee4-aef8-3c16b7450e24
+2026-08-16 04:28:08,437 | [AGENT LOOP] Plan Artefact: e93d6537-34f3-4ee4-aef8-3c16b7450e24 | Prompt: Write a python script to add three numbers | State: PLANNING 
+2026-08-16 04:30:55,438 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008d6-45ce-7704-97fa-7d68ae441809 | Artefact ID: 2b21e6fc-cdcd-4112-b682-d43d2ab79dfb
+2026-08-16 04:30:55,456 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:31:06,852 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:31:06,852 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008d6-45ce-7704-97fa-7d68ae441809 | Artefact ID: 8501485a-e7e1-4ea0-9fe3-1825b61ceefe
+2026-08-16 04:31:06,855 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008d6-45ce-7704-97fa-7d68ae441809
+2026-08-16 04:31:06,855 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008d6-45ce-7704-97fa-7d68ae441809 | Artefact ID: 88f920db-a305-4e81-97f2-0f989a394d78
+2026-08-16 04:31:25,855 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:31:26,032 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add three numbers | Error: Unterminated string starting at: line 1 column 3023 (char 3022)
+2026-08-16 04:31:26,034 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008d6-45ce-7704-97fa-7d68ae441809 | Artefact ID: e0b46a33-5f0b-4587-87fa-38457f3f6bb1
+2026-08-16 04:31:26,069 | [AGENT LOOP] Plan Artefact: e0b46a33-5f0b-4587-87fa-38457f3f6bb1 | Prompt: Write a python script to add three numbers | State: PLANNING 
+2026-08-16 04:48:07,239 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008e6-0447-70ea-bfc4-172f537ccceb | Artefact ID: 6a636ca2-2065-47c5-9787-16524d029bbc
+2026-08-16 04:48:07,266 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:48:24,065 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:48:24,065 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008e6-0447-70ea-bfc4-172f537ccceb | Artefact ID: ee77eac8-dc45-4db2-879a-1eb18ae3fb9f
+2026-08-16 04:48:24,070 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008e6-0447-70ea-bfc4-172f537ccceb
+2026-08-16 04:48:24,071 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008e6-0447-70ea-bfc4-172f537ccceb | Artefact ID: 6a70a271-4fd7-40e7-9fa6-593ccb90f019
+2026-08-16 04:48:50,950 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:48:51,085 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: Unterminated string starting at: line 1 column 2908 (char 2907)
+2026-08-16 04:48:51,091 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008e6-0447-70ea-bfc4-172f537ccceb | Artefact ID: 4bd12dab-8829-4caa-abf2-b86cf176d65a
+2026-08-16 04:48:51,118 | [AGENT LOOP] Plan Artefact: 4bd12dab-8829-4caa-abf2-b86cf176d65a | Prompt: Write a python script to add two numbers | State: PLANNING 
+2026-08-16 04:52:04,425 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008e9-a2c9-7529-8cef-01a9dd32390b | Artefact ID: e57b8820-1c2c-4cff-bb32-20501974705e
+2026-08-16 04:52:04,459 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:52:17,202 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:52:17,202 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008e9-a2c9-7529-8cef-01a9dd32390b | Artefact ID: d8b5707d-9cb7-4eeb-8ba5-3b5925780d55
+2026-08-16 04:52:17,206 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008e9-a2c9-7529-8cef-01a9dd32390b
+2026-08-16 04:52:17,206 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008e9-a2c9-7529-8cef-01a9dd32390b | Artefact ID: 51fb697c-f3ed-4fce-903b-8f232f95a0da
+2026-08-16 04:53:09,845 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:53:10,076 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add three numbers | Error: 'list' object has no attribute 'items'
+2026-08-16 04:53:10,077 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008e9-a2c9-7529-8cef-01a9dd32390b | Artefact ID: 90cd3864-daab-4c1d-9698-cc9a9cb1eef8
+2026-08-16 04:53:10,081 | [AGENT LOOP] Plan Artefact: 90cd3864-daab-4c1d-9698-cc9a9cb1eef8 | Prompt: Write a python script to add three numbers | State: PLANNING 
+2026-08-16 04:58:09,262 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008ef-33ee-711e-9628-552a788348b1 | Artefact ID: 9f09de2a-e8bc-477a-b75a-6ba3bd55b46d
+2026-08-16 04:58:09,292 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 04:58:23,024 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 04:58:23,025 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008ef-33ee-711e-9628-552a788348b1 | Artefact ID: 89479937-44fa-4cfb-9428-a2ccc4b792aa
+2026-08-16 04:58:23,028 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008ef-33ee-711e-9628-552a788348b1
+2026-08-16 04:58:23,028 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008ef-33ee-711e-9628-552a788348b1 | Artefact ID: 70af5f88-6ac6-4680-ab17-1ed526f828aa
+2026-08-16 04:59:20,288 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 04:59:20,593 | [PLAN ARTEFACT] Producer: Agent | Objective: write a python script to perform an einsum | Error: 'list' object has no attribute 'items'
+2026-08-16 04:59:20,597 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008ef-33ee-711e-9628-552a788348b1 | Artefact ID: b53ccce2-979e-4672-87d3-73ba1c52bed5
+2026-08-16 04:59:20,603 | [AGENT LOOP] Plan Artefact: b53ccce2-979e-4672-87d3-73ba1c52bed5 | Prompt: write a python script to perform an einsum | State: PLANNING 
+2026-08-16 05:07:06,160 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008f7-6530-74da-8f1b-826c63450db1 | Artefact ID: aee4d873-1038-45d9-a832-0cf9c20bf9fe
+2026-08-16 05:07:06,194 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 05:07:17,410 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 05:07:17,410 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008f7-6530-74da-8f1b-826c63450db1 | Artefact ID: 609c2e5c-9d98-4b15-b68c-047336d237d6
+2026-08-16 05:07:17,413 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008f7-6530-74da-8f1b-826c63450db1
+2026-08-16 05:07:17,413 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008f7-6530-74da-8f1b-826c63450db1 | Artefact ID: 7b83dcda-5d16-4b53-b523-474673a0c4d1
+2026-08-16 05:07:58,182 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-16 05:07:58,400 | [PLAN ARTEFACT] Producer: Agent | Objective: Create a standalone Python script in the agent-harness repository that adds two numbers and exposes the result, following the repository's existing flat-module Python conventions. | Tasks Head: Confirm target location for the new script: place it at repository root or in a scripts/ directory; planner recommends a single new file `add_two_numbers.py` at the repository root to avoid coupling with the existing `src/` harness packages. -- Create `add_two_numbers.py` containing a pure function `add(a: float, b: float) -> float` that returns `a + b`, with type hints and a short docstring. -- Add a CLI entry path guarded by `if __name__ == "__main__":` that parses two numeric arguments via `argparse` (or reads from `sys.argv`) and prints the sum. -- Handle invalid/missing input by letting argparse emit a usage error, and cast inputs with `float` so both integers and decimals are supported. -- Add a minimal test at `tests/test_add_two_numbers.py` asserting add(2, 3) == 5, add(-1, 1) == 0, and add(0.5, 0.25) == 0.75 (tests/ currently contains only .gitkeep, so a test framework is not yet established; use plain asserts so the file runs under pytest or `python -m`). | Sample Risk: A -- m -- b -- i -- g -- u -- i -- t -- y --   -- o -- f --   -- p -- l -- a -- c -- e -- m -- e -- n -- t -- : --   -- i -- f --   -- t -- h -- e --   -- u -- s -- e -- r --   -- a -- c -- t -- u -- a -- l -- l -- y --   -- w -- a -- n -- t -- e -- d --   -- t -- h -- i -- s --   -- a -- s --   -- a --   -- h -- a -- r -- n -- e -- s -- s --   -- t -- o -- o -- l --   -- ( -- m -- i -- r -- r -- o -- r -- i -- n -- g --   -- ` -- s -- r -- c -- / -- t -- o -- o -- l -- s -- / -- * -- _ -- t -- o -- o -- l -- . -- p -- y -- ` --   -- p -- a -- t -- t -- e -- r -- n -- s -- ) -- , --   -- a --   -- r -- o -- o -- t -- - -- l -- e -- v -- e -- l --   -- s -- c -- r -- i -- p -- t --   -- w -- o -- u -- l -- d --   -- n -- e -- e -- d --   -- r -- e -- w -- o -- r -- k -- . | Sample Repo Observations: path -- observation -- confidence
+2026-08-16 05:07:58,401 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008f7-6530-74da-8f1b-826c63450db1 | Artefact ID: 5b4ca0ec-9051-4d53-bad4-f606d9e45b41
+2026-08-16 05:07:58,427 | [AGENT LOOP] Plan Artefact: 5b4ca0ec-9051-4d53-bad4-f606d9e45b41 | Prompt: Write a python script to add two numbers | State: PLANNING 
+2026-08-16 05:09:14,910 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a008f9-5c1e-74d7-8c02-db400e8399e8 | Artefact ID: 99c523de-d57e-4ea0-92c2-e00fcea7724b
+2026-08-16 05:09:14,941 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 5945709e168f87babed04c2238cae0d1189558c3
+
+2026-08-16 05:09:26,333 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 5945709e168f87babed04c2238cae0d1189558c3
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1795 | N Config Files: 12
+2026-08-16 05:09:26,333 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a008f9-5c1e-74d7-8c02-db400e8399e8 | Artefact ID: 5be98ddf-8a36-4753-9135-5ced82cfbcc8
+2026-08-16 05:09:26,336 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a008f9-5c1e-74d7-8c02-db400e8399e8
+2026-08-16 05:09:26,336 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a008f9-5c1e-74d7-8c02-db400e8399e8 | Artefact ID: ab4efa36-2162-4eb4-8f2e-9ef5c0198dff
+2026-08-16 05:09:27,891 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 400 Bad Request"
+2026-08-16 05:09:28,009 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to square a number | Error: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.'}, 'request_id': 'req_011Ce6UMnHB618U8mzVC48FL'}
+2026-08-16 05:09:28,021 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a008f9-5c1e-74d7-8c02-db400e8399e8 | Artefact ID: 83a5583a-1af2-440c-90da-3b202597d3d4
+2026-08-16 05:09:28,024 | [AGENT LOOP] Plan Artefact: 83a5583a-1af2-440c-90da-3b202597d3d4 | Prompt: Write a python script to square a number | State: PLANNING 
