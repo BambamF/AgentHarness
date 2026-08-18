@@ -59,6 +59,7 @@ class Harness:
         self.plan = self.planner.create_plan(self.execution_id)
 
     def _generate(self):
+
         response = self.agent.messages.create(
                 model=self.MODEL,
                 system=self.DEFAULT_SYSTEM,
