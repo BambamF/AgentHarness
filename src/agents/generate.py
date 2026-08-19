@@ -9,15 +9,17 @@ import logging
 from typing import Any
 import importlib
 import inspect
+from tools.tool_dispatch import ToolDispatch
 
 class GenerationManager:
 
-    def __init__(self, agent, model, artefact_store: ArtefactStore, execution_id: UUID, caller: str = "agent"):
+    def __init__(self, agent, model, artefact_store: ArtefactStore, execution_id: UUID, caller: str = "agent", tool_dispatch: ToolDispatch):
         self.agent = agent
         self.model = model
         self.artefact_store = artefact_store
         self.execution_id = execution_id
         self.caller = caller
+        self.tool_dispatch = tool_dispatch
 
     def generate(self, tools_path: str):
         plan_artefact = self.artefact_store.latest(PlanArtefact)
@@ -38,7 +40,7 @@ class GenerationManager:
         messages = [{"role": "user",
                      "content": plan_artefact.objective}]
 
-        tools = self._parse_tools(tools_path)
+        tools = self.tool_dispatch.tool_dicts
 
         SYSTEM_PROMPT = f"""
         Use the repository and executable code as your primary reasoning substrate.
@@ -72,25 +74,8 @@ class GenerationManager:
             if not self._contains_tool_call(response):
                 break
 
-            results = self._dispatch_tools(response)
+            results = self.tool_dispatch.dispatch_tools(response)
 
             messages.append({"role": "user",
                              "content": results})
-
-    def _parse_tools(self, path: str) -> list[dict[str, Any]]:
-        tools = []
-        for file_name in os.listdir(path):
-            if file_name.endswith('_tool.py'):
-                mod_name = file_name[:-3].replace("_", "")
-                mod_name = mod_name[0].upper()+mod_name[1:-4]+mod_name[-4].upper()+mod_name[-3:]
-
-                module = importlib.import_module(mod_name)
-                candidates = inspect.get_members(module, inspect.isclass)
-                for candidate in candidates:
-                    if issubclass(candidate, Tool) and candidate is not Tool:
-                        tools.append({"name": candidate.name,
-                                      "description": candidate.description,
-                                      "input_schema": candidate.input_schema})
-        return tools
-
-    def _dispatch_tools(self)
+            

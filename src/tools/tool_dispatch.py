@@ -9,15 +9,17 @@ from harness.artefacts.permission import PermissionArtefact
 import logging
 from typing import Any
 
+
 class ToolDispatch:
 
     def __init__(self, tools_path: str):
         self.tool_dicts, self.tools = self._parse_tools(tools_path)
 
-    def dispatch(self, tool: Tool, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
+    def dispatch(self, tool: Tool, tool_input: str, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
         action_artefact: ActionArtefact = artefact_store.latest(ActionArtefact)
         params = {"execution_id": execution_id,
                   "producer": caller,
+                  "input": tool_input
                   "intention": action_artefact.intention,
                   "required_permission": action_artefact.required_permission}
         permission_artefact = PermissionManager.get_permission(action_artefact)
@@ -30,6 +32,8 @@ class ToolDispatch:
             except Exception as e:
                 params = {"execution_id": permission_artefact.execution_id,
                           "producer": caller,
+                          "tool_input": tool_input,
+                          "permitted": permission_artefact.allowed
                           "execution_status": "FAILED",
                           "termination_reason": "error encountered",
                           "error": e}
@@ -39,6 +43,8 @@ class ToolDispatch:
 
             params = {"execution_id": permission_artefact.execution_id,
                       "producer": caller,
+                      "tool_input": tool_input,
+                      "permitted": permission_artefact.allowed,
                       "execution_status": "FAILED",
                       "termination_reason": "not permitted",
                       "error": None}

@@ -8,15 +8,13 @@ from planner.planner import Planner
 from .artefacts.action import ActionProvider
 import logging
 from typing import List, Dict, Any, Callable
-# from tools.tool_map import ToolMap
+from agents.generation_manager import GenerationManager
 
 class Harness:
-    def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], prompt_artefact: PromptArtefact, permission_manager: PermissionManager, artefact_store: ArtefactStore, execution_id: UUID):
+    def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], permission_manager: PermissionManager, generation_manager: GenerationManager, artefact_store: ArtefactStore, execution_id: UUID):
         self.agent = agent
         self.model = model
-        self.prompt_artefact = prompt_artefact
         self.memory_path = memory_path
-        self.messages = messages
         self.charter_path = charter_path
         self.repository_root = repository_root
         self.execution_id = execution_id
@@ -28,15 +26,14 @@ class Harness:
                             HarnessState.REPO_ANALYSIS: self._analyse_repo,
                             HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
                             HarnessState.PLANNING: self._create_plan,
-                           # HarnessState.GENERATING: self._generate,
-                           # HarnessState.PERMISSIONS: self._run_permissions,
+                            HarnessState.GENERATING: self._generate,
                            # HarnessState.EXECUTING: self._execute,
                            # HarnessState.REFLECTING: self._reflect,
                            # HarnessState.MEMORY_UPDATE: self._update_memory,
                             HarnessState.TERMINATE: self._terminate}
 
         self.permission_manager = permission_manager
-        self.DEFAULT_SYSTEM = f"You are a coding agent at {self.repository_root}. Use tools to solve tasks, Act, don't explain."
+        self.generation_manager = generation_manager
 
     def run(self):
         while self.state != HarnessState.TERMINATE:
@@ -59,17 +56,8 @@ class Harness:
         self.plan = self.planner.create_plan(self.execution_id)
 
     def _generate(self):
+        self.generation_manager
 
-        response = self.agent.messages.create(
-                model=self.MODEL,
-                system=self.DEFAULT_SYSTEM,
-                messages=self.messages,
-                max_tokens=8000
-                )
-        self.messages.append({"role": "agent", "content": response.content})
-
-    def _run_permissions(self):
-        self.permission_manager.get_permission(ArtefactStore.latest(GenerationArtefact))
 
     def _execute(self):
         pass

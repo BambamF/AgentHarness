@@ -17,9 +17,9 @@ import hashlib
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
+from agents.generate import GenerationManager
 
 load_dotenv()
-print("api key in env ? ", "ANTHROPIC_API_KEY" in os.environ)
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 if not ANTHROPIC_API_KEY:
@@ -30,6 +30,7 @@ MODEL_ID="claude-opus-5"
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(ROOT_PATH, 'src/logging')
 LOG_PATH = os.path.join(LOG_DIR, 'harness.log')
+TOOLS_DIR = os.path.join(ROOT_PATH, 'src/tools')
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 MODEL=MODEL_ID
@@ -38,7 +39,7 @@ agent = client
 config_path = os.path.join(ROOT_PATH, 'configs/config.json')
 charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
-def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, memory_manager: MemoryManager):
+def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager):
     while True:
         execution_id = uuid.uuid7()
         last_message = messages[-1].get('content')
@@ -61,16 +62,16 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
-        harness = Harness(agent, MODEL, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, artefact_store, execution_id)
+        harness = Harness(agent, MODEL, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, generation_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response_artefact) != PlanArtefact: # Change to TerminationArtefact after dryrun
+        if type(response_artefact) != ActionArtefact: # Change to TerminationArtefact after dryrun
             print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: PlanArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
+            logging.error(f"[AGENT LOOP] Expected artefact: ActionArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
         else:
-            print("\n\033[32mFinal Answer: Done plan created, check log file\033[0m")
-            logging.info(f"[AGENT LOOP] Plan Artefact: {response_artefact.artefact_id} | Prompt: {full_params.get('payload')} | State: PLANNING ")
+            print(f"\n\033[32mFinal Answer: {response_artefact.payload if response_artefact.payload else 'Done, check log file'}\033[0m")
+            logging.info(f"[AGENT LOOP] Latest Artefact: {str(type(response_artefact))} | Prompt: {full_params.get('payload')} | State: {harness.state} ")
         break
 
 
@@ -78,7 +79,9 @@ def main():
     os.makedirs(LOG_DIR, exist_ok=True)
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
+    tool_dispatch = ToolDispatch(TOOLS_DIR)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
+    generation_manager = GenerationManager()
     history: List[Dict[str, Any]] = []
     while True:
         try:
