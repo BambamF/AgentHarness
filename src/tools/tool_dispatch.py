@@ -17,12 +17,7 @@ class ToolDispatch:
 
     def dispatch(self, tool: Tool, tool_input: str, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
         action_artefact: ActionArtefact = artefact_store.latest(ActionArtefact)
-        params = {"execution_id": execution_id,
-                  "producer": caller,
-                  "input": tool_input
-                  "intention": action_artefact.intention,
-                  "required_permission": action_artefact.required_permission}
-        permission_artefact = PermissionManager.get_permission(action_artefact)
+        permission_artefact = PermissionManager.get_permission(action_artefact, artefact_store)
 
         if permission_artefact.allowed:
             try:
@@ -38,6 +33,7 @@ class ToolDispatch:
                           "termination_reason": "error encountered",
                           "error": e}
                 logging.error(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
+                print(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
                 return ArtefactFactory.builder(ExecutionArtefact, params)
         else:
 
@@ -49,6 +45,7 @@ class ToolDispatch:
                       "termination_reason": "not permitted",
                       "error": None}
             logging.error(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
+            print(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
             return ArtefactFactory.builder(ExecutionArtefact, params)
 
 
@@ -56,7 +53,7 @@ class ToolDispatch:
         results = []
 
         for block in response_content:
-            if block.type = "tool_use":
+            if block.type != "tool_use":
                 continue
             tool_name = block.name
             tool_input = block.input

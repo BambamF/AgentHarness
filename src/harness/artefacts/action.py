@@ -7,7 +7,7 @@ from enum import Enum, auto
 class ActionArtefact(Artefact):
     provider: str
     intention: str
-    required_permission: PermissionLevel
+    input: str
     dependencies: list[str] | None
     success_criteria: list[str]
 

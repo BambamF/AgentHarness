@@ -27,13 +27,15 @@ class Harness:
                             HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
                             HarnessState.PLANNING: self._create_plan,
                             HarnessState.GENERATING: self._generate,
-                           # HarnessState.EXECUTING: self._execute,
+                            HarnessState.EVALUATING: self._evaluate,
                            # HarnessState.REFLECTING: self._reflect,
                            # HarnessState.MEMORY_UPDATE: self._update_memory,
                             HarnessState.TERMINATE: self._terminate}
 
         self.permission_manager = permission_manager
         self.generation_manager = generation_manager
+        self.ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.tools_dir = os.path.join(self.ROOT_DIR, 'src/tools')
 
     def run(self):
         while self.state != HarnessState.TERMINATE:
@@ -51,15 +53,16 @@ class Harness:
     def _hydrate_memory(self):
         self.context.scan_memory(execution_id=self.execution_id, memory_manager=self.memory_manager)
         self.memory_manager.hydrate_memory(execution_id=self.execution_id)
+
     def _create_plan(self):
         self.planner = Planner(self.agent, self.model, self.artefact_store, self.execution_id)
         self.plan = self.planner.create_plan(self.execution_id)
 
     def _generate(self):
-        self.generation_manager
+        self.generation_manager.generate(self.tools_dir)
 
 
-    def _execute(self):
+    def _evaluate(self):
         pass
 
     def _reflect(self):

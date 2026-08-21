@@ -6,8 +6,6 @@ class HarnessState(Enum):
     HYDRATING_MEMORY = auto()
     PLANNING = auto()
     GENERATING = auto()
-    PERMISSIONS = auto()
-    EXECUTING = auto()
     EVALUATING = auto()
     REFLECTING = auto()
     MEMORY_UPDATE = auto()

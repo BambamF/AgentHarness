@@ -38,7 +38,7 @@ class GenerationManager:
                               "memory_references": plan_artefact.memory_references,
                               "topology_references": plan_artefact.topology_references}
         messages = [{"role": "user",
-                     "content": plan_artefact.objective}]
+                     "content": generation_context}]
 
         tools = self.tool_dispatch.tool_dicts
 
@@ -68,14 +68,25 @@ class GenerationManager:
                     max_tokens=8000
                     )
 
-            messages.append({"role": "agent",
+            messages.append({"role": "assistant",
                              "content": response.content})
 
-            if not self._contains_tool_call(response):
+            tool_calls = self._get_tool_calls(response)
+
+            if not tool_calls:
                 break
 
-            results = self.tool_dispatch.dispatch_tools(response)
+            results = self.tool_dispatch.dispatch_tools(tool_calls, self.execution_id, self.caller, self.artefact_store)
 
             messages.append({"role": "user",
                              "content": results})
+            for tool_call in tool_calls:
+                params = {"provider": self.caller,
+                          "intention": user_prompt,
+                          "input": tool_call.input,
+                          "dependencies": plan_artefact.dependencies,
+                          "success_criteria": plan_artefact.success_criteria}
+                action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store)
             
+    def _get_tool_calls(self, messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [i for i in messages if i.content.get("type") == "tool_use"]

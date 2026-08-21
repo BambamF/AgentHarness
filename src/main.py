@@ -66,9 +66,9 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response_artefact) != ActionArtefact: # Change to TerminationArtefact after dryrun
+        if type(response_artefact) != ExecutionArtefact: # Change to TerminationArtefact after dryrun
             print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: ActionArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
+            logging.error(f"[AGENT LOOP] Expected artefact: ExecutionArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
         else:
             print(f"\n\033[32mFinal Answer: {response_artefact.payload if response_artefact.payload else 'Done, check log file'}\033[0m")
             logging.info(f"[AGENT LOOP] Latest Artefact: {str(type(response_artefact))} | Prompt: {full_params.get('payload')} | State: {harness.state} ")
@@ -95,6 +95,7 @@ def main():
         history.append({"role": "user", "content": query})
         agent_loop(history, artefact_store, permission_manager, memory_manager)
         break
+    artefact_store.print_artefacts_meta(5)
 
 if __name__ == "__main__":
     logging.basicConfig(

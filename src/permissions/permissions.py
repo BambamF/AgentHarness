@@ -17,7 +17,7 @@ class PermissionManager:
         self.requires_sub = ["git", "apt", "docker"]
 
     def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> PermissionArtefact:
-        command = action_artefact.command
+        command = action_artefact.input
 
         if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 

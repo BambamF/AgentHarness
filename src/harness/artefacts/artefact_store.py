@@ -13,6 +13,12 @@ class ArtefactStore:
         self.artefacts: dict[type(Artefact), list[Artefact]] = {}
         self.artefact_history: deque[tuple[type(Artefact), UUID]] = deque([])
 
+    def print_artefacts_meta(self, n_artefacts: int):
+        artefacts_tuples = self.artefacts_history[-n_artefacts:]
+        for t, id in artefacts_tuples:
+            artefact = i for i in self.artefacts.get(t) if i.artefact_id == id
+            print(f"Artefact Type: {t} | Artefact ID: {id} | Artefact Payload: {artefact.payload if artefact.payload else None} | Execution ID: {artefact.execution_id} | Timestamp: {artefact.timestamp} | Producer: {artefact.caller}\n")
+
     def add(self, candidate: Artefact):
         if type(candidate) not in self.artefacts:
             self.artefacts[type(candidate)] = [candidate]
