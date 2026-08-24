@@ -1,4 +1,4 @@
-from artefact import Artefact
+from harness.artefacts.artefact import Artefact
 from dataclasses import dataclass
 
 @dataclass(frozen=True)

@@ -2,6 +2,7 @@ from harness.harness import Harness
 import os
 import logging
 from planner.planner import Planner
+from tools.tool_dispatch import ToolDispatch
 from permissions.permissions import PermissionManager
 from memory.memory import MemoryManager
 from harness.artefacts.artefact_store import ArtefactStore
@@ -83,6 +84,7 @@ def main():
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     generation_manager = GenerationManager()
     history: List[Dict[str, Any]] = []
+    """
     while True:
         try:
             # prompt the user for a query with a coloured prompt
@@ -95,6 +97,7 @@ def main():
         history.append({"role": "user", "content": query})
         agent_loop(history, artefact_store, permission_manager, memory_manager)
         break
+    """    
     artefact_store.print_artefacts_meta(5)
 
 if __name__ == "__main__":

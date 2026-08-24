@@ -2,9 +2,9 @@ from tools.tool import Tool
 from tools.tool_dispatch import ToolDispatch
 from uuid import UUID
 from harness.artefacts.artefact_store import ArtefactStore
-from harness.artefacts.arefact_factory import ArtefactFactory
+from harness.artefacts.artefact_factory import ArtefactFactory
+from harness.artefacts.action import ActionArtefact
 from permissions.permissions import PermissionManager
-from harness.artefacts.generation import GenerationArtefact
 import logging
 from typing import Any
 import importlib
@@ -13,7 +13,7 @@ from tools.tool_dispatch import ToolDispatch
 
 class GenerationManager:
 
-    def __init__(self, agent, model, artefact_store: ArtefactStore, execution_id: UUID, caller: str = "agent", tool_dispatch: ToolDispatch):
+    def __init__(self, agent, model, artefact_store: ArtefactStore, execution_id: UUID, tool_dispatch: ToolDispatch, caller: str = "agent"):
         self.agent = agent
         self.model = model
         self.artefact_store = artefact_store
@@ -86,7 +86,7 @@ class GenerationManager:
                           "input": tool_call.input,
                           "dependencies": plan_artefact.dependencies,
                           "success_criteria": plan_artefact.success_criteria}
-                action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store)
+                action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
             
     def _get_tool_calls(self, messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [i for i in messages if i.content.get("type") == "tool_use"]

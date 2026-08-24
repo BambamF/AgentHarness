@@ -1,7 +1,7 @@
 import os
 from uuid import UUID
 from typing import List
-from tool import Tool
+from tools.tool import Tool
 import subprocess
 from harness.artefacts.execution import ExecutionArtefact
 from harness.artefacts.artefact_store import ArtefactStore
@@ -25,10 +25,10 @@ class WriteTool(Tool):
                 }
         super.__init__(name, description, input_schema)
 
-    def run(self, path: str, content: str, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
+    def run(self, path: str, content: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
         return self.run_write(path, content, caller, execution_id, snapshots)
 
-    def run_write(self, path: str, content: str, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
+    def run_write(self, path: str, content: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
 
         try:
             if os.path.exists(path):
@@ -54,7 +54,7 @@ class WriteTool(Tool):
                       "producer": caller,
                       "payload": payload}
 
-            execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
         except Exeception as e:
@@ -65,5 +65,5 @@ class WriteTool(Tool):
                       "producer": caller,
                       "error": e}
             
-            execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact

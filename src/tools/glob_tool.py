@@ -1,9 +1,9 @@
 from typing import List
-from tool import Tool
-import subprocess
+from tools.tool import Tool
 from uuid import UUID
 from harness.artefacts.execution import ExecutionArtefact
 from harness.artefacts.artefact_factory import ArtefactFactory
+from harness.artefacts.artefact_store import ArtefactStore
 from permissions.permissions import PermissionManager, PermissionLevel
 from dataclasses import dataclass
 import glob as _glob
@@ -19,10 +19,10 @@ class GlobTool:
                              }
         super.__init__(name, description, input_schema)
 
-    def run(self, pattern: str, caller: str, execution_id: UUID) -> ExecutionArtefact:
+    def run(self, pattern: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
         return self.run_glob(pattern, caller, execution_id)
 
-    def run_glob(self, pattern: str, caller: str,  execution_id: UUID) -> ExecutionArtefact:
+    def run_glob(self, pattern: str, artefact_store: ArtefactStore, caller: str,  execution_id: UUID) -> ExecutionArtefact:
 
         matches = _glob.glob(pattern, recursive=True)
         
@@ -32,5 +32,5 @@ class GlobTool:
                   "producer": caller,
                   "payload": "\n".join(sorted(matches)[:200])}
 
-            excution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
-            return execution_artefact
+        excution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+        return execution_artefact

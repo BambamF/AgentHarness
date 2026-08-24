@@ -29,39 +29,25 @@ class ReadTool(Tool):
                 }
         super.__init__(name, description, input_schema)
 
-    def run(self, command: str, caller: str, execution_id: UUID) -> ExecutionArtefact:
+    def run(self, path: str, start_line: Optional[int] = None, end_line: Optional = None, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
         return self.run_read(command, caller, execution_id)
 
-    def run_read(self, command: str, caller: str, execution_id: UUID) -> ExecutionArtefact:
-        if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK)):
-
-            params = {"execution_status": "FAILED",
-                      "termination_reason": "blocked",
-                      "execution_id": execution_id,
-                      "producer": caller}
-
-            execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+    def run_read(self, path: str, start_line: Optional[int] = None, end_line: Optional = None, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
             try:
-                response = subprocess.run([command], capture_output=True, text=True, timeout=120)
-                payload = {"stdout": response.stdoout, "stderr": response.stderr}
+                with open(path, 'r', encoding='utf-8', errors="replace") as f:
+                    lines = f.readlines()
 
-                params = {"execution_status": "SUCCESS" if response.returncode == 0 else "FAILED",
-                              "termination_reason": "completed" if response.returncode == 0 else "null return",
+                start_index = (start_line - 1) or 1
+                end_index = end_line or len(lines)
+                numbered_lines = "".join(f"{start_index + 1 + i:4d}\t{line}" for i, line in enumerate(lines[start_index:end_index]))
+
+                params = {"execution_status": "SUCCESS" if numbered_lines else "FAILED",
+                              "termination_reason": "completed" if numbered_lines else "null return",
                               "execution_id": execution_id,
                               "producer": caller,
-                              "payload": payload}
+                              "payload": numbered_lines}
                     
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
-                return execution_artefact
-
-            except subprocess.TimeoutExpired as e:
-                params = {"execution_status": "FAILED",
-                              "termination_status": "timeout",
-                              "execution_id": execution_id,
-                              "producer": caller,
-                              "error": e}
-
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
                 return execution_artefact
 
             except Exception as e:
@@ -71,6 +57,6 @@ class ReadTool(Tool):
                               "producer": caller,
                               "error": e}
 
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
                 return execution_artefact
 

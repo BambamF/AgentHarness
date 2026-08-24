@@ -1,8 +1,9 @@
 from typing import Dict, Any
-from ../permissions/permissions import PermissionLevel
+from permissions.permissions import PermissionLevel
+from dataclasses import dataclass
 
-class Tool(name: str, description: str: input_schema: Dict[str, Any], required_persmission: PermissionLevel):
-    self.name = name
-    self.description = description
-    self.input_schema = input_schema
-    self.required_permission = required_permission
+@dataclass(frozen=True)
+class Tool:
+    name: str
+    description: str
+    input_schema: dict[str, Any]

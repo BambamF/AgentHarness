@@ -2,11 +2,11 @@
 from typing import List
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.execution import ExecutionArtefact
-from tool import Tool
+from tools.tool import Tool
 from uuid import UUID
 from dataclasses import dataclass
-from tool.snapshots import SNAPSHOTS
 import os
+from harness.artefacts.artefact_store import ArtefactStore
 
 @dataclass(frozen=True)
 class RevertTool(Tool):
@@ -18,10 +18,10 @@ class RevertTool(Tool):
                              "required": ["path"]}
         super.__init__(name, description, input_schema)
 
-    def run(self, path: str, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
+    def run(self, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
         return self.run_revert(path, caller, execution_id)
 
-    def run_revert(self, path: str, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
+    def run_revert(self, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
         if path not in snapshots.all():
             payload = f"No snapshot for {path}"
         original_content = snapshots.pop(path)
@@ -49,5 +49,5 @@ class RevertTool(Tool):
                   "payload": payload if payload else None,
                   "error": caught_error if caught_error else None}
                     
-        execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+        execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
         return execution_artefact

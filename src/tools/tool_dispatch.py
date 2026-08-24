@@ -1,6 +1,7 @@
 from permissions.permissions import PermissionManager
+import os
+import importlib
 from tools.tool import Tool
-from tools.tool_dispatch import ToolDispatch
 from datetime import datetime
 from harness.artefacts.action import ActionArtefact, ActionProvider
 from harness.artefacts.artefact_store import ArtefactStore
@@ -8,6 +9,7 @@ from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.permission import PermissionArtefact
 import logging
 from typing import Any
+import inspect
 
 
 class ToolDispatch:
@@ -28,13 +30,13 @@ class ToolDispatch:
                 params = {"execution_id": permission_artefact.execution_id,
                           "producer": caller,
                           "tool_input": tool_input,
-                          "permitted": permission_artefact.allowed
+                          "permitted": permission_artefact.allowed,
                           "execution_status": "FAILED",
                           "termination_reason": "error encountered",
                           "error": e}
                 logging.error(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
                 print(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
-                return ArtefactFactory.builder(ExecutionArtefact, params)
+                return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execytion_id, caller)
         else:
 
             params = {"execution_id": permission_artefact.execution_id,
@@ -46,7 +48,7 @@ class ToolDispatch:
                       "error": None}
             logging.error(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
             print(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
-            return ArtefactFactory.builder(ExecutionArtefact, params)
+            return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
 
 
     def dispatch_tools(self, response_content: list[dict[str, Any]], execution_id: UUID, caller: str, artefact_store: ArtefactStore):
@@ -83,18 +85,23 @@ class ToolDispatch:
 
     def _parse_tools(self, tools_path: str) -> list[dict[str, Any]]:
         tool_dicts = []
-        candidates = []
-        for file_name in os.listdir(tools_path):
-            if file_name.endswith('_tool.py'):
-                mod_name = file_name[:-3].replace("_", "")
-                mod_name = mod_name[0].upper()+mod_name[1:-4]+mod_name[-4].upper()+mod_name[-3:]
+        candidates = {}
 
-                module = importlib.import_module(mod_name)
-                candidates = inspect.get_members(module, inspect.isclass)
-                for candidate in candidates:
-                    if issubclass(candidate, Tool) and candidate is not Tool:
-                        tool_dicts.append({"name": candidate.name,
-                                      "description": candidate.description,
-                                      "input_schema": candidate.input_schema})
-                        candidates.append({candidate.name: candidate})
+        package_name = os.path.basename(os.path.abspath(tools_path))
+
+        for file_name in os.listdir(tools_path):
+            if not file_name.endswith('_tool.py'):
+                continue
+            module_name = file_name[:-3]
+            full_module_name = f"{package_name}.{module_name}"
+
+            module = importlib.import_module(full_module_name)
+            for _, candidate in inspect.getmembers(module, inspect.isclass):
+                if candidate is Tool:
+                    continue
+                if issubclass(candidate, Tool):
+                    tool_dicts.append({"name": candidate.name,
+                                       "description": candidate.description,
+                                       "input_schema": candidate.input_schema})
+                    candidates[candidate.name] = candidate
         return tool_dicts, candidates

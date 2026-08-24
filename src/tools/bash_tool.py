@@ -1,10 +1,11 @@
-from tool import Tool
+from tools.tool import Tool
 import subprocess
 import os
 from harness.artefacts.execution_artefact import ExecutionArtefact
 from harness.artefacrs.artefact_store import ArtefactStore
 from harness.artefacrs.artefact_factory import ArtefactFactory
 from dataclasses import dataclass
+from uuid import UUID
 
 @dataclass(frozen=True)
 class BashTool(Tool):
@@ -23,7 +24,7 @@ class BashTool(Tool):
         return run_bash(command)
 
 
-    def run_bash(self, command: str) -> ExecutionArtefact:
+    def run_bash(self, command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
         if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 
             params = {"execution_status": "FAILED",
@@ -31,7 +32,7 @@ class BashTool(Tool):
                       "execution_id": self.execution_id,
                       "producer": self.caller}
 
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
         try:
@@ -44,7 +45,7 @@ class BashTool(Tool):
                       "producer": self.caller,
                       "payload": payload}
 
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
         except subprocess.TimoutExpired:
@@ -55,7 +56,7 @@ class BashTool(Tool):
                       "execution_id": self.execution_id,
                       "producer": self.caller}
 
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
         except Exception as e:
             # return any other execution errors as part of an execution artefact
@@ -67,5 +68,5 @@ class BashTool(Tool):
                       "error": e
                       }
 
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params)
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact

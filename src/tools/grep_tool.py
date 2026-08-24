@@ -1,5 +1,5 @@
 from typing import List
-from tool import Tool
+from tools.tool import Tool
 import subprocess
 from uuid import UUID
 from harness.artefacts.execution import ExecutionArtefact
@@ -37,13 +37,13 @@ class GrepTool(Tool):
 
                 params = {
                         "execution_status": "SUCCESS" if response.returncode == 0 else "FAILED",
-                        "termination_reason" "completed" if response.returncode == 0 else "no matches",
+                        "termination_reason": "completed" if response.returncode == 0 else "no matches",
                         "execution_id": execution_id,
                         "producer": caller,
                         "payload": payload
                         }
 
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
                 return execution_artefact
 
             except subprocess.TimeoutExpired as e:
@@ -57,7 +57,7 @@ class GrepTool(Tool):
                         }
 
 
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
                 return execution_artefact
 
             except Exception as e:
@@ -71,5 +71,5 @@ class GrepTool(Tool):
                         }
 
 
-                execution_artefact = ArtefactFactory.builder(artefact_type=ExecutionArtefact, params=params)
+                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
                 return execution_artefact
