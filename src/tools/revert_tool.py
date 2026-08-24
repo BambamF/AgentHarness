@@ -11,12 +11,11 @@ from harness.artefacts.artefact_store import ArtefactStore
 @dataclass(frozen=True)
 class RevertTool(Tool):
     def __init__(self):
-        name = "revert"
-        description = "Restore a file to its state before the last write call. Use when a write operation produced incorrect results."
-        input_schema = {"type": "object",
+        self.name = "revert"
+        self.description = "Restore a file to its state before the last write call. Use when a write operation produced incorrect results."
+        self.input_schema = {"type": "object",
                              "properties": {"path": {"type": "string"}},
                              "required": ["path"]}
-        super.__init__(name, description, input_schema)
 
     def run(self, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
         return self.run_revert(path, caller, execution_id)

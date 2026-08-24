@@ -13,9 +13,9 @@ from tools.snapshots import SNAPSHOTS
 @dataclass(frozen=True)
 class WriteTool(Tool):
     def __init__(self):
-        name = "write"
-        description = "Write content to a file. Automatically snapshots the previous content so you can revert. Creates parent directories if needed."
-        input_schema = {
+        self.name = "write"
+        self.description = "Write content to a file. Automatically snapshots the previous content so you can revert. Creates parent directories if needed."
+        self.input_schema = {
                 "type": "object",
                 "properties": {
                     "path": {"type": "string"},
@@ -23,7 +23,6 @@ class WriteTool(Tool):
                     },
                 "required": ["path", "content"]
                 }
-        super.__init__(name, description, input_schema)
 
     def run(self, path: str, content: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: SNAPSHOTS) -> ExecutionArtefact:
         return self.run_write(path, content, caller, execution_id, snapshots)

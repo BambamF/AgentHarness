@@ -5,15 +5,15 @@ from uuid import UUID
 from harness.artefacts.execution import ExecutionArtefact
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
-from permission.permissions import PermissionManager, PermissionLevel
+from permissions.permissions import PermissionManager, PermissionLevel
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class GrepTool(Tool):
     def __init__(self):
-        name = "grep"
-        description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
-        input_schema = {
+        self.name = "grep"
+        self.description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
+        self.input_schema = {
                 "type": "object",
                 "properties": {
                     "pattern": {"type": "string"},
@@ -22,7 +22,6 @@ class GrepTool(Tool):
                     },
                 "required": ["pattern"]
                 }
-        super.__init__(name, description, input_schema)
 
         def run(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
             return self.run_grep(pattern, path, caller, execution_id, recursive)
@@ -47,10 +46,9 @@ class GrepTool(Tool):
                 return execution_artefact
 
             except subprocess.TimeoutExpired as e:
-                `
                 params = {
                         "execution_status": "FAILED",
-                        "termination_reason" "timeout",
+                        "termination_reason": "timeout",
                         "execution_id": execution_id,
                         "producer": caller,
                         "error": e
@@ -64,7 +62,7 @@ class GrepTool(Tool):
 
                 params = {
                         "execution_status": "FAILED",
-                        "termination_reason" "error",
+                        "termination_reason": "error",
                         "execution_id": execution_id,
                         "producer": caller,
                         "error": e

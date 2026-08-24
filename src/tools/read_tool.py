@@ -16,9 +16,9 @@ try:
 @dataclass(frozen=True)
 class ReadTool(Tool):
     def __init__(self):
-        name = "read"
-        description = "Read a file and return numbered lines. Use when you need to inspect file content or reference specific line numbers. Returns up to 50,000 characters. Use start_line/end_line for large files."
-        input_schema = {
+        self.name = "read"
+        self.description = "Read a file and return numbered lines. Use when you need to inspect file content or reference specific line numbers. Returns up to 50,000 characters. Use start_line/end_line for large files."
+        self.input_schema = {
                 "type": "object",
                 "properties": {
                     "path": {"type": "string"},
@@ -27,7 +27,6 @@ class ReadTool(Tool):
                     },
                 "required": ["path"]
                 }
-        super.__init__(name, description, input_schema)
 
     def run(self, path: str, start_line: Optional[int] = None, end_line: Optional = None, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
         return self.run_read(command, caller, execution_id)

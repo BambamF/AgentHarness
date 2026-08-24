@@ -11,13 +11,12 @@ import glob as _glob
 @dataclass(frozen=True)
 class GlobTool:
     def __init__(self):
-        name = "glob"
-        description = "Find files matching a glob pattern, e.g. '**/*.py'. Returns sorted list of matching paths."
-        input_schema = {"type": "object",
+        self.name = "glob"
+        self.description = "Find files matching a glob pattern, e.g. '**/*.py'. Returns sorted list of matching paths."
+        self.input_schema = {"type": "object",
                              "properties": {"pattern": {"type": "string"}},
                              "required": ["pattern"]
                              }
-        super.__init__(name, description, input_schema)
 
     def run(self, pattern: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
         return self.run_glob(pattern, caller, execution_id)

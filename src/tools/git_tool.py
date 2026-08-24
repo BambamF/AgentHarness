@@ -12,14 +12,13 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class GitTool(Tool):
     def __init__(self):
-        name = "git"
-        description = "Run a git command."
-        input_schema = {
+        self.name = "git"
+        self.description = "Run a git command."
+        self.input_schema = {
                 "type": "object",
                 "properties": {"command": {"type": "string"}},
                 "required": "command"
                 }
-        super.__init__(name, description, input_schema)
     
     def run(self, command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
         return self.run_git(command)
