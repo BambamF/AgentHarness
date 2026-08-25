@@ -10,17 +10,17 @@ from harness.artefacts.artefact_store import ArtefactStore
 
 @dataclass(frozen=True)
 class RevertTool(Tool):
-    def __init__(self):
-        self.name = "revert"
-        self.description = "Restore a file to its state before the last write call. Use when a write operation produced incorrect results."
-        self.input_schema = {"type": "object",
+    name = "revert"
+    description = "Restore a file to its state before the last write call. Use when a write operation produced incorrect results."
+    input_schema = {"type": "object",
                              "properties": {"path": {"type": "string"}},
                              "required": ["path"]}
+    @staticmethod
+    def run(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
+        return run_revert(path, caller, execution_id)
 
-    def run(self, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
-        return self.run_revert(path, caller, execution_id)
-
-    def run_revert(self, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
+    @staticmethod
+    def run_revert(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
         if path not in snapshots.all():
             payload = f"No snapshot for {path}"
         original_content = snapshots.pop(path)

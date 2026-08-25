@@ -37,7 +37,7 @@ class Planner:
 
             Do not invent repository facts.
 
-            Distinguish beteween:
+            Distinguish between:
             - Established repository facts
             - Historical memory
             - Planner observations
@@ -95,7 +95,7 @@ class Planner:
 
             logging.info(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0]} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[:3]) or None}")
 
-            print(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0]} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[:3]) or None}")
+            print(f"\n[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0]} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[:3]) or None}")
             plan_artefact = ArtefactFactory.builder(artefact_type=PlanArtefact, params=params, artefact_store=self.artefact_store, execution_id=self.execution_id, caller="agent")
             return plan_artefact
 

@@ -10,10 +10,9 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class GrepTool(Tool):
-    def __init__(self):
-        self.name = "grep"
-        self.description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
-        self.input_schema = {
+    name = "grep"
+    description = "Search for a regex pattern across files. Returns file paths and line numbers of matches."
+    input_schema = {
                 "type": "object",
                 "properties": {
                     "pattern": {"type": "string"},
@@ -22,19 +21,20 @@ class GrepTool(Tool):
                     },
                 "required": ["pattern"]
                 }
+    @staticmethod
+    def run(pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
+        return run_grep(pattern, path, caller, execution_id, recursive)
+    
+    @staticmethod
+    def run_grep(pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
 
-        def run(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
-            return self.run_grep(pattern, path, caller, execution_id, recursive)
+        try:
+            flags = ['-r'] if recursive else []
 
-        def run_grep(self, pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
+            response = subprocess.run(["grep", "-n", *flags, pattern, path], capture_output=True, text=True, timeout=30)
+            payload = {"stdout": response.stdout, "stderr": response.stdout}
 
-            try:
-                flags = ['-r'] if recursive else []
-
-                response = subprocess.run(["grep", "-n", *flags, pattern, path], capture_output=True, text=True, timeout=30)
-                payload = {"stdout": response.stdout, "stderr": response.stdout}
-
-                params = {
+            params = {
                         "execution_status": "SUCCESS" if response.returncode == 0 else "FAILED",
                         "termination_reason": "completed" if response.returncode == 0 else "no matches",
                         "execution_id": execution_id,
@@ -42,11 +42,11 @@ class GrepTool(Tool):
                         "payload": payload
                         }
 
-                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-                return execution_artefact
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+            return execution_artefact
 
-            except subprocess.TimeoutExpired as e:
-                params = {
+        except subprocess.TimeoutExpired as e:
+            params = {
                         "execution_status": "FAILED",
                         "termination_reason": "timeout",
                         "execution_id": execution_id,
@@ -55,12 +55,12 @@ class GrepTool(Tool):
                         }
 
 
-                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-                return execution_artefact
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+            return execution_artefact
 
-            except Exception as e:
+        except Exception as e:
 
-                params = {
+            params = {
                         "execution_status": "FAILED",
                         "termination_reason": "error",
                         "execution_id": execution_id,
@@ -69,5 +69,5 @@ class GrepTool(Tool):
                         }
 
 
-                execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-                return execution_artefact
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+            return execution_artefact

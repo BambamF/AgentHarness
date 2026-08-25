@@ -40,9 +40,8 @@ agent = client
 config_path = os.path.join(ROOT_PATH, 'configs/config.json')
 charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
-def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager):
+def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, execution_id: UUID):
     while True:
-        execution_id = uuid.uuid7()
         last_message = messages[-1].get('content')
         role = messages[-1].get('role')
         h = hashlib.sha256()
@@ -63,7 +62,7 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
-        harness = Harness(agent, MODEL, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, prompt_artefact, permission_manager, generation_manager, artefact_store, execution_id)
+        harness = Harness(agent, MODEL, memory_path, memory_manager, config_path, charter_path, ROOT_PATH, messages, permission_manager, generation_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
@@ -82,9 +81,10 @@ def main():
     artefact_store = ArtefactStore()
     tool_dispatch = ToolDispatch(TOOLS_DIR)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
-    generation_manager = GenerationManager()
+    execution_id = uuid.uuid7()
+    generation_manager = GenerationManager(agent, MODEL, artefact_store, execution_id, tool_dispatch)
     history: List[Dict[str, Any]] = []
-    """
+
     while True:
         try:
             # prompt the user for a query with a coloured prompt
@@ -95,9 +95,9 @@ def main():
         if query.strip().lower() in ("q", "exit", ""):
             break
         history.append({"role": "user", "content": query})
-        agent_loop(history, artefact_store, permission_manager, memory_manager)
+        agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, execution_id)
         break
-    """    
+
     artefact_store.print_artefacts_meta(5)
 
 if __name__ == "__main__":

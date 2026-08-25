@@ -1,48 +1,46 @@
 from tools.tool import Tool
 import subprocess
 import os
-from harness.artefacts.execution_artefact import ExecutionArtefact
-from harness.artefacrs.artefact_store import ArtefactStore
-from harness.artefacrs.artefact_factory import ArtefactFactory
+from harness.artefacts.execution import ExecutionArtefact
+from harness.artefacts.artefact_store import ArtefactStore
+from harness.artefacts.artefact_factory import ArtefactFactory
 from dataclasses import dataclass
 from uuid import UUID
 
 @dataclass(frozen=True)
 class BashTool(Tool):
 
-    def __init__(self):
-        name = "bash"
-        description = "Run a shell command."
-        input_schema = {
+    name = "bash"
+    description = "Run a shell command."
+    input_schema = {
                 "type": "object",
                 "properties": {"command": {"type": "string"}},
                 "required": ["command"]
                 }
-        super.__init__(name, description, input_schema)
 
     def run(command: str) -> ExecutionArtefact:
         return run_bash(command)
 
 
-    def run_bash(self, command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
+    def run_bash(command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
         if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 
             params = {"execution_status": "FAILED",
                       "termination_reason": "blocked",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller}
+                      "execution_id": execution_id,
+                      "producer": caller}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
         try:
 
-            result = subprocess.run([self.command], shell=True, cwd=os.getcwd(), capture_output=True, text=True, timeout=120)
+            result = subprocess.run([command], shell=True, cwd=os.getcwd(), capture_output=True, text=True, timeout=120)
             payload = {"stdout": result.stdout if result.stdout else "(no output)", "stderr": result.stderr}
             params = {"execution_status": "SUCCESS",
                       "termination_reason": "completed",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller,
+                      "execution_id": execution_id,
+                      "producer": caller,
                       "payload": payload}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
@@ -53,8 +51,8 @@ class BashTool(Tool):
 
             params = {"execution_status": "FAILED",
                       "termination_reason": "timeout",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller}
+                      "execution_id": execution_id,
+                      "producer": caller}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
@@ -63,8 +61,8 @@ class BashTool(Tool):
 
             params = {"execution_status": "FAILED",
                       "termination_reason": "error",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller,
+                      "execution_id": execution_id,
+                      "producer": caller,
                       "error": e
                       }
 

@@ -9,6 +9,7 @@ from .artefacts.action import ActionProvider
 import logging
 from typing import List, Dict, Any, Callable
 from agents.generate import GenerationManager
+import os
 
 class Harness:
     def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], permission_manager: PermissionManager, generation_manager: GenerationManager, artefact_store: ArtefactStore, execution_id: UUID):
@@ -22,10 +23,10 @@ class Harness:
         self.state = HarnessState.INITIALISING
         self.artefact_store = artefact_store
         self.memory_manager = memory_manager
-        self.transitions: Dict[HarnessState, Callable] = {#HarnessState.INITIALISING: self._initialise,
-                           # HarnessState.REPO_ANALYSIS: self._analyse_repo,
-                           # HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
-                           # HarnessState.PLANNING: self._create_plan,
+        self.transitions: Dict[HarnessState, Callable] = {HarnessState.INITIALISING: self._initialise,
+                           HarnessState.REPO_ANALYSIS: self._analyse_repo,
+                           HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
+                           HarnessState.PLANNING: self._create_plan,
                            HarnessState.GENERATING: self._generate,
                            # HarnessState.EVALUATING: self._evaluate,
                            # HarnessState.REFLECTING: self._reflect,

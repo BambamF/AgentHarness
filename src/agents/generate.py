@@ -4,6 +4,7 @@ from uuid import UUID
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.action import ActionArtefact
+from harness.artefacts.plan import PlanArtefact
 from permissions.permissions import PermissionManager
 import logging
 from typing import Any
@@ -28,7 +29,7 @@ class GenerationManager:
             print()
             print(f"[GENERATING] The Plan Artefact Does Not Exist. Cannot Run Generation Step")
             raise(NameError("[GENERATING] Plan Artefact Does Not Exist, Check PLANNING Step"))
-        generation_context = {"objective": plan_artefact.obejective,
+        generation_context = {"objective": plan_artefact.objective,
                               "ordered_tasks": plan_artefact.ordered_tasks,
                               "assumptions": plan_artefact.assumptions,
                               "risks": plan_artefact.risks,
