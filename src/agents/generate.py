@@ -1,4 +1,5 @@
 from tools.tool import Tool
+import json
 from tools.tool_dispatch import ToolDispatch
 from uuid import UUID
 from harness.artefacts.artefact_store import ArtefactStore
@@ -39,7 +40,7 @@ class GenerationManager:
                               "memory_references": plan_artefact.memory_references,
                               "topology_references": plan_artefact.topology_references}
         messages = [{"role": "user",
-                     "content": generation_context}]
+                     "content": json.dumps(generation_context, default=str)}]
 
         tools = self.tool_dispatch.tool_dicts
 
@@ -72,7 +73,7 @@ class GenerationManager:
             messages.append({"role": "assistant",
                              "content": response.content})
 
-            tool_calls = self._get_tool_calls(response)
+            tool_calls = self._get_tool_calls(response.content)
 
             if not tool_calls:
                 break
@@ -89,5 +90,5 @@ class GenerationManager:
                           "success_criteria": plan_artefact.success_criteria}
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
             
-    def _get_tool_calls(self, messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        return [i for i in messages if i.content.get("type") == "tool_use"]
+    def _get_tool_calls(self, response_content):
+        return [i for i in response_content if i.type == "tool_use"]

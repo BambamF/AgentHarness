@@ -7,6 +7,7 @@ from harness.artefacts.action import ActionArtefact, ActionProvider
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.permission import PermissionArtefact
+from harness.artefacts.execution import ExecutionArtefact
 import logging
 from typing import Any
 import inspect
@@ -17,7 +18,7 @@ class ToolDispatch:
     def __init__(self, tools_path: str):
         self.tool_dicts, self.tools = self._parse_tools(tools_path)
 
-    def dispatch(self, tool: Tool, tool_input: str, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
+    def dispatch(self, tool: Tool, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
         action_artefact: ActionArtefact = artefact_store.latest(ActionArtefact)
         permission_artefact = PermissionManager.get_permission(action_artefact, artefact_store)
 
@@ -36,7 +37,7 @@ class ToolDispatch:
                           "error": e}
                 logging.error(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
                 print(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
-                return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execytion_id, caller)
+                return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
         else:
 
             params = {"execution_id": permission_artefact.execution_id,
@@ -71,12 +72,12 @@ class ToolDispatch:
             print()
             print(f"\033[33m[{tool_name}] {first_val}...\033[0m")
             try:
-                output = self.dispatch(tool, tool_input, execution_id, caller, artefact_store)
+                output = self.dispatch(tool, execution_id, caller, artefact_store)
             except Exception as e:
                 output = f"Error during tool execution: {e}"
             print(str(output)[:300]) # Print a preview of the output
 
-            results.append({"type": "tool_use",
+            results.append({"type": "tool_result",
                             "tool_use_id": tool_use_id,
                             "content": str(output)})
 
