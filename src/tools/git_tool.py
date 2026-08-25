@@ -16,7 +16,7 @@ class GitTool(Tool):
     input_schema = {
                 "type": "object",
                 "properties": {"command": {"type": "string"}},
-                "required": "command"
+                "required": ["command"]
                 }
     @staticmethod
     def run(command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
