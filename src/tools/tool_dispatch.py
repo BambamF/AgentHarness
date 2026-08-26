@@ -15,12 +15,13 @@ import inspect
 
 class ToolDispatch:
 
-    def __init__(self, tools_path: str):
+    def __init__(self, tools_path: str, permission_manager: PermissionManager):
         self.tool_dicts, self.tools = self._parse_tools(tools_path)
+        self.permission_manager = permission_manager
 
     def dispatch(self, tool: Tool, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
         action_artefact: ActionArtefact = artefact_store.latest(ActionArtefact)
-        permission_artefact = PermissionManager.get_permission(action_artefact, artefact_store)
+        permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
 
         if permission_artefact.allowed:
             try:

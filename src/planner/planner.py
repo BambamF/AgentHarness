@@ -93,9 +93,9 @@ class Planner:
                       "topology_references": plan_dict.get("topology_references"),
                       "error": None}
 
-            logging.info(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(str(task) for task in plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0] or None} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[:3]) or None}")
+            logging.info(f"[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(str(task) for task in plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0] or None} | Sample Repo Observations: {' -- '.join(i.get('observation') for i in plan_dict.get('repo_observations')[:3]) or None}")
 
-            print(f"\n[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(str(task) for task in plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0] or None} | Sample Repo Observations: {' -- '.join(plan_dict.get('repo_observations')[:3]) or None}")
+            print(f"\n[PLAN ARTEFACT] Producer: Agent | Objective: {plan_dict.get('objective')} | Tasks Head: {' -- '.join(str(task) for task in plan_dict.get('ordered_tasks')[:5])} | Sample Risk: {plan_dict.get('risks')[0] or None} | Sample Repo Observations: {' -- '.join(i.get('observation') for i in plan_dict.get('repo_observations')[:3]) or None}")
             plan_artefact = ArtefactFactory.builder(artefact_type=PlanArtefact, params=params, artefact_store=self.artefact_store, execution_id=self.execution_id, caller="agent")
             return plan_artefact
 

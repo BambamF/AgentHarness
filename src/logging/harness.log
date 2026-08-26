@@ -892,3 +892,24 @@
 2026-08-25 09:58:01,195 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a0385a-5a54-7628-b28b-704169eeea36
 2026-08-25 09:58:01,195 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a0385a-5a54-7628-b28b-704169eeea36 | Artefact ID: c25a3e64-5a28-44a2-b699-289a7c5ebe3e
 2026-08-25 09:58:21,332 | Retrying request to /v1/messages in 0.458542 seconds
+2026-08-26 10:28:03,656 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 68981b78-1723-4f40-af4b-942700f322b4
+2026-08-26 10:28:03,686 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: ee3936fb0c21a4fa255cb0efeac38b79dfc979c2
+
+2026-08-26 10:28:15,712 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: ee3936fb0c21a4fa255cb0efeac38b79dfc979c2
+ | Languages: python | N Entry Points: None | Topology: 1 | Dependency Graph: 1802 | N Config Files: 12
+2026-08-26 10:28:15,712 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 263703a7-edc8-4da4-be6f-465bee0cb63a
+2026-08-26 10:28:15,716 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14
+2026-08-26 10:28:15,716 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 8ff41cc9-dc37-45eb-bd10-24d861e53671
+2026-08-26 10:28:50,120 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-26 10:28:50,251 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: sequence item 0: expected str instance, dict found
+2026-08-26 10:28:50,262 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 79c202da-32e9-4825-9ff2-0ed89bdb3882
+2026-08-26 10:28:52,186 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-26 10:28:52,332 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: fc5ad63f-3e26-4788-86d8-849de3c932c3
+2026-08-26 10:28:52,332 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 4fe6512b-a820-4d57-9291-a93bc945281c
+2026-08-26 10:28:54,960 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-26 10:28:55,110 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: a251635e-c566-45bd-8fe7-0f65a3ce3ac5
+2026-08-26 10:28:55,111 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: a20dc7d5-a712-4546-9911-3b2c7e816937
+2026-08-26 10:29:01,173 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-26 10:29:01,320 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 400cf56d-69b3-4f9f-89a0-ce371e33864e
+2026-08-26 10:29:03,952 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-08-26 10:29:04,101 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a03d9c-709f-76ca-b268-136e42fadb14 | Artefact ID: 983248f8-3ee7-4a19-a764-02dcc83b3182

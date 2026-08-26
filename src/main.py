@@ -79,7 +79,7 @@ def main():
     os.makedirs(LOG_DIR, exist_ok=True)
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
-    tool_dispatch = ToolDispatch(TOOLS_DIR)
+    tool_dispatch = ToolDispatch(TOOLS_DIR, permission_manager)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()
     generation_manager = GenerationManager(agent, MODEL, artefact_store, execution_id, tool_dispatch)
