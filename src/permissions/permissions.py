@@ -22,53 +22,58 @@ class PermissionManager:
         if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 
             params = {"execution_id": action_artefact.execution_id,
-                      "producer": action_artefact.provider,
+                      "producer": action_artefact.producer,
                       "allowed": False,
                       "reason": "restricted_command"}
             full_params = {"artefact_id": uuid.uuid4(),
-                           "producer": role,
                            "timestamp": datetime.now(),
-                           "confidence": 1.0, # compute later
                            "metadata": None,
                            "payload": False}
             full_params.update(params)
 
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=params, artefact_store=artefact_store)
-        if list(command)[0] in self.requires_sub:
-            start = 2
+            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)
+
+        command_tokens = command.split()
+
+        if not command_tokens:
+            print(f"[PERMISSION MANAGER] No command in tool call input | Execution ID: {action_artefact.execution_id}")
+            logging.info(f"[PERMISSION MANAGER] No command in tool call input | Execution ID: {action_artefact.execution_id}")
+
+        program = command_tokens[0]
+
+        if program in self.requires_sub and len(command_tokens) > 1:
+            permission_target = " ".join(command_tokens[:2])
         else:
-            start = 1
+            permission_target = program
+
         for level, command_starts in self.permission_levels.items():
-            if command[:start] in command_starts:
+            if permission_target in command_starts:
                 command_access = level
+                break
             else:
                 command_access = PermissionLevel.READ_ONLY
-        if action_artefact.provider == ActionProvider.SYSTEM:
+        if action_artefact.provider == "system":
             params = {"execution_id": action_artefact.execution_id,
-                      "producer": action_artefact.provider,
+                      "producer": action_artefact.producer,
                       "allowed": True,
                       "reason": "system operation"}
             full_params = {"artefact_id": uuid.uuid4(),
-                           "producer": role,
                            "timestamp": datetime.now(),
-                           "confidence": 1.0, # compute later
                            "metadata": None,
                            "payload": True}
             full_params.update(params)
             logging.info(f"[PERMISSION ARTEFACT] Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store)
+            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)
         else:
             params = {"execution_id": action_artefact.execution_id,
-                      "producer": action_artefact.provider,
+                      "producer": action_artefact.producer,
                       "allowed": True if action_artefact.required_permission == command_access else False,
                       "reason": f"agent action: current permission level - {command_access}"
                       }
             full_params = {"artefact_id": uuid.uuid4(),
-                           "producer": role,
                            "timestamp": datetime.now(),
-                           "confidence": 1.0, # compute later
                            "metadata": None,
                            "payload": True}
             full_params.update(params)
             logging.info(f"[PERMISSION ARTEFACT] Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store)
+            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)

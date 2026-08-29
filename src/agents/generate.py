@@ -60,6 +60,7 @@ class GenerationManager:
         """
 
         user_prompt = plan_artefact.objective
+        results = []
 
         while True:
             response = self.agent.messages.create(
@@ -78,17 +79,37 @@ class GenerationManager:
             if not tool_calls:
                 break
 
-            results = self.tool_dispatch.dispatch_tools(tool_calls, self.execution_id, self.caller, self.artefact_store)
 
-            messages.append({"role": "user",
-                             "content": results})
             for tool_call in tool_calls:
-                params = {"provider": self.caller,
+
+                tool = self.tool_dispatch.tools.get(tool_call.name)
+
+                if not tool:
+                    logging.info(f"[DISPATCH TOOL] {tool_call.name} tool not found... | Execution ID: {self.execution_id} | Tool Input: {str(list(tool_call.input.values())[0][:80]) if tool_call.input else ''}")
+
+                    print(f"[DISPATCH] {tool_call.name} tool not found...")
+                    continue
+
+                first_val = str(list(tool_call.input.values())[0][:80]) if tool_call.input else ""
+                print(f"\033[33m[{tool_call.name}] {first_val}...\033[0m")
+
+                params = {"producer": self.caller,
                           "intention": user_prompt,
                           "input": tool_call.input,
                           "dependencies": plan_artefact.dependencies,
                           "success_criteria": plan_artefact.success_criteria}
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
+                try:
+                    result = self.tool_dispatch.dispatch(tool, self.execution_id, self.caller, action_artefact)
+                    logging.info(f"[GENERATE] Tool Dispatch Result: str(result) | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
+                except Exception as e:
+                    result = f"Error during tool execution: {e}"
+                    logging.exception(f"[GENERATE] Tool Dispatch Exception: {e} | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
+                messages.append({"role": "user",
+                                 "content": result})
+        return messages
+
+
             
     def _get_tool_calls(self, response_content):
         return [i for i in response_content if i.type == "tool_use"]
