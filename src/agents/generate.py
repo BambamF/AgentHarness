@@ -66,6 +66,7 @@ class GenerationManager:
             response = self.agent.messages.create(
                     model=self.model,
                     system=SYSTEM_PROMPT,
+                    cache_control={"type": "ephemeral"},
                     messages=messages,
                     tools=tools,
                     max_tokens=8000

@@ -71,6 +71,7 @@ class Planner:
                     system=system_prompt,
                     model=self.model,
                     max_tokens=AgentConfig.max_tokens,
+                    cache_control={"type": "ephemeral"},
                     messages=[{"role": "user", "content": user_prompt}],
                     output_config={"format": {
                         "type": "json_schema",
