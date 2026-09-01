@@ -101,7 +101,7 @@ class GenerationManager:
                           "success_criteria": plan_artefact.success_criteria}
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
                 try:
-                    result = self.tool_dispatch.dispatch(tool, self.execution_id, self.caller, action_artefact)
+                    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
                     logging.info(f"[GENERATE] Tool Dispatch Result: str(result) | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
                 except Exception as e:
                     result = f"Error during tool execution: {e}"

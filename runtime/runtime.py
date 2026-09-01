@@ -5,18 +5,24 @@ from src.harness.artefacts.execute import ExecutionArtefact
 from uuid import UUID
 import docker
 import datetime
+from harness.arefacts.permission import PermissionArtefact
+from harness.artefacts.artefact_store import ArtefactStore
+from harness.artefacts.artefact_factory import ArtefactFactory
+import logging
 
 class RuntimeManager:
-    def __init__(self, agent: str, model: str, tools: dict[str. Any], executions_dir: str):
+    def __init__(self, image: str, agent: str, model: str, executions_dir: str, permission_manager: PermissionManager, artefact_store: ArtefactStore):
         self.agent = agent
         self.model = model
-        self.tools = tools
-        self.executions_dir = execution_dir
+        self.executions_dir = executions_dir
         self.client = docker.from_env()
+        self.permission_manager = permission_manager
+        self.artefact_store = artefact_store
+        self.image = self.client.images.pull(image)
 
-    def execute(self, tool: dict[str, Any], action_artefact: ActionArtefact, execution_id: UUID) -> ExecutionArtefact:
+    def execute(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
 
-        current_execution_dir = os.path.join(self.execution_dir, execution_id)
+        current_execution_dir = os.path.join(self.executions_dir, execution_id)
 
         input_dir = os.path.join(current_execution_dir, 'input')
         output_dir = os.path.join(current_execution_dir, 'output')
@@ -41,7 +47,7 @@ class RuntimeManager:
 
         try:
             container = self.client.containers.run(
-                    image= # DOCKER IMAGE HERE,
+                    image=self.image,
                     command=action_artefact.input,
                     detach=True,
                     working_dir="/workspace",
@@ -59,7 +65,7 @@ class RuntimeManager:
                             "mode": "rw"
                             }
                         },
-                    nerwork_disabled=True,
+                    network_disabled=True,
                     mem_limit="512m",
                     nano_cpus=1_000_000_000,
                     pids_limit=128,
@@ -74,7 +80,55 @@ class RuntimeManager:
             with open(os.path.join(logs_dir, "container.log"), "a", encoding="utf-8") as log_file:
                 log_file.write(logs)
 
+            params = {
+                    "execution_id": action_artefact.execution_id,
+                    "producer": action_artefact.producer,
+                    "tool_input": action_artefact.input,
+                    "permitted": permission_artefact.allowed,
+                    "execution_status": "SUCCESS" if result["StatusCode"] == 0 else "FAILED",
+                    "termination_reason": "completed" if result["StatusCode"] == 0 else "could not be completed",
+                    "exit_code": result["StatusCode"],
+                    "started_at": started_at,
+                    "finished_at": datetime.now(),
+                    "image": self.image,
+                    "input_path": str(input_dir),
+                    "output_path": str(output_dir),
+                    "workspace_path": str(workspace_dir)
+                    }
 
+            logging.info(f"[RUNTIME] - Tool: {type(tool)} | Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
+
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
         except Exception as e:
             
-            return self._create_execution_artefact(action_artefact, e)
+            
+            params = {
+                    "execution_id": action_artefact.execution_id,
+                    "producer": action_artefact.producer,
+                    "tool_input": action_artefact.input,
+                    "permitted": permission_artefact.allowed,
+                    "execution_status": "FAILED",
+                    "termination_reason": "exception encountered",
+                    "exit_code": result["StatusCode"],
+                    "started_at": started_at,
+                    "finished_at": datetime.now(),
+                    "image": self.image,
+                    "input_path": str(input_dir),
+                    "output_path": str(output_dir),
+                    "workspace_path": str(workspace_dir)
+                    }
+            logging.exception(f"[RUNTIME EXCEPTION] - Tool: {type(tool)} | Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
+
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
+        
+        finally:
+            if container is not None:
+                container.stop()
+
+        self._write_json(os.path.join(current_execution_dir, "execution.json"), execution_artefact)
+        return execution_artefact
+
+    @static_method
+    def _write_json(path: str, artefact: Artefact):
+        with open(path, 'a', encoding='utf-8', newline="") as f:
+            f.write(artefact.to_json())

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 from ..state import HarnessState
 from typing import Any
 from uuid import UUID
 
+@dataclass_json
 @dataclass(frozen=True)
 class Artefact:
     artefact_id: UUID

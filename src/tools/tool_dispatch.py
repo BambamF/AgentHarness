@@ -11,46 +11,22 @@ from harness.artefacts.execution import ExecutionArtefact
 import logging
 from typing import Any
 import inspect
+from runtime.runtime import RuntimeManager
 
 
 class ToolDispatch:
 
-    def __init__(self, tools_path: str, permission_manager: PermissionManager):
+    def __init__(self, tools_path: str, permission_manager: PermissionManager, runtime_manager: RuntimeManager):
         self.tool_dicts, self.tools = self._parse_tools(tools_path)
         self.permission_manager = permission_manager
+        self.runtime_manager = runtime_manager
 
-    def dispatch(self, tool: Tool, execution_id: UUID, caller: str, artefact_store: ArtefactStore):
-        action_artefact: ActionArtefact = artefact_store.latest(ActionArtefact)
+    def dispatch(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> ExecutionArtefact:
+
         permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
 
-        if permission_artefact.allowed:
-            try:
-                exec_artefact = tool.run(action_artefact.input)
-                logging.info(f"[Dispatch] - Tool: {type(tool)} | Permission: {PermissionManager.get_status()} | Permitted: {permission_artefact.allowed}")
-                return exec_artefact
-            except Exception as e:
-                params = {"execution_id": permission_artefact.execution_id,
-                          "producer": caller,
-                          "tool_input": tool_input,
-                          "permitted": permission_artefact.allowed,
-                          "execution_status": "FAILED",
-                          "termination_reason": "error encountered",
-                          "error": e}
-                logging.error(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
-                print(f"[Dispatch Error] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}, Exception: {e}")
-                return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-        else:
-
-            params = {"execution_id": permission_artefact.execution_id,
-                      "producer": caller,
-                      "tool_input": tool_input,
-                      "permitted": permission_artefact.allowed,
-                      "execution_status": "FAILED",
-                      "termination_reason": "not permitted",
-                      "error": None}
-            logging.error(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
-            print(f"[Dispatch Not Permitted] - Tool: {type(tool)} | Permission: {permission_artefact.status} | Permitted: {permission_artefact.allowed}")
-            return ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+        execution_artefact = self.runtime_manager.execute(action_artefact, permission_artefact)
+        return execution_artefact
 
 
     def dispatch_tools(self, response_content: list[dict[str, Any]], execution_id: UUID, caller: str, artefact_store: ArtefactStore):
