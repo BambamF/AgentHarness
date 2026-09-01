@@ -31,7 +31,7 @@ class PermissionManager:
                            "payload": False}
             full_params.update(params)
 
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)
+            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
 
         command_tokens = command.split()
 
@@ -63,7 +63,7 @@ class PermissionManager:
                            "payload": True}
             full_params.update(params)
             logging.info(f"[PERMISSION ARTEFACT] Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)
+            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
         else:
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
@@ -76,4 +76,4 @@ class PermissionManager:
                            "payload": True}
             full_params.update(params)
             logging.info(f"[PERMISSION ARTEFACT] Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
-            return ArtefactFactory.builder(artefact_type=PermissionArtefact, params=full_params, artefact_store=artefact_store, action_artefact.execution_id, action_artefact.caller)
+            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)

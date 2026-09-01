@@ -5,7 +5,6 @@ from enum import Enum, auto
 
 @dataclass(frozen=True)
 class ActionArtefact(Artefact):
-    provider: str
     intention: str
     input: str
     dependencies: list[str] | None
