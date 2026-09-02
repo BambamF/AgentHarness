@@ -80,18 +80,25 @@ class GenerationManager:
             if not tool_calls:
                 break
 
+            tool_results = []
 
             for tool_call in tool_calls:
 
                 tool = self.tool_dispatch.tools.get(tool_call.name)
 
                 if not tool:
-                    logging.info(f"[DISPATCH TOOL] {tool_call.name} tool not found... | Execution ID: {self.execution_id} | Tool Input: {str(list(tool_call.input.values())[0][:80]) if tool_call.input else ''}")
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "is_error": True,
+                        "content": f"Tool not found: {tool_call.name}"
+                        })
+                    logging.error(f"[DISPATCH TOOL] {tool_call.name} tool not found... | Execution ID: {self.execution_id} | Tool Input: {str(list(tool_call.input.values())[0][:80]) if tool_call.input else ''}")
 
                     print(f"[DISPATCH] {tool_call.name} tool not found...")
                     continue
 
-                first_val = str(list(tool_call.input.values())[0][:80]) if tool_call.input else ""
+                first_val = (str(next(iter(tool_call.input.values())))[:80] if tool_call.input else "")
                 print(f"\033[33m[{tool_call.name}] {first_val}...\033[0m")
 
                 params = {"producer": self.caller,
@@ -102,13 +109,37 @@ class GenerationManager:
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
                 try:
                     result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+
+                    if hasattr(result, "to_json"):
+                        result_content = result.to_json()
+                    else:
+                        result_content = str(result)
+
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "is_error": True,
+                        "content": result_content
+                        })
+
                     logging.info(f"[GENERATE] Tool Dispatch Result: str(result) | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
+
                 except Exception as e:
-                    result = f"Error during tool execution: {e}"
-                    logging.exception(f"[GENERATE] Tool Dispatch Exception: {e} | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
-                messages.append({"role": "user",
-                                 "content": result})
-        return messages
+
+                    result = f"Error during tool execution: {str(e)}"
+
+                    logging.exception(f"[GENERATE] Tool Dispatch Exception: {str(e)} | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
+
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "is_error": True,
+                        "content": str(e)
+                        })
+            messages.append({"role": "user",
+                             "content": tool_results})
+
+            return messages
 
 
             

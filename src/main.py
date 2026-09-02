@@ -81,7 +81,7 @@ def main():
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
     executions_dir = os.path.join(ROOT_PATH, 'runtime/executions')
-    runtime_manager = RuntimeManager("ngnix", agent, MODEL, executions_dir, permission_manager, artefact_store)
+    runtime_manager = RuntimeManager("python:3.12-slim", agent, MODEL, executions_dir, permission_manager, artefact_store)
     tool_dispatch = ToolDispatch(TOOLS_DIR, permission_manager, runtime_manager)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()

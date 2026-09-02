@@ -3,6 +3,7 @@ from typing import Any
 from src.harness.artefacts.action import ActionArtefact
 from src.harness.artefacts.execution import ExecutionArtefact
 import docker
+import json
 from datetime import datetime
 from src.harness.artefacts.permission import PermissionArtefact
 from src.harness.artefacts.artefact_store import ArtefactStore
@@ -10,25 +11,35 @@ from src.harness.artefacts.artefact import Artefact
 from src.harness.artefacts.artefact_factory import ArtefactFactory
 import logging
 from repositories.repository_manager import RepositoryManager
+from uuid import UUID
 
 class RuntimeManager:
-    def __init__(self, image: str, agent: str, model: str, executions_dir: str, permission_manager: PermissionManager, artefact_store: ArtefactStore):
-        self.agent = agent
-        self.model = model
+    def __init__(self, image: str, executions_dir: str):
         self.executions_dir = executions_dir
         self.client = docker.from_env()
-        self.permission_manager = permission_manager
-        self.artefact_store = artefact_store
-        self.image = self.client.images.pull(image)
+        self.image = image
 
-    def execute(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
+        self.container = None
+        self.execution_id = None
+        self.execution_dir = None
+        self.input_dir = None
+        self.output_dir = None
+        self.logs_dir = None
+        self.workspace_dir = None
 
-        current_execution_dir = os.path.join(self.executions_dir, str(action_artefact.execution_id))
+    def start(self, execution_id: UUID):
 
-        input_dir = os.path.join(current_execution_dir, 'input')
-        output_dir = os.path.join(current_execution_dir, 'output')
-        logs_dir = os.path.join(current_execution_dir, 'logs')
-        workspace_dir = os.path.join(current_execution_dir, 'workspace')
+        if self.container is not None:
+            raise RuntimeError("A runtime container is already active")
+
+        self.execution_id = execution_id
+
+        self.execution_dir = os.path.join(self.executions_dir, str(execution_id))
+        self.input_dir = os.path.join(self.execution_dir, 'input')
+        self.output_dir = os.path.join(self.execution_dir, 'output')
+        self.logs_dir = os.path.join(self.execution_dir, 'logs')
+        self.workspace_dir = os.path.join(current_execution_dir, 'workspace')
+
 
         for directory in (
         input_dir,
@@ -38,45 +49,74 @@ class RuntimeManager:
         ):
             os.makedirs(directory, exist_ok=True)
 
+        
+        self.container = self.client.containers.run(
+                image=self.image,
+                command=["sleep", "infinity"],
+                detach=True,
+                working_dir="/workspace",
+                volumes={
+                    str(input_dir): {
+                        "bind": "/input",
+                        "mode": "ro",
+                        },
+                    str(output_dir): {
+                        "bind": "/output",
+                        "mode": "rw"
+                        },
+                    str(workspace_dir): {
+                        "bind": "/workspace",
+                        "mode": "rw"
+                        }
+                    },
+                network_disabled=True,
+                mem_limit="512m",
+                nano_cpus=1_000_000_000,
+                pids_limit=128,
+                read_only=True,
+                tmpfs={"/tmp": "rw,nanoexec,nosuid,size=64m"},
+                user="1000:1000"
+                )
+
+        logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {execution_id}")
+
+
+    def execute(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
+
+        if self.container is None:
+            raise RuntimeError("Runtime has not been started")
+
+        if action_artefact.execution_id != self.execution_id:
+            raise RuntimeError("ActionArtefact Execution ID does not match active runtime Execution ID")
+
         self._write_json(os.path.join(current_execution_dir, "action.json"), action_artefact)
         
-        self._write_json(os.path.join(current_execution_dir, "permission.json"), action_artefact)
+        self._write_json(os.path.join(current_execution_dir, "permission.json"), permission_artefact)
 
         started_at = datetime.now()
-        
-        container = None
 
+        if not permission_artefact.allowed:
+            return self.get_blocked_execution_artefact(action_artefact, permission_artefact) 
         try:
-            container = self.client.containers.run(
-                    image=self.image,
-                    command=action_artefact.input,
-                    detach=True,
-                    working_dir="/workspace",
-                    volumes={
-                        str(input_dir.resolve()): {
-                            "bind": "/input",
-                            "mode": "ro",
-                            },
-                        str(output_dir.resolve()): {
-                            "bind": "/output",
-                            "mode": "rw"
-                            },
-                        str(workspace_dir.resolve()): {
-                            "bind": "/workspace",
-                            "mode": "rw"
-                            }
-                        },
-                    network_disabled=True,
-                    mem_limit="512m",
-                    nano_cpus=1_000_000_000,
-                    pids_limit=128,
-                    read_only=True,
-                    tmpfs={"/tmp": "rw,nanoexec,nosuid,size=64m"},
-                    user="1000:1000"
-                    )
 
-            result =  container.wait(timeout=8000)
-            logs = container.logs().decode("utf-8", errors="replace")
+            result =  self.container.exec_run(
+                    cmd=["sh", "-lc", action_artefact.input],
+                    workdir="/workspace",
+                    stdout=True,
+                    stderr=True
+                    )
+            exit_code = result.exit_code
+            output = result.output.decode("utf-8", errors="replace")
+            logs = self.container.logs().decode("utf-8", errors="replace")
+
+            logging.info(f"[RUNTIME EXECUTE] Execution ID: {execution_id} | Input: {action_artefact.input} | Execution Output: {output}")
+
+            if exit_code == 0:
+                status = "SUCCESS"
+                error = None
+            else:
+                status = "FAILED"
+                error = output
 
             with open(os.path.join(logs_dir, "container.log"), "a", encoding="utf-8") as log_file:
                 log_file.write(logs)
@@ -86,22 +126,24 @@ class RuntimeManager:
                     "producer": action_artefact.producer,
                     "tool_input": action_artefact.input,
                     "permitted": permission_artefact.allowed,
-                    "execution_status": "SUCCESS" if result["StatusCode"] == 0 else "FAILED",
-                    "termination_reason": "completed" if result["StatusCode"] == 0 else "could not be completed",
-                    "exit_code": result["StatusCode"],
+                    "execution_status": status,
+                    "termination_reason": "completed" if exit_code == 0 else "non zero exit code",
+                    "exit_code": exit_code,
                     "started_at": started_at,
                     "finished_at": datetime.now(),
                     "image": self.image,
                     "input_path": str(input_dir),
                     "output_path": str(output_dir),
                     "workspace_path": str(workspace_dir),
-                    "payload": RepositoryManager.get_commit_hash(),
-                    "error": None
+                    "payload": None,
+                    "error": error
                     }
 
-            logging.info(f"[RUNTIME] Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
+            logging.info(f"[RUNTIME] Execution Complete | Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
+            self._write_artefact(execution_artefact)
+
         except Exception as e:
             
             
@@ -120,18 +162,19 @@ class RuntimeManager:
                     "output_path": str(output_dir),
                     "workspace_path": str(workspace_dir),
                     "payload": None,
-                    "error": str(e)
+                    "error": {"type": type(e).__name__,
+                              "message": str(e)}
                     }
-            logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
+            logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
+            self._write_artefact(execution_artefact)
         
-        finally:
-            if container is not None:
-                container.stop()
-
         self._write_json(os.path.join(current_execution_dir, "execution.json"), execution_artefact)
         return execution_artefact
+
+    def finalise(self, execution_id: UUID):
+        pass
 
     def get_blocked_execution_artefact(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
         started_at = datetime.now()
@@ -155,9 +198,75 @@ class RuntimeManager:
         logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
         execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
+        self._write_artefact(execution_artefact)
         return execution_artefact
 
+    def finalise(self) str | None:
+
+        if self.container is None:
+            raise RuntimeError("Cannot finalise an inactive runtime")
+
+        try:
+            result = self.container.exec_run(
+                    cmd=["sh", "-lc", (
+                        "git add -A && "
+                        "git diff --cached --quiet || "
+                        "git commit -m 'agent execution'")],
+                    workdir="/workspace"
+                    )
+            if result.exit_code != 0:
+                output = result.output.decode("utf-8", errors="replace")
+                raise RuntimeError(f"Could not finalise repository {output}")
+
+            hash_result = self.container.exec_run(
+                    cmd=["git", "rev-parse", "HEAD"],
+                    workdir="/workspace"
+                    )
+            if hash_result.exit_code != 0:
+                raise RuntimeError("Could not obtain final commit hash")
+            commit_hash = hash_result.output.decode("utf-8").strip()
+
+            logging.info(f"[RUNTIME FINALISE] Execution ID: {self.execution_id} | Commit: {commit_hash}")
+            return commmit_hash
+
+        except Exception as e:
+            logging.exception(f"[RUNTIME FINALISE EXCEPTION] Execution ID: {self.execution_id} | Exception: {str(e)}")
+            raise
+
+    def close(self):
+        if self.container is None:
+            return
+
+        container_id = self.container.id
+
+        try:
+            logging.info(f"[RUNTIME CLOSE] Closing container | Container ID: {container_id} | Execution ID: {self.container.id}")
+
+            self.container.reload()
+
+            if self.container.status == "running":
+                self.container.stop(timeout=10)
+        except Exception as e:
+            logging.exception(f"[RUNTIME CLOSE EXCEPTION] Error stopping container | Container ID: {container_id}")
+        finally:
+            try:
+                self.container.remove(force=True)
+                logging.info(f"[RUNTIME CLOSE FINALLY] Container removed | Container ID: {container_id}")
+            except Exception:
+                logging.exception(f"[RUNTIME CLOSE FINALLY EXCEPTION] Error removing container | Container ID: {container_id}")
+            finally:
+                self.container = None
+                self.execution_id = None
+
+    def _write_artefact(self, artefact: Artefact):
+        artefact_path = os.path.join(self.execution_dir, "artefacts")
+        os.makedirs(artefact_path, exist_ok=True)
+        path = os.path.join(artefact_path, f"{artefact.artefact_id}.json")
+        with open(path, 'w', encoding='utf-8') as path_file:
+            path_file.write(artefact.to_json())
+
+
     @staticmethod
-    def _write_json(self, path: str, artefact: Artefact):
+    def _write_json(path: str, artefact: Artefact):
         with open(path, 'a', encoding='utf-8', newline="") as f:
             f.write(artefact.to_json())
