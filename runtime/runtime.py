@@ -1,4 +1,5 @@
 import os
+import shutil
 from typing import Any
 from src.harness.artefacts.action import ActionArtefact
 from src.harness.artefacts.execution import ExecutionArtefact
@@ -14,10 +15,13 @@ from repositories.repository_manager import RepositoryManager
 from uuid import UUID
 
 class RuntimeManager:
-    def __init__(self, image: str, executions_dir: str):
+    def __init__(self, image: str, executions_dir: str, repository_root: str, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
         self.executions_dir = executions_dir
         self.client = docker.from_env()
         self.image = image
+        self.repository_root = repository_root
+        self.git_user_name = git_user_name
+        self.git_user_email = git_user_email
 
         self.container = None
         self.execution_id = None
@@ -38,16 +42,27 @@ class RuntimeManager:
         self.input_dir = os.path.join(self.execution_dir, 'input')
         self.output_dir = os.path.join(self.execution_dir, 'output')
         self.logs_dir = os.path.join(self.execution_dir, 'logs')
-        self.workspace_dir = os.path.join(current_execution_dir, 'workspace')
+        self.workspace_dir = os.path.join(self.execution_dir, 'workspace')
 
 
         for directory in (
-        input_dir,
-        output_dir,
-        logs_dir,
-        workspace_dir
+        self.input_dir,
+        self.output_dir,
+        self.logs_dir,
         ):
             os.makedirs(directory, exist_ok=True)
+
+        shutil.copytree(
+                self.repository_root,
+                self.workspace_dir,
+                ignore=shutil.ignore_patterns(
+                    ".venv",
+                    "__pycache__",
+                    ".pytest_cache",
+                    "node_modules",
+                    "runtime"
+                    )
+                )
 
         
         self.container = self.client.containers.run(
@@ -56,7 +71,7 @@ class RuntimeManager:
                 detach=True,
                 working_dir="/workspace",
                 volumes={
-                    str(input_dir): {
+                    str(self.input_dir): {
                         "bind": "/input",
                         "mode": "ro",
                         },
@@ -78,6 +93,10 @@ class RuntimeManager:
                 user="1000:1000"
                 )
 
+        self.containter.exec_run(["git", "config", "--global", "user.name", self.git_user_name])
+
+        self.container.exec_run(["git", "config", "--global", "user.email", self.git_user_email])
+
         logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {execution_id}")
 
 
@@ -89,9 +108,9 @@ class RuntimeManager:
         if action_artefact.execution_id != self.execution_id:
             raise RuntimeError("ActionArtefact Execution ID does not match active runtime Execution ID")
 
-        self._write_json(os.path.join(current_execution_dir, "action.json"), action_artefact)
+        self._write_json(os.path.join(self.execution_dir, "action.json"), action_artefact)
         
-        self._write_json(os.path.join(current_execution_dir, "permission.json"), permission_artefact)
+        self._write_json(os.path.join(self.execution_dir, "permission.json"), permission_artefact)
 
         started_at = datetime.now()
 
@@ -132,9 +151,9 @@ class RuntimeManager:
                     "started_at": started_at,
                     "finished_at": datetime.now(),
                     "image": self.image,
-                    "input_path": str(input_dir),
-                    "output_path": str(output_dir),
-                    "workspace_path": str(workspace_dir),
+                    "input_path": str(self.input_dir),
+                    "output_path": str(self.output_dir),
+                    "workspace_path": str(self.workspace_dir),
                     "payload": None,
                     "error": error
                     }
@@ -158,9 +177,9 @@ class RuntimeManager:
                     "started_at": started_at,
                     "finished_at": datetime.now(),
                     "image": self.image,
-                    "input_path": str(input_dir),
-                    "output_path": str(output_dir),
-                    "workspace_path": str(workspace_dir),
+                    "input_path": str(self.input_dir),
+                    "output_path": str(self.output_dir),
+                    "workspace_path": str(self.workspace_dir),
                     "payload": None,
                     "error": {"type": type(e).__name__,
                               "message": str(e)}
@@ -170,11 +189,8 @@ class RuntimeManager:
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
             self._write_artefact(execution_artefact)
         
-        self._write_json(os.path.join(current_execution_dir, "execution.json"), execution_artefact)
+        self._write_json(os.path.join(self.execution_dir, "execution.json"), execution_artefact)
         return execution_artefact
-
-    def finalise(self, execution_id: UUID):
-        pass
 
     def get_blocked_execution_artefact(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
         started_at = datetime.now()
@@ -201,7 +217,7 @@ class RuntimeManager:
         self._write_artefact(execution_artefact)
         return execution_artefact
 
-    def finalise(self) str | None:
+    def finalise(self) -> str | None:
 
         if self.container is None:
             raise RuntimeError("Cannot finalise an inactive runtime")
@@ -227,7 +243,7 @@ class RuntimeManager:
             commit_hash = hash_result.output.decode("utf-8").strip()
 
             logging.info(f"[RUNTIME FINALISE] Execution ID: {self.execution_id} | Commit: {commit_hash}")
-            return commmit_hash
+            return commit_hash
 
         except Exception as e:
             logging.exception(f"[RUNTIME FINALISE EXCEPTION] Execution ID: {self.execution_id} | Exception: {str(e)}")
@@ -240,20 +256,20 @@ class RuntimeManager:
         container_id = self.container.id
 
         try:
-            logging.info(f"[RUNTIME CLOSE] Closing container | Container ID: {container_id} | Execution ID: {self.container.id}")
+            logging.info(f"[RUNTIME CLOSE] Closing container | Container ID: {container_id} | Execution ID: {self.execution_id}")
 
             self.container.reload()
 
             if self.container.status == "running":
                 self.container.stop(timeout=10)
         except Exception as e:
-            logging.exception(f"[RUNTIME CLOSE EXCEPTION] Error stopping container | Container ID: {container_id}")
+            logging.exception(f"[RUNTIME CLOSE EXCEPTION] Error stopping container | Container ID: {container_id} | Execution ID: {self.execution_id}")
         finally:
             try:
                 self.container.remove(force=True)
-                logging.info(f"[RUNTIME CLOSE FINALLY] Container removed | Container ID: {container_id}")
+                logging.info(f"[RUNTIME CLOSE FINALLY] Container removed | Container ID: {container_id} | Execution ID: {self.execution_id}")
             except Exception:
-                logging.exception(f"[RUNTIME CLOSE FINALLY EXCEPTION] Error removing container | Container ID: {container_id}")
+                logging.exception(f"[RUNTIME CLOSE FINALLY EXCEPTION] Error removing container | Container ID: {container_id} | Execution ID: {self.execution_id}")
             finally:
                 self.container = None
                 self.execution_id = None

@@ -948,3 +948,10 @@ Traceback (most recent call last):
                      ^^^^^^^^^^^^^
 AttributeError: 'dict' object has no attribute 'split'
 2026-09-02 06:41:29,388 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 400 Bad Request"
+2026-09-03 13:06:59,781 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06761-0b3b-745e-a152-f602f60fb7a9 | Artefact ID: 9bc42f46-6ad5-4c7c-9039-dc4a0c080d9f
+2026-09-03 13:10:19,978 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06764-1be4-764c-8124-28dd4733ad9c | Artefact ID: 9c7d65f6-1f09-42c5-bc6f-61036f6e4e92
+2026-09-03 13:15:40,841 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06768-fa97-74f3-9880-fb67c6c012f0 | Artefact ID: f4121ff7-f1b5-4539-bc23-001de3492e60
+2026-09-03 13:16:29,897 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06769-b82e-7547-8a93-8d19f2ef9611 | Artefact ID: 840e37a7-5491-46e4-9c2a-de4522f798c7
+2026-09-03 13:19:47,642 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0676c-ca45-7629-a08d-c46952e74f17 | Artefact ID: 014f8832-dc9b-461f-b925-04c4d8b292ae
+2026-09-03 13:35:09,348 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0677a-d4b7-7776-9725-b6a8706dc00d | Artefact ID: ffdcf0da-183c-4152-8a5f-499058e86216
+                                                                                                                                                                                                                                           

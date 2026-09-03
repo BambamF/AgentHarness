@@ -118,7 +118,7 @@ class GenerationManager:
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": tool_call.id,
-                        "is_error": True,
+                        "is_error": result.execution_status != "SUCCESS",
                         "content": result_content
                         })
 
@@ -139,7 +139,7 @@ class GenerationManager:
             messages.append({"role": "user",
                              "content": tool_results})
 
-            return messages
+        return messages
 
 
             

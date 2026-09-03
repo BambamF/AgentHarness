@@ -9,10 +9,11 @@ from .artefacts.action import ActionProvider
 import logging
 from typing import List, Dict, Any, Callable
 from agents.generate import GenerationManager
+from runtime.runtime import RuntimeManager
 import os
 
 class Harness:
-    def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], permission_manager: PermissionManager, generation_manager: GenerationManager, artefact_store: ArtefactStore, execution_id: UUID):
+    def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, runtime_manager: RuntimeManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], permission_manager: PermissionManager, generation_manager: GenerationManager, artefact_store: ArtefactStore, execution_id: UUID):
         self.agent = agent
         self.model = model
         self.memory_path = memory_path
@@ -23,6 +24,7 @@ class Harness:
         self.state = HarnessState.INITIALISING
         self.artefact_store = artefact_store
         self.memory_manager = memory_manager
+        self.runtime_manager = runtime_manager
         self.transitions: Dict[HarnessState, Callable] = {HarnessState.INITIALISING: self._initialise,
                            HarnessState.REPO_ANALYSIS: self._analyse_repo,
                            HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
@@ -39,10 +41,15 @@ class Harness:
         self.tools_dir = os.path.join(self.ROOT_DIR, 'src/tools')
 
     def run(self):
-        while self.state != HarnessState.TERMINATE:
-            for transition, handler in self.transitions.items():
-                self.state = transition
-                handler()
+        self.runtime_manager.start(self.execution_id)
+        try:
+            while self.state != HarnessState.TERMINATE:
+                for transition, handler in self.transitions.items():
+                    self.state = transition
+                    handler()
+            self.runtime_manager.finalise()
+        finally:
+            self.runtime_manager.close()
 
     def _initialise(self):
         self.context = HarnessContext(self.memory_path, self.config_path, self.repository_root, self.artefact_store)
