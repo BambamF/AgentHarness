@@ -64,6 +64,9 @@ class RuntimeManager:
                     )
                 )
 
+        #self.workspace_dir.chown(1000, 1000)
+        #self.output_dir.chown(1000, 1000)
+
         
         self.container = self.client.containers.run(
                 image=self.image,
@@ -75,11 +78,11 @@ class RuntimeManager:
                         "bind": "/input",
                         "mode": "ro",
                         },
-                    str(output_dir): {
+                    str(self.output_dir): {
                         "bind": "/output",
                         "mode": "rw"
                         },
-                    str(workspace_dir): {
+                    str(self.workspace_dir): {
                         "bind": "/workspace",
                         "mode": "rw"
                         }
@@ -89,11 +92,11 @@ class RuntimeManager:
                 nano_cpus=1_000_000_000,
                 pids_limit=128,
                 read_only=True,
-                tmpfs={"/tmp": "rw,nanoexec,nosuid,size=64m"},
+                tmpfs={"/tmp": "rw,noexec,nosuid,size=64m"},
                 user="1000:1000"
                 )
 
-        self.containter.exec_run(["git", "config", "--global", "user.name", self.git_user_name])
+        self.container.exec_run(["git", "config", "--global", "user.name", self.git_user_name])
 
         self.container.exec_run(["git", "config", "--global", "user.email", self.git_user_email])
 

@@ -954,4 +954,122 @@ AttributeError: 'dict' object has no attribute 'split'
 2026-09-03 13:16:29,897 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06769-b82e-7547-8a93-8d19f2ef9611 | Artefact ID: 840e37a7-5491-46e4-9c2a-de4522f798c7
 2026-09-03 13:19:47,642 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0676c-ca45-7629-a08d-c46952e74f17 | Artefact ID: 014f8832-dc9b-461f-b925-04c4d8b292ae
 2026-09-03 13:35:09,348 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0677a-d4b7-7776-9725-b6a8706dc00d | Artefact ID: ffdcf0da-183c-4152-8a5f-499058e86216
-                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                           2026-09-03 21:47:07,099 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0693d-3e37-7551-9b20-347f9a320944 | Artefact ID: 86e35f7c-cdb7-4fad-834c-0bd186cd3d54
+2026-09-03 21:49:32,166 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a0693f-7476-7520-8c70-b7f45ab0a61b | Artefact ID: 1d0c524e-7cb1-45ee-917f-05c90b40fb24
+2026-09-03 21:55:05,178 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06944-8486-7677-a0e0-4f18f6ab68c2 | Artefact ID: 25885bd9-1868-4ea4-94de-0580b4e1f999
+2026-09-03 21:55:46,084 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.prompt.PromptArtefact'> | Producer: user | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: f391a08f-5677-466a-88f4-b7e91490ad7a
+2026-09-03 21:55:46,795 | [RUNTIME] Containter Started | Container ID: 1ca016ec725e265037e59c397b730f942b09a87097554da9a3b70cd8dd4f0862 | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419
+2026-09-03 21:55:46,801 | [COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: 92eec35d6a1702711d0bcb5f7dceed3655ec9dba
+
+2026-09-03 21:56:23,980 | [REPO ARTEFACT] Producer: RepositoryManager | Repository Root: /home/bambamf/agent-harness | Commit Hash: 92eec35d6a1702711d0bcb5f7dceed3655ec9dba
+ | Languages: javascript,python | N Entry Points: None | Topology: 1 | Dependency Graph: 2517 | N Config Files: 805
+2026-09-03 21:56:23,980 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.repository.repository.RepositoryArtefact'> | Producer: system | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 8e96ccf0-e7fd-4534-9eab-b66c4800ff98
+2026-09-03 21:56:23,996 | [MEMORY ARTEFACT] Producer: System | Memory Path: /home/bambamf/agent-harness/src/memory/memory.md | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419
+2026-09-03 21:56:23,997 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.memory.MemoryArtefact'> | Producer: system | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 4f842d28-0c8f-4d30-b0e9-d88b812c79e7
+2026-09-03 21:56:27,773 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 400 Bad Request"
+2026-09-03 21:56:27,799 | [PLAN ARTEFACT] Producer: Agent | Objective: Write a python script to add two numbers | Error: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'prompt is too long: 4061183 tokens > 1000000 maximum'}, 'request_id': 'req_011CehFcpm2upHmmVGUBDdti'}
+2026-09-03 21:56:27,810 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.plan.PlanArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: f4487935-9a5a-432d-a79b-3d8f4c2065b2
+2026-09-03 21:56:29,834 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-03 21:56:29,929 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 609ef5e9-ad0c-4c55-b474-28b7b40b3e82
+2026-09-03 21:56:29,929 | [GENERATE] Tool Dispatch Exception: 'ActionArtefact' object has no attribute 'provider' | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'command': 'pwd && ls -la'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 55, in get_permission
+    if action_artefact.provider == "system":
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ActionArtefact' object has no attribute 'provider'. Did you mean: 'producer'?
+2026-09-03 21:56:29,932 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 93749361-1a17-4bda-a51b-a6679a50a148
+2026-09-03 21:56:29,932 | [GENERATE] Tool Dispatch Exception: 'ActionArtefact' object has no attribute 'provider' | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'command': 'log --oneline -20'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 55, in get_permission
+    if action_artefact.provider == "system":
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ActionArtefact' object has no attribute 'provider'. Did you mean: 'producer'?
+2026-09-03 21:56:32,596 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-03 21:56:32,632 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 835fe077-a25e-49ec-8de8-ab60715b0b0b
+2026-09-03 21:56:32,632 | [GENERATE] Tool Dispatch Exception: argument of type 'NoneType' is not a container or iterable | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'path': 'README.md'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in get_permission
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+       ^^^
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in <genexpr>
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+           ^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not a container or iterable
+2026-09-03 21:56:32,636 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 557ce64c-e5a3-4dc2-9056-6e730fd04453
+2026-09-03 21:56:32,636 | [GENERATE] Tool Dispatch Exception: argument of type 'NoneType' is not a container or iterable | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'pattern': 'def ', 'recursive': True}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in get_permission
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+       ^^^
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in <genexpr>
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+           ^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not a container or iterable
+2026-09-03 21:56:37,502 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-03 21:56:37,541 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 91645eff-57ea-4d75-8dda-13b9c6507b2d
+2026-09-03 21:56:37,541 | [GENERATE] Tool Dispatch Exception: argument of type 'NoneType' is not a container or iterable | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'path': 'add_two_numbers.py', 'content': '#!/usr/bin/env python3\n"""Add two numbers supplied on the command line."""\n\nimport argparse\nimport sys\n\n\ndef add(a: float, b: float) -> float:\n    return a + b\n\n\ndef parse_args(argv=None) -> argparse.Namespace:\n    parser = argparse.ArgumentParser(description="Add two numbers.")\n    parser.add_argument("a", type=float, help="first number")\n    parser.add_argument("b", type=float, help="second number")\n    return parser.parse_args(argv)\n\n\ndef format_result(value: float) -> str:\n    if value == int(value):\n        return str(int(value))\n    return str(value)\n\n\ndef main(argv=None) -> int:\n    args = parse_args(argv)\n    print(format_result(add(args.a, args.b)))\n    return 0\n\n\nif __name__ == "__main__":\n    sys.exit(main())\n'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in get_permission
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+       ^^^
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in <genexpr>
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+           ^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not a container or iterable
+2026-09-03 21:56:40,572 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-03 21:56:40,624 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 58af1105-557b-4ab9-a333-6d28b7e05b4e
+2026-09-03 21:56:40,624 | [GENERATE] Tool Dispatch Exception: argument of type 'NoneType' is not a container or iterable | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'path': './add_two_numbers.py', 'content': 'print("probe")\n'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in get_permission
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+       ^^^
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 22, in <genexpr>
+    if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+           ^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not a container or iterable
+2026-09-03 21:56:40,627 | [ARTEFACT FACTORY] Artefact Created: <class 'harness.artefacts.action.ActionArtefact'> | Producer: agent | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Artefact ID: 40ff6086-2ec7-4c69-99ea-09f1f2c320c1
+2026-09-03 21:56:40,627 | [GENERATE] Tool Dispatch Exception: 'ActionArtefact' object has no attribute 'provider' | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Provider: agent | Intention: Write a python script to add two numbers | Tool Input: {'command': 'echo probe'}
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/src/agents/generate.py", line 111, in generate
+    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+  File "/home/bambamf/agent-harness/src/tools/tool_dispatch.py", line 26, in dispatch
+    permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+  File "/home/bambamf/agent-harness/src/permissions/permissions.py", line 55, in get_permission
+    if action_artefact.provider == "system":
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ActionArtefact' object has no attribute 'provider'. Did you mean: 'producer'?
+2026-09-03 21:56:52,554 | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-09-03 21:56:52,714 | [RUNTIME FINALISE EXCEPTION] Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419 | Exception: Could not finalise repository sh: 1: git: not found
+sh: 1: git: not found
+Traceback (most recent call last):
+  File "/home/bambamf/agent-harness/runtime/runtime.py", line 238, in finalise
+    raise RuntimeError(f"Could not finalise repository {output}")
+RuntimeError: Could not finalise repository sh: 1: git: not found
+sh: 1: git: not found
+
+2026-09-03 21:56:52,715 | [RUNTIME CLOSE] Closing container | Container ID: 1ca016ec725e265037e59c397b730f942b09a87097554da9a3b70cd8dd4f0862 | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419
+2026-09-03 21:57:02,951 | [RUNTIME CLOSE FINALLY] Container removed | Container ID: 1ca016ec725e265037e59c397b730f942b09a87097554da9a3b70cd8dd4f0862 | Execution ID: 01a06945-2d96-7736-92ce-9ebf28997419
