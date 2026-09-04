@@ -16,10 +16,25 @@ class PermissionManager:
                 }
         self.requires_sub = ["git", "apt", "docker"]
 
-    def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> PermissionArtefact:
-        command = action_artefact.input.get('command')
+    def get_permission_text(self, action_artefact) -> str:
+        tool_input = action_artefact.input() or {}
 
-        if any(blocked in command for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
+        command = tool_input.get("command")
+        if command:
+            if isinstance(command, list):
+                return " ".join(str(part) for part in command)
+            return str(command)
+
+        path = tool_input.get("path", "")
+        pattern = tool_input.get("pattern", "")
+        content = tool_input.get("content", "")
+
+        return " ".join(value for value in (path, pattern, content) if value is not None)
+
+    def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> PermissionArtefact:
+        permission_text = self.get_permission_text(action_artefact)
+
+        if any(blocked in permission_text for blocked in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
 
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
@@ -52,7 +67,7 @@ class PermissionManager:
                 break
             else:
                 command_access = PermissionLevel.READ_ONLY
-        if action_artefact.provider == "system":
+        if action_artefact.producer == "system":
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
                       "allowed": True,

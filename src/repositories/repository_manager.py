@@ -15,7 +15,82 @@ import logging
 import uuid
 from uuid import UUID
 
+IGNORE_DIRS = {
+        ".git",
+        ".hg",
+        ".svn",
+        ".venv",
+        "venv",
+        "env",
+        "node_modules",
+        "__pycache__",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        "build",
+        "dist",
+        ".tox",
+        ".idea",
+        ".vscode"
+        }
+
+IGNORE_FILES = {".DS_Store"}
+
+MAX_FILES = 256_000
+
 class RepositoryManager:
+
+    @staticmethod
+    def iter_repository_files(repository_root: str):
+        root = Path(repository_root).resolve()
+
+        for path in root.rglob("*"):
+            if any(path in IGNORE_DIRS for part in path.parts):
+                continue
+            if path.name in IGNORE_FILES:
+                continue
+            if path.is_file():
+                yield path
+
+    @staticmethod
+    def build_repository_index(repository_root: str) -> dict[str, Any]:
+        root = Path(repository_root).resolve()
+        files = []
+        config_files = []
+        languages = set()
+
+        language_map = RepositoryManager.get_language_dict()
+
+        for path in iter_repository_files(repository_root):
+            relative_path = path.relative_to(root).as_posix()
+            suffix = path.suffix.lower()
+
+            try:
+                size = path.stat.st_size()
+            except OSError:
+                continue
+
+            files.append({
+                "path": relative_path,
+                "type": "file",
+                "size": size
+                })
+
+            language = languages_map.get(suffix)
+            if language:
+                languages.add(language)
+
+            if (suffix in {".json", ".yaml", ".yml", ".toml", ".ini", ".cfg"} 
+                or path.name.lower() in {"dockerfile", "makefile", "pyproject.toml", "package.json", "requirements.txt"}):
+                config_files.append(relative_path)
+
+        return {
+                "repository_root": str(root),
+                "languages": sorted(languages),
+                "file_count": len(files),
+                "config_files": sorted(config_files),
+                "files": files
+                }
 
     @staticmethod
     def get_repository_artefact(repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
