@@ -6,7 +6,7 @@ from enum import Enum, auto
 @dataclass(frozen=True)
 class ActionArtefact(Artefact):
     intention: str
-    input: str
+    input: dict
     dependencies_length: int | None
     success_criteria: list[str]
 

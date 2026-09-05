@@ -20,8 +20,16 @@ class ToolDispatch:
         self.tool_dicts, self.tools = self._parse_tools(tools_path)
         self.permission_manager = permission_manager
         self.runtime_manager = runtime_manager
+        self._snapshots = {}
 
     def dispatch(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> ExecutionArtefact:
+        
+        tool_name = (action_artefact.input or {}).get("tool_name")
+        tool = self.tools.get(tool_name)
+
+        if tool is not None and hasattr(tool, "write"):
+            inp = {k:v for k, v in action_artefact.input.items() if k != "tool_name"}
+            return tool.run(**inp, artefact_store=artefact_store, caller=action_artefact.producer, execution_id=action_artefact.execution_id, snapshots=self._snapshots)
 
         permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store, PermissionLevel.EXECUTE)
 

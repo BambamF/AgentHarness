@@ -106,7 +106,7 @@ class GenerationManager:
 
                 params = {"producer": self.caller,
                           "intention": user_prompt,
-                          "input": tool_call.input,
+                          "input": tool_input,
                           "dependencies_length": plan_artefact.dependencies_length,
                           "success_criteria": plan_artefact.success_criteria}
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)

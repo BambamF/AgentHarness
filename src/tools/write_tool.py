@@ -24,7 +24,7 @@ class WriteTool(Tool):
 
     @staticmethod
     def run(path: str, content: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
-        return run_write(path, content, artefact_store, caller, execution_id, snapshots)
+        return WriteTool.run_write(path, content, artefact_store, caller, execution_id, snapshots)
 
     @staticmethod
     def run_write(path: str, content: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
