@@ -90,7 +90,7 @@ class PermissionManager:
                 PermissionLevel.EXECUTE: 2
                 }
 
-        required_level = None
+        required_level = current_level
 
 
         allowed = (required_level is not None

@@ -22,6 +22,7 @@ class RuntimeManager:
         self.repository_root = repository_root
         self.git_user_name = git_user_name
         self.git_user_email = git_user_email
+        self.artefact_store = artefact_store
 
         self.container = None
         self.execution_id = None
@@ -49,6 +50,7 @@ class RuntimeManager:
         self.input_dir,
         self.output_dir,
         self.logs_dir,
+        self.execution_dir
         ):
             os.makedirs(directory, exist_ok=True)
 
@@ -100,8 +102,26 @@ class RuntimeManager:
 
         self.container.exec_run(["git", "config", "user.email", self.git_user_email])
 
-        logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {execution_id}")
+        logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {self.execution_id}")
 
+    def get_command(self, action_artefact: ActionArtefact):
+        tool_input = action_artefact.input
+
+        if isinstance(tool_input, str):
+            return tool_input
+
+        if not isinstance(tool_input, dict):
+            raise TypeError(f"Tool input should be a dictionary or a string, got {type(tool_input.__name__)}")
+
+        command = tool_input.get("command")
+
+        if not isinstance(command, str):
+            raise TypeError(f"Command type must be a string, got {type(command).__name__}")
+
+        if not command.strip():
+            raise ValueError(f"Action command cannot be empty.")
+
+        return command
 
     def execute(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
 
@@ -111,18 +131,20 @@ class RuntimeManager:
         if action_artefact.execution_id != self.execution_id:
             raise RuntimeError("ActionArtefact Execution ID does not match active runtime Execution ID")
 
-        self._write_json(os.path.join(self.execution_dir, "action.json"), action_artefact)
+        self._write_json(os.path.join(self.execution_dir, "action.ndjson"), action_artefact)
         
-        self._write_json(os.path.join(self.execution_dir, "permission.json"), permission_artefact)
+        self._write_json(os.path.join(self.execution_dir, "permission.ndjson"), permission_artefact)
 
         started_at = datetime.now()
 
         if not permission_artefact.allowed:
             return self.get_blocked_execution_artefact(action_artefact, permission_artefact) 
+
+        command = self.get_command(action_artefact)
         try:
 
             result =  self.container.exec_run(
-                    cmd=["sh", "-lc", action_artefact.input],
+                    cmd=["sh", "-lc", command],
                     workdir="/workspace",
                     stdout=True,
                     stderr=True
@@ -131,7 +153,7 @@ class RuntimeManager:
             output = result.output.decode("utf-8", errors="replace")
             logs = self.container.logs().decode("utf-8", errors="replace")
 
-            logging.info(f"[RUNTIME EXECUTE] Execution ID: {execution_id} | Input: {action_artefact.input} | Execution Output: {output}")
+            logging.info(f"[RUNTIME EXECUTE] Execution ID: {self.execution_id} | Input: {action_artefact.input} | Execution Output: {output}")
 
             if exit_code == 0:
                 status = "SUCCESS"
@@ -140,11 +162,11 @@ class RuntimeManager:
                 status = "FAILED"
                 error = output
 
-            with open(os.path.join(logs_dir, "container.log"), "a", encoding="utf-8") as log_file:
+            with open(os.path.join(self.logs_dir, "container.log"), "a", encoding="utf-8") as log_file:
                 log_file.write(logs)
 
             params = {
-                    "execution_id": action_artefact.execution_id,
+                    "execution_id": self.execution_id,
                     "producer": action_artefact.producer,
                     "tool_input": action_artefact.input,
                     "permitted": permission_artefact.allowed,
@@ -214,7 +236,7 @@ class RuntimeManager:
                 "payload": None,
                 "error": None
                 }
-        logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get("execution_status")} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
+        logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
         execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
         self._write_artefact(execution_artefact)
@@ -287,5 +309,5 @@ class RuntimeManager:
 
     @staticmethod
     def _write_json(path: str, artefact: Artefact):
-        with open(path, 'a', encoding='utf-8', newline="") as f:
-            f.write(artefact.to_json())
+        with open(path, 'a') as f:
+            f.write(artefact.to_json() + "\n")
