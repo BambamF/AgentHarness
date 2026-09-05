@@ -154,7 +154,6 @@ class RepositoryManager:
         topology = RepositoryManager.get_topology(repository_root=repository_root)
         dependency_graph = RepositoryManager.build_dependency_graph(repo_path=repository_root)
         config_files = RepositoryManager.scan_config_files(repository_root=repository_root)
-        typed_topology = RepositoryManager.get_typed_topology(repository_root=repository_root)
 
         params = {
                 "repository_root": str(repository_root),
@@ -162,7 +161,6 @@ class RepositoryManager:
                 "languages": languages,
                 "entry_points": entry_points,
                 "topology": topology,
-                "typed_topology": typed_topology,
                 "dependency_graph": dependency_graph,
                 "config_files": config_files
                 }
@@ -181,7 +179,7 @@ class RepositoryManager:
         return repo_artefact
 
     @staticmethod
-    def get_commit_hash(repository_root) str | None:
+    def get_commit_hash(repository_root) -> str | None:
         try:
             response = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=repository_root, check=True, text=True, capture_output=True, timeout=120)
             commit_hash = response.stdout.strip()

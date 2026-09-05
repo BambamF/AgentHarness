@@ -87,7 +87,7 @@ class Planner:
                       "ordered_tasks": plan_dict.get("ordered_tasks"),
                       "assumptions": plan_dict.get("assumptions"),
                       "risks": plan_dict.get("risks"),
-                      "dependencies": plan_dict.get("dependencies"),
+                      "dependencies_length": plan_dict.get("dependencies_length"),
                       "success_criteria": plan_dict.get("success_criteria"),
                       "repo_observations": plan_dict.get("repo_observations"),
                       "memory_references": plan_dict.get("memory_references"),
@@ -127,9 +127,9 @@ class Planner:
                     "root": repository_artefact.repository_root,
                     "languages": repository_artefact.languages,
                     "entry_points": repository_artefact.entry_points,
-                    "topology": repository_artefact.typed_topology,
-                    "dependency_graph": repository_artefact.dependency_graph,
-                    "config_files": repository_artefact.config_files,
+                    "topology_depth": 4,
+                    "dependency_graph_length": len(repository_artefact.dependency_graph),
+                    "config_files_length": len(repository_artefact.config_files),
                     "commit_hash": repository_artefact.commit_hash
                     },
                 "memory": {
