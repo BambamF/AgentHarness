@@ -21,8 +21,18 @@ class RevertTool(Tool):
 
     @staticmethod
     def run_revert(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
-        if path not in snapshots.all():
+        if path not in snapshots:
             payload = f"No snapshot for {path}"
+            params = {"execution_status": "SUCCESS" if payload else "FAILED",
+                    "termination_reason": "completed" if original_content else "no original content",
+                    "execution_id": execution_id,
+                    "producer": caller, 
+                    "payload": payload if payload else None,
+                    "error": caught_error if caught_error else None}
+                    
+            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
+            return execution_artefact
+
         original_content = snapshots.pop(path)
 
         # If original content is none, the file didn't exist before the write

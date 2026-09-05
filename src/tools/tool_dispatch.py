@@ -1,4 +1,4 @@
-from permissions.permissions import PermissionManager
+from permissions.permissions import PermissionManager, PermissionLevel
 import os
 import importlib
 from tools.tool import Tool
@@ -23,7 +23,7 @@ class ToolDispatch:
 
     def dispatch(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> ExecutionArtefact:
 
-        permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store)
+        permission_artefact = self.permission_manager.get_permission(action_artefact, artefact_store, PermissionLevel.EXECUTE)
 
         execution_artefact = self.runtime_manager.execute(action_artefact, permission_artefact)
         return execution_artefact

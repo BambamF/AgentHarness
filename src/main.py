@@ -68,12 +68,8 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
-        if type(response_artefact) != ExecutionArtefact: # Change to TerminationArtefact after dryrun
-            print("Artefact type mismatch")
-            logging.error(f"[AGENT LOOP] Expected artefact: ExecutionArtefact | Latest Artefact: {type(response_artefact)} | Prompt: {full_params.get('payload')}")
-        else:
-            print(f"\n\033[32mFinal Answer: {response_artefact.payload if response_artefact.payload else 'Done, check log file'}\033[0m")
-            logging.info(f"[AGENT LOOP] Latest Artefact: {str(type(response_artefact))} | Prompt: {full_params.get('payload')} | State: {harness.state} ")
+        print(f"\n\033[32mFinal Answer: {response_artefact.payload if response_artefact.payload else 'Done, check log file'}\033[0m")
+        logging.info(f"[AGENT LOOP] Latest Artefact: {str(type(response_artefact))} | Prompt: {full_params.get('payload')} | State: {harness.state} ")
         break
 
 
@@ -82,7 +78,7 @@ def main():
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
     executions_dir = os.path.join(ROOT_PATH, 'runtime/executions')
-    runtime_manager = RuntimeManager("agent-runtime", executions_dir, ROOT_PATH)
+    runtime_manager = RuntimeManager("agent-runtime", executions_dir, ROOT_PATH, artefact_store)
     tool_dispatch = ToolDispatch(TOOLS_DIR, permission_manager, runtime_manager)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()

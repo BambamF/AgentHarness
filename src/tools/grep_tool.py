@@ -22,17 +22,17 @@ class GrepTool(Tool):
                 "required": ["pattern"]
                 }
     @staticmethod
-    def run(pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
-        return run_grep(pattern, path, caller, execution_id, recursive)
+    def run(pattern: str, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
+        return run_grep(pattern, path, artefact_store, caller, execution_id, recursive)
     
     @staticmethod
-    def run_grep(pattern: str, path: str, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
+    def run_grep(pattern: str, path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, recursive: bool = True) -> ExecutionArtefact:
 
         try:
             flags = ['-r'] if recursive else []
 
             response = subprocess.run(["grep", "-n", *flags, pattern, path], capture_output=True, text=True, timeout=30)
-            payload = {"stdout": response.stdout, "stderr": response.stdout}
+            payload = {"stdout": response.stdout, "stderr": response.stderr}
 
             params = {
                         "execution_status": "SUCCESS" if response.returncode == 0 else "FAILED",

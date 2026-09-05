@@ -12,12 +12,13 @@ from uuid import UUID
 class PermissionManager:
     def __init__(self):
         self.permission_levels = {
-                PermissionLevel.READ_ONLY: ["grep", "echo", "read", "git branch", "git log", "git status", "ls", "cat", "glob", "rev-parse", "pwd"],
-                PermissionLevel.READ_WRITE: ["write" "create", "edit", "patch", "mkdir", "touch", "mv", "git checkout"],
+                PermissionLevel.READ_ONLY: ["grep", "echo", "read", "git branch", "git log", "git status", "ls", "cat", "glob", "git rev-parse", "pwd"],
+                PermissionLevel.READ_WRITE: ["write", "create", "edit", "patch", "mkdir", "touch", "mv", "git checkout", "revert"],
                 PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"],
                 PermissionLevel.ALWAYS_BLOCK: ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/", ":(){ :|:& };:"]
                 }
         self.requires_sub = ["git", "apt", "apt-get", "docker"]
+
 
     def get_permission_text(self, action_artefact) -> str:
         tool_input = action_artefact.input or {}
@@ -36,32 +37,35 @@ class PermissionManager:
 
     def get_permission_target(self, action_artefact: ActionArtefact):
         tool_input = action_artefact.input or {}
-        tool_name = tool_input.get("tool_name")
+        tool_name = tool_input.get("tool_name") or getattr(action_artefact, "tool_name", None)
 
-        if tool_name == "read":
-            return "read"
-
-        if tool_name == "bash":
+        if tool_name in {"bash", "git"}:
             command = tool_input.get("command", "")
-            return self.get_command_target(command)
+            return self.get_command_target(command, prefix=tool_name)
 
         return tool_name
 
-    def get_command_target(self, command) -> str | None:
+    def get_command_target(self, command, prefix: str | None = None) -> str | None:
         if isinstance(command, list):
             tokens = [str(token) for token in command]
         else:
-            tokens = str(command).split
+            tokens = str(command).split()
 
         if not tokens:
-            return None
+            return prefix
 
-        if tokens[0] in self.requires_sub:
-            return f"{tokens[0]}{tokens[1]}"
+        if prefix == "git":
+            return f"git {tokens[0]}"
 
+        if prefix == "bash":
+            if tokens[0] in self.requires_sub and len(tokens) > 1:
+                return f"{tokens[0]} {tokens[1]}"
+            return tokens[0]
+        if tokens[0] in self.requires_sub and len(tokens) > 1:
+            return f"{tokens[0]} {tokens[1]}"
         return tokens[0]
 
-    def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore) -> PermissionArtefact:
+    def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore, current_level: PermissionLevel) -> PermissionArtefact:
         permission_target = self.get_permission_target(action_artefact)
 
         if permission_target in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, []):
@@ -80,24 +84,19 @@ class PermissionManager:
             print(f"[PERMISSION MANAGER] Command Blocked | Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
             return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
 
-        command_access = None
-        for level, command_starts in self.permission_levels.items():
-            if permission_target in command_starts:
-                command_access = level
-                break
-        if command_access is None:
-            print(f"[PERMISSION MANAGER] Command denied, inadequate access level | Execution ID: {action_artefact.execution_id}")
-            logging.info(f"[PERMISSION MANAGER] Command denied, inadequate access level | Execution ID: {action_artefact.execution_id}")
-            params = {"execution_id": action_artefact.execution_id,
-                      "producer": action_artefact.producer,
-                      "allowed": False,
-                      "reason": "denied"}
-            full_params = {"artefact_id": uuid.uuid4(),
-                           "timestamp": datetime.now(),
-                           "metadata": None,
-                           "payload": False}
-            full_params.update(params)
-            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
+        LEVEL_ORDER = {
+                PermissionLevel.READ_ONLY: 0,
+                PermissionLevel.READ_WRITE: 1,
+                PermissionLevel.EXECUTE: 2
+                }
+
+        required_level = None
+
+
+        allowed = (required_level is not None
+                   and required_level != PermissionLevel.ALWAYS_BLOCK
+                   and LEVEL_ORDER[current_level] >= LEVEL_ORDER[required_level])
+
 
         if action_artefact.producer == "system":
             params = {"execution_id": action_artefact.execution_id,
@@ -114,8 +113,8 @@ class PermissionManager:
         else:
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
-                      "allowed": True if command_access else False,
-                      "reason": f"agent action: current permission level - {command_access}"
+                      "allowed": allowed,
+                      "reason": f"agent action: current permission level - {str(required_level)}"
                       }
             full_params = {"artefact_id": uuid.uuid4(),
                            "timestamp": datetime.now(),

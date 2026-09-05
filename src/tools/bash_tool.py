@@ -18,10 +18,11 @@ class BashTool(Tool):
                 "required": ["command"]
                 }
 
+    @staticmethod
     def run(command: str, artefact_store, execution_id, caller) -> ExecutionArtefact:
         return run_bash(command, artefact_store, execution_id, caller)
 
-
+    @staticmethod
     def run_bash(command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
         try:
 

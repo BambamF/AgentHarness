@@ -57,7 +57,7 @@ class WriteTool(Tool):
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
-        except Exeception as e:
+        except Exception as e:
             
             payload = None
             params = {"execution_status": "FAILED",

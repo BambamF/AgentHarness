@@ -127,7 +127,7 @@ class Planner:
                     "root": repository_artefact.repository_root,
                     "languages": repository_artefact.languages,
                     "entry_points": repository_artefact.entry_points,
-                    "topology_depth": repository_artefact.topology_depth,
+                    "topology_depth": len(repository_artefact.topology),
                     "dependency_graph_length": len(repository_artefact.dependency_graph),
                     "config_files_length": len(repository_artefact.config_files),
                     "commit_hash": repository_artefact.commit_hash

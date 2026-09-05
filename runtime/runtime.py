@@ -15,7 +15,7 @@ from repositories.repository_manager import RepositoryManager
 from uuid import UUID
 
 class RuntimeManager:
-    def __init__(self, image: str, executions_dir: str, repository_root: str, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
+    def __init__(self, image: str, executions_dir: str, repository_root: str, artefact_store: ArtefactStore, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
         self.executions_dir = executions_dir
         self.client = docker.from_env()
         self.image = image

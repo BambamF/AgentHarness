@@ -26,7 +26,7 @@ class GitTool(Tool):
     def run_git(commmand: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
         try:
 
-            response = subprocess.run([command], capture_output=True, text=True, timeout=120)
+            response = subprocess.run(["git", *command.split()], capture_output=True, text=True, timeout=120)
             hash_response = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True, timeout=120)
 
             payload = {"stdout": response.stdout, "stderr": response.stderr, "git_hash": hash_response.stdout}
@@ -45,9 +45,9 @@ class GitTool(Tool):
             
             params = {"execution_status": "FAILED",
                       "termination_reason": "timeout",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller,
-                      "error": e}
+                      "execution_id": execution_id,
+                      "producer": caller,
+                      "error": str(e)}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
@@ -56,9 +56,9 @@ class GitTool(Tool):
 
             params = {"execution_status": "FAILED",
                       "termination_reason": "error",
-                      "execution_id": self.execution_id,
-                      "producer": self.caller,
-                      "error": e}
+                      "execution_id": execution_id,
+                      "producer": caller,
+                      "error": str(e)}
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
