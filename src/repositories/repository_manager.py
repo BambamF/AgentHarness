@@ -119,9 +119,9 @@ class RepositoryManager:
         root = Path(repository_root).resolve()
 
         for path in root.rglob("*"):
-            if any(path in IGNORE_DIRS for part in path.parts):
+            if any(path in RepositoryManager.IGNORE_DIRS for part in path.parts):
                 continue
-            if path.name in IGNORE_FILES:
+            if path.name in RepositoryManager.IGNORE_FILES:
                 continue
             if path.is_file():
                 yield path
@@ -230,7 +230,7 @@ class RepositoryManager:
 
         for root, dirs, files in os.walk(repository_root):
 
-            dirs[:] = [d for d in dirs if d not in IGNORE_DIRS]
+            dirs[:] = [d for d in dirs if d not in RepositoryManager.IGNORE_DIRS]
             for file in files:
 
                 file_lower = file.lower()
@@ -238,27 +238,16 @@ class RepositoryManager:
                 is_dotfile_config = file_lower.startswith(".")
                 is_known_filename = file_lower in CONFIG_FILENAMES
                 has_config_extension = file_ext in CONFIG_EXTENSIONS
-
-
-            language = languages_map.get(suffix)
-            if language:
-                languages.add(language)
-
-            if (suffix in {".json", ".yaml", ".yml", ".toml", ".ini", ".cfg"} 
-                or path.name.lower() in {"dockerfile", "makefile", "pyproject.toml", "package.json", "requirements.txt"}):
-                config_files.append(relative_path)
-
-        return {
-                "repository_root": str(root),
-                "languages": sorted(languages),
-                "file_count": len(files),
-                "config_files": sorted(config_files),
-                "files": files
-                }
+                
+                if is_dotfile_config or is_known_filename or has_config_extension:
+                    full_path = os.path.join(root, file)
+                    config_files.append(full_path)
+        return config_files
 
 
     @staticmethod
     def extract_imports_from_file(file_path, repo_root):
+        imports = []
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 tree = ast.parse(f.read(), filename=str(file_path))
@@ -316,7 +305,7 @@ class RepositoryManager:
             imports = RepositoryManager.extract_imports_from_file(file_path, repo_root)
             dependencies = set()
             for imported_module in imports:
-                for internal_modules in internal_modules:
+                for internal_module in internal_modules:
                     if imported_module == internal_module or imported_module.startswith(internal_module + "."):
                         dependencies.add(internal_module)
             dependencies.discard(module_name)

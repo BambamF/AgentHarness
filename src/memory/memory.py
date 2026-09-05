@@ -27,14 +27,12 @@ class MemoryManager:
         if memory_artefact == None:
             repository_artefact = self.artefact_store.latest(RepositoryArtefact)
             topology = repository_artefact.topology
-            typed_topology = repository_artefact.typed_topology
             confidence_agg = {}
-            topology_confidence = self.initialise_confidence("", confidence_agg, typed_topology, memory_artefact)
+            topology_confidence = self.initialise_confidence("", confidence_agg, topology, memory_artefact)
             dir_name = os.path.dirname(os.path.abspath(__file__))
             params = {"memory_path": self.memory_path,
                       "topology_confidence": topology_confidence,
                       "topology": topology,
-                      "typed_topology": typed_topology,
                       "known_facts":  self._read_memory(os.path.join(dir_name, self.known_facts_path)) if os.path.isfile(self.known_facts_path) else None,
                       "previous_decisions": self._read_memory(os.path.join(dir_name, self.previous_decisions_path)) if os.path.isfile(self.previous_decisions_path) else None,
                       "relevant_history": self._read_memory(os.path.join(dir_name, self.relevant_history_path)) if os.path.isfile(self.relevant_history_path) else None,
@@ -64,12 +62,12 @@ class MemoryManager:
         values = [d[k] for k in keys]
         return dict(zip(keys, values))
 
-    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], typed_topology: Dict[str, Any], memory_artefact: MemoryArtefact) -> Dict[str, float]:
+    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], topology: Dict[str, Any], memory_artefact: MemoryArtefact) -> Dict[str, float]:
         if memory_artefact == None:
-            if typed_topology.get("type") == "directory":
-                absolute_key = (acc + "/" + typed_topology.get("name")).strip("/")
+            if topology.get("type") == "directory":
+                absolute_key = (acc + "/" + topology.get("name")).strip("/")
                 confidence_agg[absolute_key] = 0.0
-                for child in typed_topology.get("children"):
+                for child in topology.get("children"):
                     self.initialise_confidence(absolute_key, confidence_agg, child, memory_artefact)
             return confidence_agg
         else: 
