@@ -19,7 +19,7 @@ class GlobTool:
 
     @staticmethod
     def run(pattern: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID) -> ExecutionArtefact:
-        return self.run_glob(pattern, caller, execution_id)
+        return self.run_glob(pattern, artefact_store, caller, execution_id)
 
     @staticmethod
     def run_glob(pattern: str, artefact_store: ArtefactStore, caller: str,  execution_id: UUID) -> ExecutionArtefact:

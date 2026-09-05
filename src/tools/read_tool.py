@@ -31,7 +31,7 @@ class ReadTool(Tool):
 
     @staticmethod
     def run(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, start_line: Optional[int] = None, end_line: Optional = None) -> ExecutionArtefact:
-        return run_read(command, caller, execution_id)
+        return run_read(path, artefact_store, caller, execution_id, start_line, end_line)
 
     @staticmethod
     def run_read(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, start_line: Optional[int] = None, end_line: Optional = None) -> ExecutionArtefact:

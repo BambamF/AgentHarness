@@ -17,7 +17,7 @@ class RevertTool(Tool):
                              "required": ["path"]}
     @staticmethod
     def run(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:
-        return run_revert(path, caller, execution_id)
+        return run_revert(path, artefact_store, caller, execution_id, snapshots)
 
     @staticmethod
     def run_revert(path: str, artefact_store: ArtefactStore, caller: str, execution_id: UUID, snapshots: dict) -> ExecutionArtefact:

@@ -119,7 +119,7 @@ class Planner:
             plan_artefact = ArtefactFactory.builder(artefact_type=PlanArtefact, params=params, execution_id=self.execution_id, artefact_store=self.artefact_store, caller="agent")
             return plan_artefact
 
-    def _build_context(self, prompt_artefact: PromptArtefact, memory_artefact: MemoryArtefact, repository_artefact: RepositoryArtefact) -> dict[str, str]:
+    def _build_context(self, prompt_artefact: PromptArtefact, memory_artefact: MemoryArtefact, repository_artefact: RepositoryArtefact) -> dict:
 
         return {"objective": prompt_artefact.sanitised_prompt,
 
@@ -127,7 +127,7 @@ class Planner:
                     "root": repository_artefact.repository_root,
                     "languages": repository_artefact.languages,
                     "entry_points": repository_artefact.entry_points,
-                    "topology_depth": 4,
+                    "topology_depth": repository_artefact.topology_depth,
                     "dependency_graph_length": len(repository_artefact.dependency_graph),
                     "config_files_length": len(repository_artefact.config_files),
                     "commit_hash": repository_artefact.commit_hash
@@ -135,7 +135,7 @@ class Planner:
                 "memory": {
                     "topology_confidence": memory_artefact.topology_confidence,
                     "known_facts": memory_artefact.known_facts,
-                    "previoous_decisions": memory_artefact.previous_decisions,
+                    "previous_decisions": memory_artefact.previous_decisions,
                     "relevant_history": memory_artefact.relevant_history,
                     "compressed_context": memory_artefact.compressed_context
                     }

@@ -20,20 +20,10 @@ class GitTool(Tool):
                 }
     @staticmethod
     def run(command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
-        return run_git(command)
+        return run_git(command, artefact_store, execution_id, caller)
     
     @staticmethod
     def run_git(commmand: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
-        if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
-
-            params = {"execution_status": "FAILED",
-                      "termination_reason": "blocked",
-                      "execution_id": execution_id,
-                      "producer": caller}
-
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-            return execution_artefact
-
         try:
 
             response = subprocess.run([command], capture_output=True, text=True, timeout=120)

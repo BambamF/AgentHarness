@@ -18,21 +18,11 @@ class BashTool(Tool):
                 "required": ["command"]
                 }
 
-    def run(command: str) -> ExecutionArtefact:
-        return run_bash(command)
+    def run(command: str, artefact_store, execution_id, caller) -> ExecutionArtefact:
+        return run_bash(command, artefact_store, execution_id, caller)
 
 
     def run_bash(command: str, artefact_store: ArtefactStore, execution_id: UUID, caller: str) -> ExecutionArtefact:
-        if any(blocked in command for blocked in PermissionManager.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, [])):
-
-            params = {"execution_status": "FAILED",
-                      "termination_reason": "blocked",
-                      "execution_id": execution_id,
-                      "producer": caller}
-
-            execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
-            return execution_artefact
-
         try:
 
             result = subprocess.run([command], shell=True, cwd=os.getcwd(), capture_output=True, text=True, timeout=120)
@@ -46,7 +36,7 @@ class BashTool(Tool):
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, artefact_store, execution_id, caller)
             return execution_artefact
 
-        except subprocess.TimoutExpired:
+        except subprocess.TimeoutExpired:
             # handle cases where the command runs longer than 120s limit
 
             params = {"execution_status": "FAILED",

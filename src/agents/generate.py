@@ -101,6 +101,9 @@ class GenerationManager:
                 first_val = (str(next(iter(tool_call.input.values())))[:80] if tool_call.input else "")
                 print(f"\033[33m[{tool_call.name}] {first_val}...\033[0m")
 
+                tool_input = dict(tool_call.input or {})
+                tool_input["tool_name"] = tool_call.name
+
                 params = {"producer": self.caller,
                           "intention": user_prompt,
                           "input": tool_call.input,
