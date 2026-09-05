@@ -83,6 +83,27 @@ class RepositoryManager:
         return result
 
     @staticmethod
+    def get_language_dict():
+        return {
+                ".py": "python",
+                ".java": "java",
+                ".cpp": "cpp",
+                ".ts": "typescript",
+                ".js": "javascript",
+                ".sql": "sql",
+                ".c": "c",
+                ".h": "c/cpp",
+                ".cs": "csharp",
+                ".go": "go",
+                ".rs": "rust",
+                ".rb": "ruby",
+                ".php": "php",
+                ".swift": "swift",
+                ".kt": "kotlin",
+                ".sh": "shell"
+                }
+
+    @staticmethod
     def get_languages(repository_root: str) -> list[str]:
         languages = set()
         language_dict = RepositoryManager.get_language_dict()
@@ -148,7 +169,7 @@ class RepositoryManager:
     @staticmethod
     def get_repository_artefact(repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
 
-        commit_hash = RepositoryManager.get_commit_hash()
+        commit_hash = RepositoryManager.get_commit_hash(repository_root)
         languages = RepositoryManager.get_languages(repository_root=repository_root)
         entry_points = RepositoryManager.get_entry_points(repository_root=repository_root)
         topology = RepositoryManager.get_topology(repository_root=repository_root)
