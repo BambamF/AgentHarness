@@ -8,7 +8,7 @@ class PlanArtefact(Artefact):
     ordered_tasks: list
     assumptions: list
     risks: list
-    dependencies: list
+    dependencies_length: int
     success_criteria: list
     repo_observations: dict
     memory_references: dict

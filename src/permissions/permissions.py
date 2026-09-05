@@ -5,6 +5,9 @@ from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from datetime import datetime
 from .permission_level import PermissionLevel
+import logging
+import uuid
+from uuid import UUID
 
 class PermissionManager:
     def __init__(self):
@@ -14,10 +17,10 @@ class PermissionManager:
                 PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"],
                 PermissionLevel.ALWAYS_BLOCK: ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/", ":(){ :|:& };:"]
                 }
-        self.requires_sub = ["git", "apt", "docker"]
+        self.requires_sub = ["git", "apt", "apt-get", "docker"]
 
     def get_permission_text(self, action_artefact) -> str:
-        tool_input = action_artefact.input() or {}
+        tool_input = action_artefact.input or {}
 
         command = tool_input.get("command")
         if command:
@@ -48,25 +51,49 @@ class PermissionManager:
 
             return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
 
-        command_tokens = command.split()
+        command_tokens = permission_text.split()
 
         if not command_tokens:
             print(f"[PERMISSION MANAGER] No command in tool call input | Execution ID: {action_artefact.execution_id}")
             logging.info(f"[PERMISSION MANAGER] No command in tool call input | Execution ID: {action_artefact.execution_id}")
+            params = {"execution_id": action_artefact.execution_id,
+                      "producer": action_artefact.producer,
+                      "allowed": False,
+                      "reason": "no command found"}
+            full_params = {"artefact_id": uuid.uuid4(),
+                           "timestamp": datetime.now(),
+                           "metadata": None,
+                           "payload": False}
+            full_params.update(params)
+            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
 
         program = command_tokens[0]
+
 
         if program in self.requires_sub and len(command_tokens) > 1:
             permission_target = " ".join(command_tokens[:2])
         else:
             permission_target = program
 
+        command_access = None
         for level, command_starts in self.permission_levels.items():
             if permission_target in command_starts:
                 command_access = level
                 break
-            else:
-                command_access = PermissionLevel.READ_ONLY
+        if command_access is None:
+            print(f"[PERMISSION MANAGER] Command denied, inadequate access level | Execution ID: {action_artefact.execution_id}")
+            logging.info(f"[PERMISSION MANAGER] Command denied, inadequate access level | Execution ID: {action_artefact.execution_id}")
+            params = {"execution_id": action_artefact.execution_id,
+                      "producer": action_artefact.producer,
+                      "allowed": False,
+                      "reason": "denied"}
+            full_params = {"artefact_id": uuid.uuid4(),
+                           "timestamp": datetime.now(),
+                           "metadata": None,
+                           "payload": False}
+            full_params.update(params)
+            return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)
+
         if action_artefact.producer == "system":
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
@@ -82,13 +109,13 @@ class PermissionManager:
         else:
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
-                      "allowed": True if action_artefact.required_permission == command_access else False,
+                      "allowed": True if command_access else False,
                       "reason": f"agent action: current permission level - {command_access}"
                       }
             full_params = {"artefact_id": uuid.uuid4(),
                            "timestamp": datetime.now(),
                            "metadata": None,
-                           "payload": True}
+                           "payload": True if paramd.get("allowed") else False}
             full_params.update(params)
             logging.info(f"[PERMISSION ARTEFACT] Execution ID: {params.get('execution_id')} | Producer: {params.get('producer')} | Allowed: {params.get('allowed')} | Reason: {params.get('reason')}")
             return ArtefactFactory.builder(PermissionArtefact, full_params, artefact_store, action_artefact.execution_id, action_artefact.caller)

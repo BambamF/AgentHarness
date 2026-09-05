@@ -7,7 +7,7 @@ from enum import Enum, auto
 class ActionArtefact(Artefact):
     intention: str
     input: str
-    dependencies: list[str] | None
+    dependencies_length: int | None
     success_criteria: list[str]
 
 class ActionProvider(Enum):

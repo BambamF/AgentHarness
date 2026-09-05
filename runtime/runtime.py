@@ -96,9 +96,9 @@ class RuntimeManager:
                 user="1000:1000"
                 )
 
-        self.container.exec_run(["git", "config", "--global", "user.name", self.git_user_name])
+        self.container.exec_run(["git", "config", "user.name", self.git_user_name])
 
-        self.container.exec_run(["git", "config", "--global", "user.email", self.git_user_email])
+        self.container.exec_run(["git", "config", "user.email", self.git_user_email])
 
         logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {execution_id}")
 

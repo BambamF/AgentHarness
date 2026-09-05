@@ -107,7 +107,7 @@ class Planner:
                       "ordered_tasks": None,
                       "assumptions": None,
                       "risks": None,
-                      "dependencies": None,
+                      "dependencies_length": None,
                       "success_criteria": None,
                       "repo_observations": None,
                       "memory_references": None,

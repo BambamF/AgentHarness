@@ -8,6 +8,7 @@ from memory.memory import MemoryManager
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.artefact_factory import ArtefactFactory
 from harness.artefacts.repository.repository import RepositoryArtefact
+from harness.artefacts.execution import ExecutionArtefact
 from harness.artefacts.memory import MemoryArtefact
 from harness.artefacts.prompt import PromptArtefact
 from harness.artefacts.plan import PlanArtefact
@@ -41,7 +42,7 @@ agent = client
 config_path = os.path.join(ROOT_PATH, 'configs/config.json')
 charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
-def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, runtime_manager: RuntimeManager, execution_id: UUID):
+def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, runtime_manager: RuntimeManager, execution_id: UUID, executions_dir: str):
     while True:
         last_message = messages[-1].get('content')
         role = messages[-1].get('role')
@@ -63,7 +64,7 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
-        harness = Harness(agent, MODEL, memory_path, memory_manager, runtime_manager, config_path, charter_path, ROOT_PATH, messages, permission_manager, generation_manager, artefact_store, execution_id)
+        harness = Harness(agent, MODEL, memory_path, memory_manager, runtime_manager, config_path, charter_path, executions_dir, messages, permission_manager, generation_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
@@ -81,7 +82,7 @@ def main():
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
     executions_dir = os.path.join(ROOT_PATH, 'runtime/executions')
-    runtime_manager = RuntimeManager("python:3.12-slim", executions_dir, ROOT_PATH)
+    runtime_manager = RuntimeManager("agent-runtime", executions_dir, ROOT_PATH)
     tool_dispatch = ToolDispatch(TOOLS_DIR, permission_manager, runtime_manager)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()
@@ -98,7 +99,7 @@ def main():
         if query.strip().lower() in ("q", "exit", ""):
             break
         history.append({"role": "user", "content": query})
-        agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, runtime_manager, execution_id)
+        agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, runtime_manager, execution_id, executions_dir)
         break
 
     artefact_store.print_artefacts_meta(5)

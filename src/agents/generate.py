@@ -34,7 +34,7 @@ class GenerationManager:
                               "ordered_tasks": plan_artefact.ordered_tasks,
                               "assumptions": plan_artefact.assumptions,
                               "risks": plan_artefact.risks,
-                              "dependencies": plan_artefact.dependencies,
+                              "dependencies_length": plan_artefact.dependencies_length,
                               "success_criteria": plan_artefact.success_criteria,
                               "repo_observations": plan_artefact.repo_observations,
                               "memory_references": plan_artefact.memory_references,
@@ -104,7 +104,7 @@ class GenerationManager:
                 params = {"producer": self.caller,
                           "intention": user_prompt,
                           "input": tool_call.input,
-                          "dependencies": plan_artefact.dependencies,
+                          "dependencies_length": plan_artefact.dependencies_length,
                           "success_criteria": plan_artefact.success_criteria}
                 action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, self.caller)
                 try:
