@@ -7,38 +7,91 @@ from harness.artefacts.repository.repository import RepositoryArtefact
 import subprocess
 from datetime import datetime
 from typing import List, Dict, Any, Set
-from  importlib.metadata import entry_points
-import entrypoints
+from  importlib.metadata import entry_points as discover_entry_points
 from collections import defaultdict
 import os
 import logging
 import uuid
 from uuid import UUID
 
-IGNORE_DIRS = {
-        ".git",
-        ".hg",
-        ".svn",
-        ".venv",
-        "venv",
-        "env",
-        "node_modules",
-        "__pycache__",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".ruff_cache",
-        "build",
-        "dist",
-        ".tox",
-        ".idea",
-        ".vscode"
-        }
-
-IGNORE_FILES = {".DS_Store"}
-
-MAX_FILES = 256_000
 
 class RepositoryManager:
+    IGNORE_DIRS = {
+            ".git",
+            ".hg",
+            ".svn",
+            ".venv",
+            "venv",
+            "env",
+            "node_modules",
+            "__pycache__",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".ruff_cache",
+            "build",
+            "dist",
+            ".tox",
+            ".idea",
+            "site-packages",
+            ".vscode"
+            }
+
+    IGNORE_FILES = {".DS_Store"}
+
+    MAX_FILES = 256_000
+
+    @staticmethod
+    def get_topology(repository_root:str, max_depth: int = 4) -> dict:
+        root = Path(repository_root).resolve()
+
+        def build_tree(directory: Path, depth: int) -> dict:
+            result = {
+                    "name": directory.name,
+                    "type": "directory",
+                    "children": []
+                    }
+            if depth >= max_depth:
+                result["truncated"] = True
+                return result
+
+            try:
+                children = sorted(directory.iterdir(), key=lambda path: (not path.is_dir(), path.name.lower()))
+            except OSError:
+                result["error"] = "unreadable"
+                return result
+
+            for child in children:
+                if child.is_symlink():
+                    continue
+                if child.is_dir() and child.name in RepositoryManager.IGNORE_DIRS:
+                    continue
+
+                if child.is_dir():
+                    result["children"].append(build_tree(child, depth+1))
+                else:
+                    result["children"].append({"name": child.name, "type": "file"})
+            return result
+        return build_tree(root, depth=0)
+
+    @staticmethod
+    def get_entry_points(repository_root: str) -> dict[str, str]:
+        discovered = discover_entry_points()
+        result = {}
+
+        for entry_point in discovered:
+            result[entry_point.name] = entry_point.value
+        return result
+
+    @staticmethod
+    def get_languages(repository_root: str) -> list[str]:
+        languages = set()
+        language_dict = RepositoryManager.get_language_dict()
+
+        for path in RepositoryManager.iter_repository_files(repository_root):
+            language = language_dict.get(path.suffix.lower())
+            if language:
+                languages.add(language)
+        return sorted(languages)
 
     @staticmethod
     def iter_repository_files(repository_root: str):
@@ -125,6 +178,23 @@ class RepositoryManager:
         logging.info(f"[REPO ARTEFACT] Producer: RepositoryManager | Repository Root: {repository_root} | Commit Hash: {commit_hash} | Languages: {",".join(languages) if languages else None} | N Entry Points: {len(entry_points) if entry_points else None} | Topology: {len(topology)} | Dependency Graph: {len(dependency_graph) if dependency_graph else None} | N Config Files: {len(config_files) if config_files else None}")
 
         repo_artefact = ArtefactFactory.builder(artefact_type=RepositoryArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="system")
+        return repo_artefact
+
+    @staticmethod
+    def get_commit_hash(repository_root) str | None:
+        try:
+            response = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=repository_root, check=True, text=True, capture_output=True, timeout=120)
+            commit_hash = response.stdout.strip()
+            logging.info(f"[COMMIT HASH] Producer: Repository Manager | Command: git rev-parse HEAD | Repository: {repository_root} | Hash: {commit_hash}")
+            return commit_hash or None
+        except subprocess.TimeoutExpired as e:
+            logging.exception(f"[COMMIT HASH] Producer: Repository Manager | Command: git rev-parse HEAD | Reason: Timeout | Repository: {repository_root} | Exception: {str(e)}")
+            return None
+        except Exception as e: 
+            logging.exception(f"[COMMIT HASH] Producer: Repository Manager | Command: git rev-parse HEAD | Reason: Exception encountered | Repository: {repository_root} | Exception: {str(e)}")
+            return None
+
+    
 
     @staticmethod
     def scan_config_files(repository_root: str) -> List[str] | None:
@@ -150,96 +220,26 @@ class RepositoryManager:
                 is_known_filename = file_lower in CONFIG_FILENAMES
                 has_config_extension = file_ext in CONFIG_EXTENSIONS
 
-                if is_dotfile_config or is_known_filename or has_config_extension:
-                    full_path = os.path.join(root, file)
-                    config_files.append(full_path)
 
-        return config_files
-    
-    @staticmethod
-    def get_commit_hash() -> str | None:
-        try:
-            response = subprocess.run(['git', 'rev-parse', 'HEAD'], check=True, text=True, capture_output=True, timeout=120)
-            logging.info(f"[COMMIT HASH] Producer: RepositoryManager | Command: git rev-parse HEAD | Hash: {response.stdout}")
-            return response.stdout if response.stdout else None
-        except subprocess.TimeoutExpired as e:
-            logging.error(f"[COMMIT HASH ERROR] Producer: RepositoryManager | Command: git rev-parse HEAD | Reason: Timeout | Error: {e}")
-            return None
-        except Exception as e:
-            logging.error(f"[COMMIT HASH ERROR] Producer: RepositoryManager | Command: git rev-parse HEAD | Reason: Error | Error: {e}")
-            return None
+            language = languages_map.get(suffix)
+            if language:
+                languages.add(language)
 
-    @staticmethod
-    def get_language_dict():
-        language_dict = {
-                ".py": "python",
-                ".java": "java",
-                ".cpp": "cpp",
-                ".ts": "typescript",
-                ".js": "javascript",
-                ".sql": "sql",
-                ".c": "c",
-                ".h": "c/cpp",
-                ".cs": "csharp",
-                ".go": "go",
-                ".rs": "rust",
-                ".rb": "ruby",
-                ".php": "php",
-                ".swift": "swift",
-                ".kt": "kotlin",
-                ".sh": "shell"
+            if (suffix in {".json", ".yaml", ".yml", ".toml", ".ini", ".cfg"} 
+                or path.name.lower() in {"dockerfile", "makefile", "pyproject.toml", "package.json", "requirements.txt"}):
+                config_files.append(relative_path)
+
+        return {
+                "repository_root": str(root),
+                "languages": sorted(languages),
+                "file_count": len(files),
+                "config_files": sorted(config_files),
+                "files": files
                 }
-        return language_dict
-
-    @staticmethod
-    def get_languages(repository_root: str) -> List[str]:
-        languages_set = set()
-        repository_root = os.path.abspath(repository_root)
-        language_dict = RepositoryManager.get_language_dict()
-
-        for root, dirs, files in os.walk(repository_root):
-            for filename in files:
-                ext = Path(filename).suffix.lower()
-                lang = language_dict.get(ext)
-                if lang:
-                    languages_set.add(lang)
-        return sorted(languages_set)
 
 
     @staticmethod
-    def get_entry_points(repository_root: str) -> Dict[str, str]:
-        repository_root = os.path.abspath(repository_root)
-        eps = entry_points(group=None)
-        return {eps.name: eps.value for name, value in eps}
-    
-    @staticmethod
-    def get_topology(repository_root: str) -> Dict[str, Any]:
-        topology = {}
-        repository_root = os.path.abspath(repository_root)
-        topology[repository_root] = {child : RepositoryManager.get_topology(os.path.join(repository_root, child)) for child in os.listdir(repository_root) if os.path.isdir(os.path.join(repository_root, child))}
-        return topology
-
-    @staticmethod
-    def get_typed_topology(repository_root: str) -> Dict[str, Any]:
-        repository_root = os.path.abspath(repository_root)
-        d = {"name": os.path.basename(repository_root)}
-        if os.path.isdir(repository_root):
-            d["type"] = "directory"
-            d["children"] = [RepositoryManager.get_typed_topology(repository_root=os.path.join(repository_root, child)) for child in os.listdir(repository_root)]
-        else:
-            d["type"] = "file"
-        return d
-
-    @staticmethod
-    def dict_to_json(d: Dict[str, Any]) -> Any:
-        return json.dumps(d)
-    
-    @staticmethod
-    def extract_imports_from_file(file_path: Path, repo_root: Path) -> List[str]:
-        """
-        Parses a python file and extracts all imported module names
-        """
-        imports = []
+    def extract_imports_from_file(file_path, repo_root):
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 tree = ast.parse(f.read(), filename=str(file_path))
@@ -280,31 +280,27 @@ class RepositoryManager:
         graph = {}
         file_mapping = {}
 
-        # Discover all python files and map their paths to module names
-        for root, _, files in os.walk(repo_root):
-            for file in files:
-                if file.endswith(".py"):
-                    full_path = Path(root)/file
-                    module_name = RepositoryManager.get_module_name(file_path=full_path, repo_root=repo_root)
-                    if module_name == "":
-                        module_name = repo_root.name
-                    file_mapping[full_path] = module_name
-                    graph[module_name] = []
+        for file_path in RepositoryManager.iter_repository_files(repo_root):
+            if file_path.suffix != ".py":
+                continue
 
-        # Parse imports and filter for internal repository modules
-        internal_modules = set(graph.keys())
+            module_name = RepositoryManager.get_module_name(file_path=file_path, repo_root=repo_root)
 
+            if not module_name:
+                module_name = repo_root.name
+
+            file_mapping[file_path] = module_name
+            graph[module_name] = []
+
+        internal_modules = set(graph)
         for file_path, module_name in file_mapping.items():
-            found_imports = RepositoryManager.extract_imports_from_file(file_path=file_path, repo_root=repo_root)
+            imports = RepositoryManager.extract_imports_from_file(file_path, repo_root)
             dependencies = set()
-
-            for imp in found_imports:
-                # Check if the import matches an internal module exactly
-                for internal_mod in internal_modules:
-                    if imp == internal_mod or imp.startswith(internal_mod+"."):
-                        dependencies.add(internal_mod)
-
-            # Remove self dependencies if any
+            for imported_module in imports:
+                for internal_modules in internal_modules:
+                    if imported_module == internal_module or imported_module.startswith(internal_module + "."):
+                        dependencies.add(internal_module)
             dependencies.discard(module_name)
-            graph[module_name] = sorted(list(dependencies))
+            graph[module_name] = sorted(dependencies)
+
         return graph
