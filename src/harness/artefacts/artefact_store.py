@@ -11,7 +11,7 @@ from datetime import datetime
 class ArtefactStore:
     def __init__(self):
         self.artefacts: dict[type(Artefact), list[Artefact]] = {}
-        self.artefact_history: deque[tuple[type(Artefact), UUID]] = deque([])
+        self.artefact_history: deque[tuple[type(Artefact), UUID, UUID]] = deque([])
 
     def print_artefacts_meta(self, n_artefacts: int):
         if n_artefacts <= 0:
@@ -27,7 +27,18 @@ class ArtefactStore:
             self.artefacts[type(candidate)] = [candidate]
         else:
             self.artefacts[type(candidate)].append(candidate)
-        self.artefact_history.append((type(candidate), candidate.artefact_id))
+        self.artefact_history.append((type(candidate), candidate.artefact_id, candidate.execution_id))
+
+    def get_session_artefacts(self, execution_id: UUID):
+        if not self.artefact_history:
+            return None
+        session_artefacts = []
+        for t, a_id, exec_id in self.artefact_history:
+            if execution_id == exec_id:
+                for artfct in self.artefacts.get(t):
+                    if artfct.execution_id == execution_id:
+                        session_artefacts.append(artfct)
+        return session_artefacts
 
     def latest_any(self) -> Artefact | None:
         if self.artefact_history:

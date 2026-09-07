@@ -30,7 +30,6 @@ class Harness:
                            HarnessState.HYDRATING_MEMORY: self._hydrate_memory,
                            HarnessState.PLANNING: self._create_plan,
                            HarnessState.GENERATING: self._generate,
-                           # HarnessState.EVALUATING: self._evaluate,
                            # HarnessState.REFLECTING: self._reflect,
                            # HarnessState.MEMORY_UPDATE: self._update_memory,
                             HarnessState.TERMINATE: self._terminate}
@@ -68,10 +67,6 @@ class Harness:
 
     def _generate(self):
         self.generation_manager.generate(self.tools_dir)
-
-
-    def _evaluate(self):
-        pass
 
     def _reflect(self):
         pass

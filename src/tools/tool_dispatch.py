@@ -27,7 +27,7 @@ class ToolDispatch:
         tool_name = (action_artefact.input or {}).get("tool_name")
         tool = self.tools.get(tool_name)
 
-        if tool is not None and hasattr(tool, "write"):
+        if tool is not None and hasattr(tool, "name") and getattr(tool, "name") == "write":
             inp = {k:v for k, v in action_artefact.input.items() if k != "tool_name"}
             return tool.run(**inp, artefact_store=artefact_store, caller=action_artefact.producer, execution_id=action_artefact.execution_id, snapshots=self._snapshots)
 
