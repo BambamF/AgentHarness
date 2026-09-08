@@ -1,4 +1,5 @@
-from dataclasses import dataclass, dataclass_json
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json
 from harness.artefacts.artefact import Artefact
 
 @dataclass(frozen=True)

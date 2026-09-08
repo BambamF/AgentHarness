@@ -53,7 +53,7 @@ class RuntimeManager:
         self.execution_dir
         ):
             os.makedirs(directory, exist_ok=True)
-
+        
         shutil.copytree(
                 self.repository_root,
                 self.workspace_dir,
@@ -62,7 +62,14 @@ class RuntimeManager:
                     "__pycache__",
                     ".pytest_cache",
                     "node_modules",
-                    "runtime"
+                    "runtime",
+                    "agents",
+                    "harness",
+                    "permissions",
+                    "planner",
+                    "prompts",
+                    "repositories",
+                    "main.py"
                     )
                 )
 
@@ -70,8 +77,7 @@ class RuntimeManager:
         #self.output_dir.chown(1000, 1000)
 
         
-        self.container = self.client.containers.run(
-                image=self.image,
+        self.container = self.client.containers.run(image=self.image,
                 command=["sleep", "infinity"],
                 detach=True,
                 working_dir="/workspace",

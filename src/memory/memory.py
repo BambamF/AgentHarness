@@ -30,10 +30,10 @@ class MemoryManager:
             params = {"memory_path": self.memory_path,
                       "topology_confidence": topology_confidence,
                       "topology": topology,
-                      "known_facts":  self._read_memory(os.path.join(dir_name, self.known_facts_path)) if os.path.isfile(self.known_facts_path) else None,
-                      "previous_decisions": self._read_memory(os.path.join(dir_name, self.previous_decisions_path)) if os.path.isfile(self.previous_decisions_path) else None,
-                      "relevant_history": self._read_memory(os.path.join(dir_name, self.relevant_history_path)) if os.path.isfile(self.relevant_history_path) else None,
-                      "compressed_context": self._read_memory(os.path.join(dir_name, self.compressed_context_path)) if os.path.isfile(self.compressed_context_path) else None}
+                      "known_facts":  None,
+                      "previous_decisions": None,
+                      "relevant_history": None,
+                      "compressed_context": None}
             full_params = {"artefact_id": uuid.uuid4(),
                            "execution_id": execution_id,
                            "producer": "system",

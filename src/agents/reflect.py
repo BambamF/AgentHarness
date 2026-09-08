@@ -11,12 +11,13 @@ import logging
 import json
 
 class ReflectionManager:
-    def __init__(self, model: str, agent, tool_dispatch: ToolDispatch, execution_id: UUID, artefact_store: ArtefactStore):
+    def __init__(self, model: str, agent, tool_dispatch: ToolDispatch, execution_id: UUID, artefact_store: ArtefactStore, log_path: str):
         self.execution_id = execution_id
         self.artefact_store = artefact_store
         self.tool_dispatch = tool_dispatch
         self.model = model
         self.agent = agent
+        self.log_path = log_path
 
     def reflect(self):
         session_artefacts = self.artefact_store.get_session_artefacts(self.execution_id)
@@ -25,25 +26,30 @@ class ReflectionManager:
         repository_artefact = None
         plan_artefact = None
         memory_artefact = None
+        for artefact in session_artefacts:
+            if isinstance(artefact, PlanArtefact):
+                plan_artefact = artefact
+            elif isinstance(artefact, ExecutionArtefact):
+                execution_artefacts.append(artefact)
+            elif isinstance(artefact, ActionArtefact):
+                action_artefacts.append(artefact)
+            elif isinstance(artefact, MemoryArtefact):
+                memory_artefact = artefact
+            elif isinstance(artefact, RepositoryArtefact):
+                repository_artefact = artefact
         if plan_artefact is None:
             raise RuntimeError(f"No Plan Artefact found for exectution {self.execution_id}")
         if repository_artefact is None:
             raise RuntimeError(f"No Repository Artefact found for exectution {self.execution_id}")
-        for artefact in session_artefacts:
-            if isinstance(artefact) == PlanArtefact:
-                plan_artefact = artefact
-            elif isinstance(artefact) == ExecutionArtefact:
-                execution_artefacts.append(artefact)
-            elif isinstance(artefact) == ActionArtefact:
-                action_artefacts.append(artefact)
-            elif isinstance(artefact) == MemoryArtefact:
-                memory_artefact = artefact
-            elif isinstance(artefact) == RepositoryArtefact:
-                repository_artefact = artefact
         reflection_context = {"execution_artefacts": [execution_artefact.to_json() for execution_artefact in execution_artefacts],
                               "action_artefacts": [action_artefact.to_json() for action_artefact in action_artefacts],
-                              "repository_artefact": repository_artefact.to_json(),
-                              "plan_artefact": plan_artefact.to_json(),
+                              "repository_depth": len(repository_artefact.topology),
+                              "commit_hash": repository_artefact.commit_hash,
+                              "ordered_tasks": plan_artefact.ordered_tasks,
+                              "success_criteria": plan_artefact.success_criteria,
+                              "risks": plan_artefact.risks,
+                              "assumptions": plan_artefact.assumptions,
+                              "log_path": self.log_path,
                               "memory_artefact": memory_artefact.to_json()}
 
     
@@ -64,7 +70,7 @@ class ReflectionManager:
 
         Repository confidence scores range from  0.0 to 10.0, with files and directories scoring closer to 0.0 if the contents of the files or directories have not been observed recently.
 
-        Memory confidence scores range from 0.0 to 10.0 with entries within the memory file ordered using a two tier system where memory entities are identified following the pattern of {<execution_id>/<memory_uuid>:confidence_score, <path/to/file>}
+        Memory confidence scores range from 0.0 to 10.0 with entries within the memory file ordered following the given schema
         """ 
 
         messages = [{"role": "user",
@@ -75,7 +81,7 @@ class ReflectionManager:
                     system=SYSTEM_PROMPT,
                     cache_control={"type": "ephemeral"},
                     messages=messages,
-                    tools=self.tool_dispatch.get_tools(),
+                    tools=self.tool_dispatch.tool_dicts,
                     max_tokens=8000,
                     output_config={"format": {"type": "json_schema",
                                               "schema": self.get_reflection_schema()
@@ -158,18 +164,20 @@ class ReflectionManager:
                                      "items": {"type": "string"}},
                     "success_criteria": {"type": "array",
                                          "items": {"type": "string"}},
-                    "repository_confidence": {"type": "object",
-                                                "properties": {"path": {"type": "string"}.
+                    "repository_confidence": {"type": "array" ,
+                                              "items": {"type": "object",
+                                                "properties": {"path": {"type": "string"},
                                                                 "observation": {"type": "string"},
                                                                 "confidence": {"type": "number"}},
                                                 "required": ["path", "observation", "confidence"],
-                                                "additionalProperties": False},
-                    "memory_confidence": {"type": "object",
+                                                "additionalProperties": False}},
+                    "memory_confidence": {"type": "array",
+                                          "items": {"type": "object",
                                             "properties": {"reference_id": {"type": "string"},
                                                             "confidence": {"type": "number"},
                                                             "resource_path": {"type": "string"}},
                                             "required": ["reference_id", "confidence", "resource_path"],
-                                            "additionalProperties": False},
+                                            "additionalProperties": False}},
                     "known_facts": {"type": "array",
                                     "items": {"type": "string"}},
                     "previous_decisions": {"type": "array",
@@ -178,7 +186,7 @@ class ReflectionManager:
                                          "items": {"type": "string"}},
                     "compressed_context": {"type": "object",
                                            "properties": {"session_id": {"type": "string"},
-                                                          "context": {"type": "string"}}
+                                                          "context": {"type": "string"}},
                                            "required": ["session_id", "context"],
                                            "additionalProperties": False},
                     "summary": {"type": "string"},

@@ -125,7 +125,7 @@ class GenerationManager:
                         "content": result_content
                         })
 
-                    logging.info(f"[GENERATE] Tool Dispatch Result: str(result) | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
+                    logging.info(f"[GENERATE] Tool Dispatch Result: {str(result)} | Execution ID: {self.execution_id} | Provider: {self.caller} | Intention: {user_prompt} | Tool Input: {tool_call.input}")
 
                 except Exception as e:
 

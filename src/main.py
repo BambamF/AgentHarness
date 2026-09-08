@@ -21,6 +21,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from agents.generate import GenerationManager
 from runtime.runtime import RuntimeManager
+from agents.reflect import ReflectionManager
 
 load_dotenv()
 
@@ -37,12 +38,12 @@ TOOLS_DIR = os.path.join(ROOT_PATH, 'src/tools')
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 MODEL=MODEL_ID
-memory_path = os.path.join(ROOT_PATH, 'src/memory/memory.md')
+memory_path = os.path.join(ROOT_PATH, 'src/memory/memory.json')
 agent = client
 config_path = os.path.join(ROOT_PATH, 'configs/config.json')
 charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
-def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, runtime_manager: RuntimeManager, execution_id: UUID, executions_dir: str):
+def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, runtime_manager: RuntimeManager, reflection_manager: ReflectionManager, execution_id: UUID, executions_dir: str):
     while True:
         last_message = messages[-1].get('content')
         role = messages[-1].get('role')
@@ -64,7 +65,7 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
         full_params.update(params)
 
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
-        harness = Harness(agent, MODEL, memory_path, memory_manager, runtime_manager, config_path, charter_path, executions_dir, messages, permission_manager, generation_manager, artefact_store, execution_id)
+        harness = Harness(agent, MODEL, memory_path, memory_manager, runtime_manager, config_path, charter_path, executions_dir, messages, permission_manager, generation_manager, reflection_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
         harness.run()
         response_artefact = artefact_store.latest_any()
@@ -83,6 +84,7 @@ def main():
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()
     generation_manager = GenerationManager(agent, MODEL, artefact_store, execution_id, tool_dispatch)
+    reflection_manager = ReflectionManager(MODEL, agent, tool_dispatch, execution_id, artefact_store, LOG_PATH)
     history: List[Dict[str, Any]] = []
 
     while True:
@@ -95,7 +97,7 @@ def main():
         if query.strip().lower() in ("q", "exit", ""):
             break
         history.append({"role": "user", "content": query})
-        agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, runtime_manager, execution_id, executions_dir)
+        agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, runtime_manager, reflection_manager, execution_id, executions_dir)
         break
 
     artefact_store.print_artefacts_meta(5)
