@@ -79,7 +79,7 @@ def main():
     permission_manager = PermissionManager()
     artefact_store = ArtefactStore()
     executions_dir = os.path.join(ROOT_PATH, 'runtime/executions')
-    runtime_manager = RuntimeManager("agent-runtime", executions_dir, ROOT_PATH, artefact_store)
+    runtime_manager = RuntimeManager("agent-runtime", executions_dir, artefact_store)
     tool_dispatch = ToolDispatch(TOOLS_DIR, permission_manager, runtime_manager)
     memory_manager = MemoryManager(memory_path=memory_path, artefact_store=artefact_store)
     execution_id = uuid.uuid7()

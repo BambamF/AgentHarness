@@ -40,6 +40,7 @@ class Harness:
         self.reflection_manager = reflection_manager
         self.ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.tools_dir = os.path.join(self.ROOT_DIR, 'src/tools')
+        self.workspace = os.path.join(self.repository_root,"runtime", "executions", str(execution_id), "workspace")
 
     def run(self):
         self.runtime_manager.start(self.execution_id)
@@ -53,7 +54,7 @@ class Harness:
             self.runtime_manager.close()
 
     def _initialise(self):
-        self.context = HarnessContext(self.memory_path, self.config_path, self.repository_root, self.artefact_store)
+        self.context = HarnessContext(self.memory_path, self.config_path, self.workspace, self.artefact_store)
         
         
     def _analyse_repo(self):

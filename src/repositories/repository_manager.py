@@ -105,6 +105,7 @@ class RepositoryManager:
 
     @staticmethod
     def get_languages(repository_root: str) -> list[str]:
+        repository_root = Path(repository_root).resolve()
         languages = set()
         language_dict = RepositoryManager.get_language_dict()
 
@@ -119,7 +120,7 @@ class RepositoryManager:
         root = Path(repository_root).resolve()
 
         for path in root.rglob("*"):
-            if any(path in RepositoryManager.IGNORE_DIRS for part in path.parts):
+            if any(part in RepositoryManager.IGNORE_DIRS for part in path.parts):
                 continue
             if path.name in RepositoryManager.IGNORE_FILES:
                 continue
@@ -135,7 +136,7 @@ class RepositoryManager:
 
         language_map = RepositoryManager.get_language_dict()
 
-        for path in iter_repository_files(repository_root):
+        for path in RepositoryManager.iter_repository_files(repository_root):
             relative_path = path.relative_to(root).as_posix()
             suffix = path.suffix.lower()
 
@@ -150,7 +151,7 @@ class RepositoryManager:
                 "size": size
                 })
 
-            language = languages_map.get(suffix)
+            language = language_map.get(suffix)
             if language:
                 languages.add(language)
 
@@ -168,7 +169,7 @@ class RepositoryManager:
 
     @staticmethod
     def get_repository_artefact(repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
-
+        repository_root = Path(repository_root).resolve()
         commit_hash = RepositoryManager.get_commit_hash(repository_root)
         languages = RepositoryManager.get_languages(repository_root=repository_root)
         entry_points = RepositoryManager.get_entry_points(repository_root=repository_root)
@@ -177,7 +178,7 @@ class RepositoryManager:
         config_files = RepositoryManager.scan_config_files(repository_root=repository_root)
 
         params = {
-                "repository_root": str(repository_root),
+                "repository_root": repository_root,
                 "commit_hash": commit_hash,
                 "languages": languages,
                 "entry_points": entry_points,
@@ -222,7 +223,7 @@ class RepositoryManager:
         CONFIG_FILENAMES = {"dockerfile", "makerfile", "pipfile", "pipfile.lock", "gemfile", "vagrantfile", "procfile", "pyproject.toml"}
         IGNORE_DIRS = {".git", ".hg", ".svn", "node_modules", "venv", ".venv", "__pycache__", "build", "dist", ".idea", ".vscode", ".gitignore"}
 
-        repository_root = os.path.abspath(repository_root)
+        repository_root = Path(repository_root).resolve()
         config_files = []
 
         if not os.path.isdir(repository_root):
@@ -238,15 +239,18 @@ class RepositoryManager:
                 is_dotfile_config = file_lower.startswith(".")
                 is_known_filename = file_lower in CONFIG_FILENAMES
                 has_config_extension = file_ext in CONFIG_EXTENSIONS
+                valid = file_ext not in IGNORE_DIRS
                 
                 if is_dotfile_config or is_known_filename or has_config_extension:
-                    full_path = os.path.join(root, file)
-                    config_files.append(full_path)
+                    full_path = Path(root)/file
+                    relative_path = full_path.relative_to(repository_root).as_posix()
+                    config_files.append(relative_path)
         return config_files
 
 
     @staticmethod
     def extract_imports_from_file(file_path, repo_root):
+        repo_root = Path(repo_root).resolve()
         imports = []
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -274,6 +278,7 @@ class RepositoryManager:
     
     @staticmethod
     def get_module_name(file_path: Path, repo_root: Path) -> str:
+        repo_root = Path(repo_root).resolve()
         """Converts a path into a python dot notation string"""
         relative_path = file_path.relative_to(repo_root)
         if relative_path.name == "__init__.py":

@@ -26,7 +26,6 @@ class MemoryManager:
             topology = repository_artefact.topology
             confidence_agg = {}
             topology_confidence = self.initialise_confidence("", confidence_agg, topology, memory_artefact)
-            dir_name = os.path.dirname(os.path.abspath(__file__))
             params = {"memory_path": self.memory_path,
                       "topology_confidence": topology_confidence,
                       "topology": topology,
@@ -75,11 +74,16 @@ class MemoryManager:
             return f.read()
 
     def sample_from_dict(self, d: Dict[Any, Any], n_sample: int):
+        if n_sample > len(d):
+            if len(d) > 1:
+                n_sample = len(d)
+            else:
+                return {}
         keys = random.sample(list(d), n_sample)
         values = [d[k] for k in keys]
         return dict(zip(keys, values))
 
-    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], topology: Dict[str, Any], memory_artefact: MemoryArtefact) -> Dict[str, float]:
+    def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], topology: Dict[str, Any], memory_artefact: MemoryArtefact | None) -> Dict[str, float]:
         if memory_artefact == None:
             if topology.get("type") == "directory":
                 absolute_key = (acc + "/" + topology.get("name")).strip("/")

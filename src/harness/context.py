@@ -26,7 +26,7 @@ class HarnessContext:
         return memory_manager.scan_memory(execution_id=execution_id)
 
     def scan_repository(self, execution_id: UUID) -> RepositoryArtefact:
-        return RepositoryManager.get_repository_artefact(repository_root=self.repository_root, artefact_store=self.artefact_store, execution_id=execution_id)
+        return RepositoryManager.get_repository_artefact(repository_root=os.path.basename(self.repository_root), artefact_store=self.artefact_store, execution_id=execution_id)
 
     def increment_round(self):
         self.current_round += 1

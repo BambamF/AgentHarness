@@ -143,7 +143,7 @@ class ReflectionManager:
                                          "tool_use_id": tool_call.id,
                                          "is_error": True,
                                          "content": str(e)}) 
-                messages.append({"role": "user",
+            messages.append({"role": "user",
                                 "content": tool_results})
         
         

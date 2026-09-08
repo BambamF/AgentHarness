@@ -15,11 +15,10 @@ from repositories.repository_manager import RepositoryManager
 from uuid import UUID
 
 class RuntimeManager:
-    def __init__(self, image: str, executions_dir: str, repository_root: str, artefact_store: ArtefactStore, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
+    def __init__(self, image: str, executions_dir: str, artefact_store: ArtefactStore, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
         self.executions_dir = executions_dir
         self.client = docker.from_env()
         self.image = image
-        self.repository_root = repository_root
         self.git_user_name = git_user_name
         self.git_user_email = git_user_email
         self.artefact_store = artefact_store
@@ -50,29 +49,10 @@ class RuntimeManager:
         self.input_dir,
         self.output_dir,
         self.logs_dir,
-        self.execution_dir
+        self.execution_dir,
+        self.workspace_dir
         ):
             os.makedirs(directory, exist_ok=True)
-        
-        shutil.copytree(
-                self.repository_root,
-                self.workspace_dir,
-                ignore=shutil.ignore_patterns(
-                    ".venv",
-                    "__pycache__",
-                    ".pytest_cache",
-                    "node_modules",
-                    "runtime",
-                    "agents",
-                    "harness",
-                    "permissions",
-                    "planner",
-                    "prompts",
-                    "repositories",
-                    "main.py"
-                    )
-                )
-
         #self.workspace_dir.chown(1000, 1000)
         #self.output_dir.chown(1000, 1000)
 
@@ -85,10 +65,6 @@ class RuntimeManager:
                     str(self.input_dir): {
                         "bind": "/input",
                         "mode": "ro",
-                        },
-                    str(self.output_dir): {
-                        "bind": "/output",
-                        "mode": "rw"
                         },
                     str(self.workspace_dir): {
                         "bind": "/workspace",
@@ -104,9 +80,11 @@ class RuntimeManager:
                 user="1000:1000"
                 )
 
-        self.container.exec_run(["git", "config", "user.name", self.git_user_name])
+        self.container.exec_run(cmd=["git", "config", "user.name", self.git_user_name],
+                                workdir="/workspace")
 
-        self.container.exec_run(["git", "config", "user.email", self.git_user_email])
+        self.container.exec_run(cmd=["git", "config", "user.email", self.git_user_email],
+                                workdir="/workspace")
 
         logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {self.execution_id}")
 
@@ -182,9 +160,9 @@ class RuntimeManager:
                     "started_at": started_at,
                     "finished_at": datetime.now(),
                     "image": self.image,
-                    "input_path": str(self.input_dir),
-                    "output_path": str(self.output_dir),
-                    "workspace_path": str(self.workspace_dir),
+                    "input_path": "/input",
+                    "output_path": "/output",
+                    "workspace_path": "/workspace",
                     "payload": None,
                     "error": error
                     }
@@ -208,9 +186,9 @@ class RuntimeManager:
                     "started_at": started_at,
                     "finished_at": datetime.now(),
                     "image": self.image,
-                    "input_path": str(self.input_dir),
-                    "output_path": str(self.output_dir),
-                    "workspace_path": str(self.workspace_dir),
+                    "input_path": "/input",
+                    "output_path": "/output",
+                    "workspace_path": "/workspace",
                     "payload": None,
                     "error": {"type": type(e).__name__,
                               "message": str(e)}
@@ -306,7 +284,7 @@ class RuntimeManager:
                 self.execution_id = None
 
     def _write_artefact(self, artefact: Artefact):
-        artefact_path = os.path.join(self.execution_dir, "artefacts")
+        artefact_path = os.path.join(os.path.dirname(self.executions_dir), "artefacts_log")
         os.makedirs(artefact_path, exist_ok=True)
         path = os.path.join(artefact_path, f"{artefact.artefact_id}.json")
         with open(path, 'w', encoding='utf-8') as path_file:

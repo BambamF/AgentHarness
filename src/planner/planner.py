@@ -121,15 +121,16 @@ class Planner:
 
     def _build_context(self, prompt_artefact: PromptArtefact, memory_artefact: MemoryArtefact, repository_artefact: RepositoryArtefact) -> dict:
 
+        config_files_length = repository_artefact.config_files if repository_artefact.config_files else None
         return {"objective": prompt_artefact.sanitised_prompt,
 
                 "repository": {
-                    "root": repository_artefact.repository_root,
+                    "root": "/workspace",
                     "languages": repository_artefact.languages,
                     "entry_points": repository_artefact.entry_points,
                     "topology_depth": len(repository_artefact.topology),
                     "dependency_graph_length": len(repository_artefact.dependency_graph),
-                    "config_files_length": len(repository_artefact.config_files),
+                    "config_files_length": config_files_length,
                     "commit_hash": repository_artefact.commit_hash
                     },
                 "memory": {
