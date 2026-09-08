@@ -9,11 +9,16 @@ from harness.artefacts.memory import MemoryArtefact
 from uuid import UUID
 import logging
 import json
+from permissions.permissions import PermissionManager
 
 class ReflectionManager:
-    def __init__(self, model: str, agent, execution_id: UUID, artefact_store: ArtefactStore):
+    def __init__(self, model: str, agent, tool_dispatch: ToolDispatch, execution_id: UUID, artefact_store: ArtefactStore, permission_manager: PermissionManager):
         self.execution_id = execution_id
         self.artefact_store = artefact_store
+        self.tool_dispatch = tool_dispatch
+        self.model = model
+        self.agent = agent
+        self.permission_manager = permission_manager
 
     def reflect(self):
         session_artefacts = self.artefact_store.get_session_artefacts(self.execution_id)
@@ -72,7 +77,7 @@ class ReflectionManager:
                     system=SYSTEM_PROMPT,
                     cache_control={"type": "ephemeral"},
                     messages=messages,
-                    tools=permission_manager.get_tools(),
+                    tools=self.permission_manager.get_tools(),
                     max_tokens=8000
                     )
             messages.append({"role": "assistant",
@@ -99,6 +104,40 @@ class ReflectionManager:
                 tool_input = dict(tool_call.input or {})
                 tool_input["tool_name"] = tool_call.name
 
+                params = {"producer": "agent",
+                          "intention": "Analyse the execution session using the provided artefacts, produce your reflection and propose updated memory and repository confidence information for future executions.",
+                          "input": tool_input,
+                          "dependencies_length": plan_artefact.dependencies_length,
+                          "success_criteria": plan_artefact.success_criteria}
+                action_artefact = ArtefactFactory.builder(ActionArtefact, params, self.artefact_store, self.execution_id, "agent")
+                try:
+                    result = self.tool_dispatch.dispatch(action_artefact, self.artefact_store)
+
+                    if hasattr(result, "to_json"):
+                        result_content = result.to_json()
+                    else:
+                        result_content = str(result)
+
+                    tool_result.append({"type": "tool_result",
+                                        "tool_use_id": tool_call.id,
+                                        "is_error": result.execution_status != "SUCCESS",
+                                        "content": result_content})
+                    logging.info(f"[REFLECT] Tool Dispatch Result: {str(result)} | Execution ID: {self.execution_id} | Producer: {params.get("producer")} | Intention: {params.get("intention")} | Tool Input: {tool_input}")
+
+                except Exception as e:
+                    result = f"Error during tool execution: {str(e)}"
+
+                    logging.exception(f"[REFLECT] Tool Dispatch Exception: {str(e)} | Execution ID: {self.execution_id} | Producer: {params.get("producer")} | Intention: {params.get("intention")} | Tool Input: {tool_input}")
+
+                    tool_results.append({"type": "tool_result",
+                                         "tool_use_id": tool_call.id,
+                                         "is_error": True,
+                                         "content": str(e)}) 
+                messages.append({"role": "user",
+                                "content": tool_results})
+
+            return messages
+            
 
 
         
