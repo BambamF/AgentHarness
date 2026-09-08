@@ -1,6 +1,7 @@
 from harness.artefacts.artefact_store import ArtefactStore
 from harness.artefacts.memory import MemoryArtefact
 from harness.artefacts.repository.repository import RepositoryArtefact
+from harness.artefacts.reflection import ReflectionArtefact
 import logging
 from uuid import UUID
 import uuid
@@ -12,14 +13,10 @@ import random
 
 class MemoryManager:
 
-    def __init__(self, memory_path: str, artefact_store: ArtefactStore, known_facts_path: str = None, decisions_path: str = None, history_path: str = None, comp_context_path: str = None):
+    def __init__(self, memory_path: str, artefact_store: ArtefactStore):
         self.memory_path = memory_path
         self.artefact_store = artefact_store
         self.relative_path = os.getcwd()
-        self.known_facts_path = known_facts_path if known_facts_path else 'known_facts.md'
-        self.previous_decisions_path = decisions_path if decisions_path else 'previous_decisions.md'
-        self.relevant_history_path = history_path if history_path else 'relevant_history.md'
-        self.compressed_context_path = comp_context_path if comp_context_path else'compressed_context.md'
 
     def scan_memory(self, execution_id: UUID) -> MemoryArtefact:
         
@@ -45,13 +42,33 @@ class MemoryManager:
                            "caller": "system",
                            "payload": topology_confidence}
             full_params.update(params)
-            logging.info(f"[MEMORY ARTEFACT] Producer: System | Memory Path: {self.memory_path if self.memory_path else None} | Execution ID: {execution_id}")
+            logging.info(f"[MEMORY ARTEFACT] Producer: System | Memory Path: {self.memory_path if self.memory_path else None} | Execution ID: {execution_id} | Attributes: {str(full_params)}")
             memory_artefact = ArtefactFactory.builder(artefact_type=MemoryArtefact, params=full_params, artefact_store=self.artefact_store, execution_id=execution_id, caller="system")
         return memory_artefact
 
     def hydrate_memory(self, execution_id: UUID):
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
         print(f"[MEMORY HYDRATION] Execution ID: {execution_id} | Topology Length: {len(memory_artefact.topology)} | Topology Confidence Length: {len(memory_artefact.topology_confidence)} | Topology Confidence Sample: {self.sample_from_dict(memory_artefact.topology_confidence, 10)}")
+
+    def update_memory(self, execution_id: UUID):
+        
+        reflection_artefact = self.artefact_store.latest(ReflectionArtefact)
+        memory_artefact = self.artefact_store.latest(MemoryArtefact)
+        known_facts = reflection_artefact.known_facts
+        previous_decisions = reflection_artefact.previous_decisions
+        compressed_context = reflection_artefact.compressed_context
+        summary = reflection_artefact.summary
+        memory_confidence = reflection_artefact.memory_confidence
+        repository_confidence = reflection_artefact.repository_confidence
+        memory_path = memory_artefact.memory_path
+
+        memory_context = {"compressed_context": compressed_context,
+                          "known_facts": known_facts,
+                          "previous_decisions": previous_decisions,
+                          "memory_path": memory_path}
+        logging.info(f"[MEMORY UPDATE] Execution ID: {reflection_artefact.execution_id} | Memory Path: {memory_path} | Reflection Summary: {summary}")
+        with open(memory_path, 'w') as mem_path:
+            json.dump(memory_context, mem_path, indent=4)
 
     def _read_memory(self, memory_path: str) -> str:
         with open(memory_path, 'r', encoding='utf-8') as f:
