@@ -170,7 +170,6 @@ class RuntimeManager:
             logging.info(f"[RUNTIME] Execution Complete | Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
-            self._write_artefact(execution_artefact)
 
         except Exception as e:
             
@@ -196,7 +195,6 @@ class RuntimeManager:
             logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
             execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
-            self._write_artefact(execution_artefact)
         
         self._write_json(os.path.join(self.execution_dir, "execution.json"), execution_artefact)
         return execution_artefact
@@ -223,7 +221,6 @@ class RuntimeManager:
         logging.exception(f"[RUNTIME EXCEPTION] Input: {action_artefact.input} | Execution Status: {params.get('execution_status')} | Permission: {permission_artefact.allowed} | Execution ID: {action_artefact.execution_id}")
 
         execution_artefact = ArtefactFactory.builder(ExecutionArtefact, params, self.artefact_store, action_artefact.execution_id, action_artefact.producer)
-        self._write_artefact(execution_artefact)
         return execution_artefact
 
     def finalise(self) -> str | None:
