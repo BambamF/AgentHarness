@@ -12,6 +12,9 @@ from typing import Dict, Any
 import random
 
 class MemoryManager:
+    """
+    The memory manager provides methods to handle the memory events e.g. scanning memory, hydrating memory and updating memory
+    """
 
     def __init__(self, memory_path: str, artefact_store: ArtefactStore):
         self.memory_path = memory_path
@@ -19,7 +22,9 @@ class MemoryManager:
         self.relative_path = os.getcwd()
 
     def scan_memory(self, execution_id: UUID) -> MemoryArtefact:
-        
+        """
+        Scans the memory file and creates a memory artefact
+        """
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
         if memory_artefact == None:
             repository_artefact = self.artefact_store.latest(RepositoryArtefact)
@@ -45,12 +50,18 @@ class MemoryManager:
             memory_artefact = ArtefactFactory.builder(artefact_type=MemoryArtefact, params=full_params, artefact_store=self.artefact_store, execution_id=execution_id, caller="system")
         return memory_artefact
 
-    def hydrate_memory(self, execution_id: UUID):
+    def hydrate_memory(self, execution_id: UUID) -> MemoryArtefact:
+        """
+        Returns the most recent memory artefact from either previous session or last active memory update
+        """
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
         print(f"[MEMORY HYDRATION] Execution ID: {execution_id} | Topology Length: {len(memory_artefact.topology)} | Topology Confidence Length: {len(memory_artefact.topology_confidence)} | Topology Confidence Sample: {self.sample_from_dict(memory_artefact.topology_confidence, 10)}")
+        return memory_artefact
 
     def update_memory(self, execution_id: UUID):
-        
+        """
+        Updates memory post reflection state
+        """
         reflection_artefact = self.artefact_store.latest(ReflectionArtefact)
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
         known_facts = reflection_artefact.known_facts
@@ -70,10 +81,16 @@ class MemoryManager:
             json.dump(memory_context, mem_path, indent=4)
 
     def _read_memory(self, memory_path: str) -> str:
+        """
+        Reads from the memory file and returns the content
+        """
         with open(memory_path, 'r', encoding='utf-8') as f:
             return f.read()
 
     def sample_from_dict(self, d: Dict[Any, Any], n_sample: int):
+        """
+        Returns a sample from the dictionary
+        """
         if n_sample > len(d):
             if len(d) > 1:
                 n_sample = len(d)
@@ -84,6 +101,9 @@ class MemoryManager:
         return dict(zip(keys, values))
 
     def initialise_confidence(self, acc:str, confidence_agg: Dict[str, float], topology: Dict[str, Any], memory_artefact: MemoryArtefact | None) -> Dict[str, float]:
+        """
+        Initialises the confidence scores
+        """
         if memory_artefact == None:
             if topology.get("type") == "directory":
                 absolute_key = (acc + "/" + topology.get("name")).strip("/")
@@ -92,4 +112,4 @@ class MemoryManager:
                     self.initialise_confidence(absolute_key, confidence_agg, child, memory_artefact)
             return confidence_agg
         else: 
-            return memory_artefact.topology_confidence # CHANGE TO EVALUATE RECENT CHANGES AND COMPARE WITH MEMORY ARTEFACT
+            return memory_artefact.topology_confidence

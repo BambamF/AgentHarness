@@ -16,6 +16,9 @@ from uuid import UUID
 
 
 class RepositoryManager:
+    """
+    The repository manager provides methods to manage the files and directories within the repository
+    """
     IGNORE_DIRS = {
             ".git",
             ".hg",
@@ -42,9 +45,15 @@ class RepositoryManager:
 
     @staticmethod
     def get_topology(repository_root:str, max_depth: int = 4) -> dict:
+        """
+        Scans the repository and returns the a representation of the topology as a dictionary
+        """
         root = Path(repository_root).resolve()
 
         def build_tree(directory: Path, depth: int) -> dict:
+            """
+            Builds the repository tree
+            """
             result = {
                     "name": directory.name,
                     "type": "directory",
@@ -75,6 +84,9 @@ class RepositoryManager:
 
     @staticmethod
     def get_entry_points(repository_root: str) -> dict[str, str]:
+        """
+        Retrieves the entrypoints within the repository as a dictionary
+        """
         discovered = discover_entry_points()
         result = {}
 
@@ -84,6 +96,9 @@ class RepositoryManager:
 
     @staticmethod
     def get_language_dict():
+        """
+        Retrieves the possible programming languages within the repository
+        """
         return {
                 ".py": "python",
                 ".java": "java",
@@ -105,6 +120,9 @@ class RepositoryManager:
 
     @staticmethod
     def get_languages(repository_root: str) -> list[str]:
+        """
+        Retrieves the programming languages utilised within the repository
+        """
         repository_root = Path(repository_root).resolve()
         languages = set()
         language_dict = RepositoryManager.get_language_dict()
@@ -117,6 +135,9 @@ class RepositoryManager:
 
     @staticmethod
     def iter_repository_files(repository_root: str):
+        """
+        Iterates through the files within the repository
+        """
         root = Path(repository_root).resolve()
 
         for path in root.rglob("*"):
@@ -129,6 +150,9 @@ class RepositoryManager:
 
     @staticmethod
     def build_repository_index(repository_root: str) -> dict[str, Any]:
+        """
+        Builds the repository index and returns the representation as a dictionary
+        """
         root = Path(repository_root).resolve()
         files = []
         config_files = []
@@ -169,6 +193,9 @@ class RepositoryManager:
 
     @staticmethod
     def get_repository_artefact(repository_root: str, artefact_store: ArtefactStore, execution_id: UUID):
+        """
+        Creates and returns the repository artefact
+        """
         repository_root = Path(repository_root).resolve()
         commit_hash = RepositoryManager.get_commit_hash(repository_root)
         languages = RepositoryManager.get_languages(repository_root=repository_root)
@@ -202,6 +229,9 @@ class RepositoryManager:
 
     @staticmethod
     def get_commit_hash(repository_root) -> str | None:
+        """
+        Gets the git commit has of the repository
+        """
         try:
             response = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=repository_root, check=True, text=True, capture_output=True, timeout=120)
             commit_hash = response.stdout.strip()
@@ -218,7 +248,9 @@ class RepositoryManager:
 
     @staticmethod
     def scan_config_files(repository_root: str) -> List[str] | None:
-
+        """
+        Scans the repository for the config files
+        """
         CONFIG_EXTENSIONS = {".json", ".yaml", ".toml", ".ini", ".cfg", ".conf", ".xml", ".properties", ".env"}
         CONFIG_FILENAMES = {"dockerfile", "makerfile", "pipfile", "pipfile.lock", "gemfile", "vagrantfile", "procfile", "pyproject.toml"}
         IGNORE_DIRS = {".git", ".hg", ".svn", "node_modules", "venv", ".venv", "__pycache__", "build", "dist", ".idea", ".vscode", ".gitignore"}
@@ -250,6 +282,9 @@ class RepositoryManager:
 
     @staticmethod
     def extract_imports_from_file(file_path, repo_root):
+        """
+        Extracts and returns the imports within the file
+        """
         repo_root = Path(repo_root).resolve()
         imports = []
         try:
@@ -278,6 +313,9 @@ class RepositoryManager:
     
     @staticmethod
     def get_module_name(file_path: Path, repo_root: Path) -> str:
+        """
+        Returns the module name from the file
+        """
         repo_root = Path(repo_root).resolve()
         """Converts a path into a python dot notation string"""
         relative_path = file_path.relative_to(repo_root)
@@ -289,6 +327,9 @@ class RepositoryManager:
 
     @staticmethod
     def build_dependency_graph(repo_path: str) -> Dict:
+        """
+        Builds the dependency graph from the repository and returns the representation as a dictionary
+        """
         repo_root = Path(repo_path).resolve()
         graph = {}
         file_mapping = {}

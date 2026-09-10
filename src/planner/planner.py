@@ -12,6 +12,9 @@ import uuid
 import json
 
 class Planner:
+    """
+    The planner provides methods to create the plan for the following session
+    """
     def __init__(self, agent, model, artefact_store: ArtefactStore, execution_id):
         self.artefact_store = artefact_store
         self.agent = agent
@@ -19,6 +22,9 @@ class Planner:
         self.execution_id = execution_id
 
     def create_plan(self, execution_id: UUID):
+        """
+        Creates the plan and the required plan artefact
+        """
         prompt_artefact = self.artefact_store.latest(PromptArtefact)
         repository_artefact = self.artefact_store.latest(RepositoryArtefact)
         memory_artefact = self.artefact_store.latest(MemoryArtefact)
@@ -67,6 +73,7 @@ class Planner:
         """
 
         try:
+            # Uses the model to create the plan using the given output schema
             message = self.agent.messages.create(
                     system=system_prompt,
                     model=self.model,
@@ -120,6 +127,9 @@ class Planner:
             return plan_artefact
 
     def _build_context(self, prompt_artefact: PromptArtefact, memory_artefact: MemoryArtefact, repository_artefact: RepositoryArtefact) -> dict:
+        """
+        Build the memory and repository context needed for the model to create the plan
+        """
 
         config_files_length = repository_artefact.config_files if repository_artefact.config_files else None
         return {"objective": prompt_artefact.sanitised_prompt,
@@ -143,6 +153,9 @@ class Planner:
                 }
 
     def get_plan_schema(self):
+        """
+        Creates the output schema required for the plan
+        """
                 return {"type": "object",
                         "properties": {
                             "objective": {"type": "string"},

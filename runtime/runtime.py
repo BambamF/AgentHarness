@@ -15,6 +15,9 @@ from repositories.repository_manager import RepositoryManager
 from uuid import UUID
 
 class RuntimeManager:
+    """
+    Provides methods to manage the runtime environment
+    """
     def __init__(self, image: str, executions_dir: str, artefact_store: ArtefactStore, git_user_name: str = "HarnessAgent", git_user_email: str = "harness@localhost"):
         self.executions_dir = executions_dir
         self.client = docker.from_env()
@@ -32,6 +35,9 @@ class RuntimeManager:
         self.workspace_dir = None
 
     def start(self, execution_id: UUID):
+        """
+        Initialises the runtime environment
+        """
 
         if self.container is not None:
             raise RuntimeError("A runtime container is already active")
@@ -45,6 +51,7 @@ class RuntimeManager:
         self.workspace_dir = os.path.join(self.execution_dir, 'workspace')
 
 
+        # Initialises the container directories
         for directory in (
         self.input_dir,
         self.output_dir,
@@ -57,6 +64,7 @@ class RuntimeManager:
         #self.output_dir.chown(1000, 1000)
 
         
+        # Initialises the container execution environment
         self.container = self.client.containers.run(image=self.image,
                 command=["sleep", "infinity"],
                 detach=True,
@@ -80,6 +88,7 @@ class RuntimeManager:
                 user="1000:1000"
                 )
 
+        # Initialises the git credentials for the repository
         self.container.exec_run(cmd=["git", "config", "user.name", self.git_user_name],
                                 workdir="/workspace")
 
@@ -89,6 +98,9 @@ class RuntimeManager:
         logging.info(f"[RUNTIME] Containter Started | Container ID: {self.container.id} | Execution ID: {self.execution_id}")
 
     def get_command(self, action_artefact: ActionArtefact):
+        """
+        Retrieves the command from the tool input
+        """
         tool_input = action_artefact.input
 
         if isinstance(tool_input, str):
@@ -108,7 +120,9 @@ class RuntimeManager:
         return command
 
     def execute(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
-
+        """
+        Execution logic for the action via the permission bridge
+        """
         if self.container is None:
             raise RuntimeError("Runtime has not been started")
 
@@ -127,6 +141,7 @@ class RuntimeManager:
         command = self.get_command(action_artefact)
         try:
 
+            # Executes the command in the container
             result =  self.container.exec_run(
                     cmd=["sh", "-lc", command],
                     workdir="/workspace",
@@ -200,6 +215,9 @@ class RuntimeManager:
         return execution_artefact
 
     def get_blocked_execution_artefact(self, action_artefact: ActionArtefact, permission_artefact: PermissionArtefact) -> ExecutionArtefact:
+        """
+        Returns a blocked execution artefact for commands that are not allowed
+        """
         started_at = datetime.now()
         params = {
                 "execution_id": action_artefact.execution_id,
@@ -224,7 +242,9 @@ class RuntimeManager:
         return execution_artefact
 
     def finalise(self) -> str | None:
-
+        """
+        Graceful degradation for the container
+        """
         if self.container is None:
             raise RuntimeError("Cannot finalise an inactive runtime")
 
@@ -256,6 +276,9 @@ class RuntimeManager:
             raise
 
     def close(self):
+        """
+        Closes the container at the end of the execution
+        """
         if self.container is None:
             return
 
@@ -281,6 +304,9 @@ class RuntimeManager:
                 self.execution_id = None
 
     def _write_artefact(self, artefact: Artefact):
+        """
+        Writes the artefact to the log file
+        """
         artefact_path = os.path.join(os.path.dirname(self.executions_dir), "artefacts_log")
         os.makedirs(artefact_path, exist_ok=True)
         path = os.path.join(artefact_path, f"{artefact.artefact_id}.json")

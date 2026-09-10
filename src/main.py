@@ -44,6 +44,10 @@ config_path = os.path.join(ROOT_PATH, 'configs/config.json')
 charter_path = os.path.join(ROOT_PATH,'src/agents/charter.md')
 
 def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, permission_manager: PermissionManager, generation_manager: GenerationManager, memory_manager: MemoryManager, runtime_manager: RuntimeManager, reflection_manager: ReflectionManager, execution_id: UUID, executions_dir: str):
+
+    """
+    The main agent loop that runs the harness architecture
+    """
     while True:
         last_message = messages[-1].get('content')
         role = messages[-1].get('role')
@@ -64,10 +68,17 @@ def agent_loop(messages: List[Dict[str, Any]], artefact_store: ArtefactStore, pe
                        "payload": html.escape(last_message)}
         full_params.update(params)
 
+        # Gets the sanitised prompt
         prompt_artefact = ArtefactFactory.builder(artefact_type=PromptArtefact, params=full_params, artefact_store=artefact_store, execution_id=execution_id, caller="user")
+
+        # Instantiates the Harness
         harness = Harness(agent, MODEL, memory_path, memory_manager, runtime_manager, config_path, charter_path, executions_dir, messages, permission_manager, generation_manager, reflection_manager, artefact_store, execution_id)
         print("\n\033[36m> Thinking...\033[0m")
+
+        # Starts the Harness process
         harness.run()
+
+
         response_artefact = artefact_store.latest_any()
         print(f"\n\033[32mFinal Answer: {response_artefact.payload if response_artefact.payload else 'Done, check log file'}\033[0m")
         logging.info(f"[AGENT LOOP] Latest Artefact: {str(type(response_artefact))} | Prompt: {full_params.get('payload')} | State: {harness.state} ")
@@ -87,6 +98,7 @@ def main():
     reflection_manager = ReflectionManager(MODEL, agent, tool_dispatch, execution_id, artefact_store, LOG_PATH)
     history: List[Dict[str, Any]] = []
 
+    # Gets input from the user via the terminal and starts the agent loop
     while True:
         try:
             # prompt the user for a query with a coloured prompt
@@ -99,7 +111,8 @@ def main():
         history.append({"role": "user", "content": query})
         agent_loop(history, artefact_store, permission_manager, generation_manager, memory_manager, runtime_manager, reflection_manager, execution_id, executions_dir)
         break
-
+    
+    # Prints the last N artefacts to the console
     artefact_store.print_artefacts_meta(5)
 
 if __name__ == "__main__":
