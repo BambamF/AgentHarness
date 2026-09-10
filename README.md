@@ -99,7 +99,7 @@ $env:PYTHONPATH=. ; py src/main.py
 
 Once you run the main script you should see a prompt with ">>" in the terminal.
 
-This indicates the script has initialised successfully and you can proceede to type your prompt in the terminal.
+This indicates the script has initialised successfully and you can procede to type your prompt in the terminal.
 
 You can prompt the agent to write python code to fulfil your requirement.
 

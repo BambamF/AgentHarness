@@ -14,6 +14,9 @@ from agents.reflect import ReflectionManager
 import os
 
 class Harness:
+    """
+    Provides methods to initialise the harness, transition the harness through the defined states and terminate the process.
+    """
     def __init__(self, agent, model, memory_path, memory_manager: MemoryManager, runtime_manager: RuntimeManager, config_path, charter_path, repository_root, messages: List[Dict[str, Any]], permission_manager: PermissionManager, generation_manager: GenerationManager, reflection_manager: ReflectionManager, artefact_store: ArtefactStore, execution_id: UUID):
         self.agent = agent
         self.model = model
@@ -43,39 +46,78 @@ class Harness:
         self.workspace = os.path.join(self.repository_root,"runtime", "executions", str(execution_id), "workspace")
 
     def run(self):
+        """
+        Runs the orchestration process for the harness state transitions
+        """
+
+        # Initialises the state machine
         self.runtime_manager.start(self.execution_id)
+
+        # State transition run
         try:
+
+            # State loop
             while self.state != HarnessState.TERMINATE:
                 for transition, handler in self.transitions.items():
                     self.state = transition
                     handler()
+
+            # Degrades the runtime process gracefully       
             self.runtime_manager.finalise()
         finally:
+
+            # Closes the runtime environment
             self.runtime_manager.close()
 
     def _initialise(self):
+        """
+        Initialises the state machine
+        """
+
+        # Sets the harness context
         self.context = HarnessContext(self.memory_path, self.config_path, self.workspace, self.artefact_store)
         
         
     def _analyse_repo(self):
+        """
+        Launches the Repo Analysis state via repository scan
+        """
         self.context.scan_repository(self.execution_id)
 
     def _hydrate_memory(self):
+        """
+        Hydrates the session memory from cache
+        """
         self.context.scan_memory(execution_id=self.execution_id, memory_manager=self.memory_manager)
         self.memory_manager.hydrate_memory(execution_id=self.execution_id)
 
     def _create_plan(self):
+        """
+        Creates a plan for the session via the planner
+        """
         self.planner = Planner(self.agent, self.model, self.artefact_store, self.execution_id)
         self.plan = self.planner.create_plan(self.execution_id)
 
     def _generate(self):
+        """
+        Starts the generation loop
+        """
         self.generation_manager.generate(self.tools_dir)
 
     def _reflect(self):
+        """
+        Launches the Reflection state
+        """
         self.reflection_manager.reflect()
 
     def _update_memory(self):
+        """
+        Persists the session memory for future sessions
+        """
         self.memory_manager.update_memory(self.execution_id)
 
     def _terminate(self):
+        """
+        Indicates session termination to the user
+        """
         print("Terminating...")

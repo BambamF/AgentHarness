@@ -24,6 +24,11 @@ class GenerationManager:
         self.tool_dispatch = tool_dispatch
 
     def generate(self, tools_path: str):
+        """
+        The agents generation loop
+        """
+
+        # Retrieve the plan artefact from the artefact store
         plan_artefact = self.artefact_store.latest(PlanArtefact)
         if not plan_artefact:
             logging.error(f"[GENERATING] Caller: Agent | Execution ID: {self.execution_id} | Event: Plan Artefact Does Not Exist")
@@ -62,6 +67,7 @@ class GenerationManager:
         user_prompt = plan_artefact.objective
         results = []
 
+        # Generation loop
         while True:
             response = self.agent.messages.create(
                     model=self.model,
@@ -147,4 +153,7 @@ class GenerationManager:
 
             
     def _get_tool_calls(self, response_content):
+        """
+        Gets the tool calls from the response content
+        """
         return [i for i in response_content if i.type == "tool_use"]

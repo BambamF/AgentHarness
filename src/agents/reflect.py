@@ -20,6 +20,9 @@ class ReflectionManager:
         self.log_path = log_path
 
     def reflect(self):
+        """
+        Runs the agents reflection loop and returns a reflection artefact
+        """
         session_artefacts = self.artefact_store.get_session_artefacts(self.execution_id)
         execution_artefacts = []
         action_artefacts = []
@@ -75,6 +78,8 @@ class ReflectionManager:
 
         messages = [{"role": "user",
                      "content": json.dumps(reflection_context, default=str)}]
+
+        # Runs the reflection loop
         while True:
             response = self.agent.messages.create(
                     model=self.model,
@@ -151,8 +156,11 @@ class ReflectionManager:
         return reflection_artefact
             
 
-
+    
     def get_reflection_schema(self):
+        """
+        The output schema for the models reflection
+        """
         return {"type": "object",
                 "properties": {
                     "objective": {"type": "string"},
