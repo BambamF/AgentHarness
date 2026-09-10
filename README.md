@@ -116,11 +116,11 @@ src
 * prompts: Contains the prompt handling logic
 * repositories: Contains the repository management logic
 * tools: contains the tool interface and subclasses (frozen dataclasses)
-runtime: Contains the executions directory that holds the agent's execution environment, and the runtime code
-tests: Contains the projects testing suite
-Dockerfile: The configs for docker
-pyproject.toml: configs for running module scripts
-requirements.txt: dependencies for the project
+runtime: Contains the executions directory that holds the agent's execution environment, and the runtime code  
+tests: Contains the projects testing suite  
+Dockerfile: The configs for docker  
+pyproject.toml: configs for running module scripts  
+requirements.txt: dependencies for the project  
 
 ## Testing 
 
