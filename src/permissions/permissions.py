@@ -8,6 +8,7 @@ from .permission_level import PermissionLevel
 import logging
 import uuid
 from uuid import UUID
+import shlex
 
 class PermissionManager:
     def __init__(self):
@@ -17,8 +18,69 @@ class PermissionManager:
                 PermissionLevel.EXECUTE: ["python", "python3", "pip", "pip3", "apt-get install", "apt upgrade", "docker run", "rm", "node", "git commit", "git merge"],
                 PermissionLevel.ALWAYS_BLOCK: ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/", ":(){ :|:& };:"]
                 }
-        self.requires_sub = ["git", "apt", "apt-get", "docker"]
+        self.requires_sub = ["git", "apt", "apt-get", "docker", "rm", "pip"]
 
+    def get_command_targets(self, command, prefix: str | None = None) -> list[str]:
+        """
+        Get the command targets from every command in a shell command chain
+        """
+        if isinstance(command, list):
+            tokens = [str(token) for token in command]
+        else:
+            try:
+                lexer = shlex.shlex(str(command), posix=True, punctuation_chars = ";&|")
+                lexer.whitespace_split = True
+                tokens = list(lexer)
+            except ValueError:
+                # an invalid or oddly formed shell syntax should not be treated as safe
+                return [str(command)]
+
+        targets = []
+        current_command = []
+
+        separators = {";", "&&", "||", "|", "&", "\n"}
+
+        for token in tokens:
+            if token in separators:
+                if current_command:
+                    target = self.get_command_target(current_command, prefix=prefix)
+                    if target:
+                        targets.append(target)
+                    current_command = []
+            else:
+                current_command.append(token)
+
+        if current_command:
+            target = self.get_command_target(current_command, prefix)
+            if target:
+                targets.append(target)
+        return targets
+
+    def is_blocked_command(self, command, prefix: str | None = None) -> bool:
+        """
+        Return True if any command in the chain appears in ALWAYS_BLOCK
+        """
+        if isinstance(command, list):
+            raw_command = " ".join(str(token) for token in command)
+        else:
+            raw_command = str(command)
+
+        # handle whitespace
+        normalised = " ".join(raw_command.split())
+
+        # check each command in the chain
+        targets = self.get_command_targets(command, prefix)
+
+        for target in targets:
+            if target in self.permission_levels[PermissionLevel.ALWAYS_BLOCK]:
+                return True
+        # check the complete command for dangerous arguments
+        blocked_patterns = ["rm -rf /", "> /dev/", ":(){ :|:& };:", "sudo"]
+
+        for pattern in blocked_patterns:
+            if pattern in normalised:
+                return True
+        return False
 
     def get_permission_text(self, action_artefact) -> str:
         tool_input = action_artefact.input or {}
@@ -68,7 +130,9 @@ class PermissionManager:
     def get_permission(self, action_artefact: ActionArtefact, artefact_store: ArtefactStore, current_level: PermissionLevel) -> PermissionArtefact:
         permission_target = self.get_permission_target(action_artefact)
 
-        if permission_target in self.permission_levels.get(PermissionLevel.ALWAYS_BLOCK, []):
+        tool_input = action_artefact.input or {}
+        command = tool_input.get("command")
+        if command and self.is_blocked_command(command):
 
             params = {"execution_id": action_artefact.execution_id,
                       "producer": action_artefact.producer,
